@@ -1,0 +1,31 @@
+#include "../h/matrix.h"
+#include "stdio.h"
+#include "stdlib.h"
+
+void print_matrix(matrix* a) {
+    for(int i = 0; i < a->x; i++) {
+        for(int j = 0; j < a->y; j++) {
+            printf("%f ", a->m[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+matrix* malloc_matrix(int x, int y) {
+    matrix* a = malloc(sizeof(matrix));
+    a->x = x;
+    a->y = y;
+    a->m = malloc(a->x * sizeof(float*));
+    for(int i = 0; i < a->x; i++) {
+        a->m[i] = malloc(a->y * sizeof(float));
+    }
+    return a;
+}
+
+void free_matrix(matrix* a) {
+    for(int i = 0; i < a->x; i++) {
+        free(a->m[i]);
+    }
+    free(a->m);
+    free(a);
+}

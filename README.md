@@ -1,0 +1,32 @@
+# Rechnerarchitekturen für Deep-Learning Anwendungen
+```sh
+NAME="Robert Kagan"
+EMAIL=robert.kagan@fau.de
+USER=cu14mowo
+
+git config --global user.name "$NAME"
+git config --global user.email $EMAIL
+git config --global core.editor nano
+git config --global init.defaultBranch main
+
+mkdir -p ~/.ssh
+ssh-keygen -C $EMAIL -f ~/.ssh/fau -N ""
+echo -e "\n>>> https://gitlab.cs.fau.de/-/user_settings/ssh_keys <<<"
+cat ~/.ssh/fau.pub
+
+echo "Host gitlab.cs.fau.de" > ~/.ssh/config
+echo -e "\tUser $USER" >> ~/.ssh/config
+echo -e "\tPreferredAuthentications publickey" >> ~/.ssh/config
+echo -e "\tIdentityFile ~/.ssh/fau" >> ~/.ssh/config
+```
+```sh
+git clone git@gitlab.cs.fau.de:cu14mowo/radl.git "Rechnerarchitekturen für Deep-Learning Anwendungen"
+```
+```sh
+python -m venv venv
+source venv/bin/activate
+pip install tensorflow tensorflow-datasets
+cd "Rechnerarchitekturen für Deep-Learning Anwendungen/Source Code/py"
+./tf.py
+deactivate
+```
