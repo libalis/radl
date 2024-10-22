@@ -1,7 +1,7 @@
 #include "../h/tf.h"
 #include <assert.h>
 
-matrix* matadd(matrix* a, matrix* b) {
+matrix* add(matrix* a, matrix* b) {
     assert(a->x == b->x && a->y == b->y);
     matrix *c = malloc_matrix(a->x, a->y);
     for(int i = 0; i < c->x; i++) {
@@ -23,14 +23,4 @@ matrix* matmul(matrix* a, matrix* b) {
         }
     }
     return c;
-}
-
-matrix* conv2d(matrix* a, matrix* b) {
-    // TODO
-    return malloc_matrix(0, 0);
-}
-
-matrix* maxpool2d(matrix* a, matrix* b) {
-    // TODO
-    return malloc_matrix(0, 0);
 }
