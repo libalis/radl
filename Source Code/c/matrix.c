@@ -19,6 +19,11 @@ matrix* malloc_matrix(int x, int y) {
     for(int i = 0; i < a->x; i++) {
         a->m[i] = malloc(a->y * sizeof(float));
     }
+    for(int i = 0; i < a->x; i++) {
+        for(int j = 0; j < a->y; j++) {
+            a->m[i][j] = 0;
+        }
+    }
     return a;
 }
 
