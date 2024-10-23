@@ -57,7 +57,7 @@ io* malloc_io() {
     a->masks = malloc(a->masks_len * sizeof(matrix*));
     for(int i = 0; i < a->masks_len; i++) {
         char* c = malloc(strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1);
-        sprintf(c, "./weights/masks_%d.txt", i);
+        snprintf(c, strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1, "./weights/masks_%d.txt", i);
         a->masks[i] = io_to_matrix(c);
         free(c);
     }

@@ -21,7 +21,7 @@ matrix* malloc_matrix(int x, int y) {
     }
     for(int i = 0; i < a->x; i++) {
         for(int j = 0; j < a->y; j++) {
-            a->m[i][j] = 0;
+            a->m[i][j] = 0.0;
         }
     }
     return a;
