@@ -11,6 +11,8 @@ int max(matrix* a) {
             index = i;
         }
     }
+    free_matrix(a);
+    a = NULL;
     return index;
 }
 
@@ -21,11 +23,15 @@ matrix* add(matrix* a, matrix* b) {
             c->m[i][j] = a->m[i][j] + b->m[i][j];
         }
     }
+    free_matrix(a);
+    a = NULL;
+    free_matrix(b);
+    b = NULL;
     return c;
 }
 
 matrix* matmul(matrix* a, matrix* b) {
-    matrix* c = malloc_matrix(a->y, b->x);
+    matrix* c = malloc_matrix(a->x, b->y);
     for(int i = 0; i < c->x; i++) {
         for(int k = 0; k < c->y; k++) {
             for(int j = 0; j < a->y; j++) {
@@ -33,6 +39,10 @@ matrix* matmul(matrix* a, matrix* b) {
             }
         }
     }
+    free_matrix(a);
+    a = NULL;
+    free_matrix(b);
+    b = NULL;
     return c;
 }
 
@@ -44,6 +54,8 @@ matrix* flatten(matrix* a) {
             c->m[m++][0] = a->m[i][j];
         }
     }
+    free_matrix(a);
+    a = NULL;
     return c;
 }
 
@@ -66,6 +78,12 @@ matrix* maxpool(matrix** a, int len) {
             c->m[i / pool_len][j / pool_len] = max_val;
         }
     }
+    for(int i = 0; i < len; i++) {
+        free_matrix(a[i]);
+        a[i] = NULL;
+    }
+    free(a);
+    a = NULL;
     return c;
 }
 
@@ -83,6 +101,12 @@ matrix** relu(matrix** a, int len) {
             }
         }
     }
+    for(int i = 0; i < len; i++) {
+        free_matrix(a[i]);
+        a[i] = NULL;
+    }
+    free(a);
+    a = NULL;
     return c;
 }
 
@@ -96,6 +120,14 @@ matrix** biasing(matrix** a, int len, matrix* b) {
             }
         }
     }
+    for(int i = 0; i < len; i++) {
+        free_matrix(a[i]);
+        a[i] = NULL;
+    }
+    free(a);
+    a = NULL;
+    free_matrix(b);
+    b = NULL;
     return c;
 }
 
@@ -117,5 +149,15 @@ matrix** conv2d(matrix* a, matrix** b, int len) {
             }
         }
     }
+    free_matrix(a);
+    a = NULL;
+    for(int i = 0; i < len; i++) {
+        if(b[i] != NULL){
+            free_matrix(b[i]);
+            b[i] = NULL;
+        }
+    }
+    free(b);
+    b = NULL;
     return c;
 }

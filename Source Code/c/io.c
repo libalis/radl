@@ -70,17 +70,39 @@ io* malloc_io() {
         snprintf(c, strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1, "./weights/masks_%d.txt", i);
         a->masks[i] = io_to_matrix(c);
         free(c);
+        c = NULL;
     }
     return a;
 }
 
 void free_io(io* a) {
-    free_matrix(a->conv_bias);
-    free_matrix(a->fc_bias);
-    free_matrix(a->fc_weights);
-    for(int i = 0; i < a->masks_len; i++) {
-        free_matrix(a->masks[i]);
+    if(a == NULL) {
+        return;
     }
-    free(a->masks);
-    free(a);
+    if(a->conv_bias != NULL) {
+        free_matrix(a->conv_bias);
+        a->conv_bias = NULL;
+    }
+    if(a->fc_bias != NULL) {
+        free_matrix(a->fc_bias);
+        a->fc_bias = NULL;
+    }
+    if(a->fc_weights) {
+        free_matrix(a->fc_weights);
+        a->fc_weights = NULL;
+    }
+    for(int i = 0; i < a->masks_len; i++) {
+        if(a->masks[i] != NULL) {
+            free_matrix(a->masks[i]);
+            a->masks[i] = NULL;
+        }
+    }
+    if(a->masks != NULL) {
+        free(a->masks);
+        a->masks = NULL;
+    }
+    if(a != NULL) {
+        free(a);
+        a = NULL;
+    }
 }
