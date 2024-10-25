@@ -2,32 +2,37 @@
 #include "../h/tf.h"
 #include "../h/timer.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char* argv[]) {
     start_timer();
     io* i = malloc_io();
-    // TODO
-    matrix* images = malloc_matrix(0, 0);
-    // TODO
-    matrix* masks = malloc_matrix(0, 0);
-    matrix* c = conv2d(images, masks);
-    matrix* b = biasing(c, i->conv_bias);
-    matrix* r = relu(b);
-    matrix* m = maxpool(r);
+    matrix** c = conv2d(i->image, i->masks, i->masks_len);
+    matrix** b = biasing(c, i->masks_len, i->conv_bias);
+    matrix** r = relu(b, i->masks_len);
+    matrix* m = maxpool(r, i->masks_len);
     matrix* f = flatten(m);
     matrix* mm = matmul(f, i->fc_weights);
     matrix* a = add(mm, i->fc_bias);
+
+    print_matrix(a);
     printf("%d\n", max(a));
+    printf("accurate: %d\n", max(a) == i->label);
+
     free_matrix(a);
     free_matrix(mm);
     free_matrix(f);
     free_matrix(m);
-    free_matrix(r);
-    free_matrix(b);
-    free_matrix(c);
-    free_matrix(masks);
-    free_matrix(images);
+    for (int j = 0; j < i->masks_len; j++) {
+        free_matrix(r[j]);
+        free_matrix(b[j]);
+        free_matrix(c[j]);
+    }
+    free(r);
+    free(b);
+    free(c);
     free_io(i);
+
     printf("%ld us\n", stop_timer_us());
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -7,6 +7,8 @@ typedef struct io {
     matrix* conv_bias;
     matrix* fc_bias;
     matrix* fc_weights;
+    matrix* image;
+    int label;
     matrix** masks;
     int masks_len;
 } io;

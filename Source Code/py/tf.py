@@ -118,10 +118,35 @@ for i in range(epochs):
     print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss: {loss * 100:.2f}%")
 
 # save output
+# first two lines are the shape
+# ============
 try:
     os.mkdir("../weights")
 except:
     pass
+
+f = open("../weights/conv_bias.txt", "w")
+f.close()
+with open("../weights/conv_bias.txt", "ab") as f:
+    np.savetxt(f, conv_bias.shape, fmt='%f')
+    f.write(b"\n")
+    np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
+
+f = open("../weights/fc_bias.txt", "w")
+f.close()
+with open("../weights/fc_bias.txt", "ab") as f:
+    np.savetxt(f, fc_bias.shape, fmt='%f')
+    f.write(b"\n")
+    np.savetxt(f, fc_bias.eval(session=session), fmt='%f')
+
+f = open("../weights/fc_weights.txt", "w")
+f.close()
+with open("../weights/fc_weights.txt", "ab") as f:
+    np.savetxt(f, fc_weights.shape, fmt='%f')
+    f.write(b"\n")
+    np.savetxt(f, tf.transpose(fc_weights).eval(session=session), fmt='%f')
+
+# save how many masks there are
 with open("../weights/masks.txt", "w") as f:
     f.write(f"{masks.shape[3]}\n")
 for i in range(masks.shape[3]):
@@ -131,21 +156,3 @@ for i in range(masks.shape[3]):
             np.savetxt(f, masks[:, :, 0, i].shape, fmt='%f')
             f.write(b"\n")
             np.savetxt(f, masks[:, :, 0, i].eval(session=session), fmt='%f')
-f = open("../weights/conv_bias.txt", "w")
-f.close()
-with open("../weights/conv_bias.txt", "ab") as f:
-    np.savetxt(f, conv_bias.shape, fmt='%f')
-    f.write(b"\n")
-    np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
-f = open("../weights/fc_weights.txt", "w")
-f.close()
-with open("../weights/fc_weights.txt", "ab") as f:
-    np.savetxt(f, fc_weights.shape, fmt='%f')
-    f.write(b"\n")
-    np.savetxt(f, tf.transpose(fc_weights).eval(session=session), fmt='%f')
-f = open("../weights/fc_bias.txt", "w")
-f.close()
-with open("../weights/fc_bias.txt", "ab") as f:
-    np.savetxt(f, fc_bias.shape, fmt='%f')
-    f.write(b"\n")
-    np.savetxt(f, fc_bias.eval(session=session), fmt='%f')

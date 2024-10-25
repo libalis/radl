@@ -46,14 +46,24 @@ io* malloc_io() {
     a->conv_bias = io_to_matrix("./weights/conv_bias.txt");
     a->fc_bias = io_to_matrix("./weights/fc_bias.txt");
     a->fc_weights = io_to_matrix("./weights/fc_weights.txt");
-    FILE* f = fopen("./weights/masks.txt", "r");
+    a->image = io_to_matrix("./weights/image.txt");
+
+    FILE* i = fopen("./weights/label.txt", "r");
     char* line = NULL;
     size_t len = 0;
+    getline(&line, &len, i);
+    a->label= (int)strtof(line, NULL);
+    fclose(i);
+    len = 0;
+    memset(line, 0, len);
+
+    FILE* f = fopen("./weights/masks.txt", "r");
     getline(&line, &len, f);
     a->masks_len = (int)strtof(line, NULL);
+    fclose(f);
     free(line);
     line = NULL;
-    fclose(f);
+
     a->masks = malloc(a->masks_len * sizeof(matrix*));
     for(int i = 0; i < a->masks_len; i++) {
         char* c = malloc(strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1);
