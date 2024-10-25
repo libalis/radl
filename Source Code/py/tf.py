@@ -37,7 +37,7 @@ train_ds = train_ds.map(lambda image, label: (tf.pad(image, [[1, 1], [1, 1], [0,
 train_ds = train_ds.cache()
 
 # shuffling and dividing in batches as before
-batch_size = 128
+batch_size = 1
 train_ds = train_ds.shuffle(60000).batch(batch_size)
 
 # it is good practice to end the pipeline by prefetching for performance

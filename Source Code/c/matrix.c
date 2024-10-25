@@ -11,6 +11,18 @@ void print_matrix(matrix* a) {
     }
 }
 
+matrix* transpose(matrix* a) {
+    matrix* c = malloc_matrix(a->y, a->x);
+    for(int i = 0; i < a->x; i++) {
+        for(int j = 0; j < a->y; j++) {
+            c->m[j][i] = a->m[i][j];
+        }
+    }
+    free_matrix(a);
+    a = NULL;
+    return c;
+}
+
 matrix* malloc_matrix(int x, int y) {
     matrix* a = malloc(sizeof(matrix));
     a->x = x;
@@ -28,9 +40,21 @@ matrix* malloc_matrix(int x, int y) {
 }
 
 void free_matrix(matrix* a) {
-    for(int i = 0; i < a->x; i++) {
-        free(a->m[i]);
+    if(a == NULL) {
+        return;
     }
-    free(a->m);
-    free(a);
+    for(int i = 0; i < a->x; i++) {
+        if(a->m[i] != NULL) {
+            free(a->m[i]);
+            a->m[i] = NULL;
+        }
+    }
+    if(a->m != NULL) {
+        free(a->m);
+        a->m = NULL;
+    }
+    if(a != NULL) {
+        free(a);
+        a = NULL;
+    }
 }

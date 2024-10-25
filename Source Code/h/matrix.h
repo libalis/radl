@@ -8,6 +8,7 @@ typedef struct matrix {
 } matrix;
 
 void print_matrix(matrix* a);
+matrix* transpose(matrix* a);
 matrix* malloc_matrix(int x, int y);
 void free_matrix(matrix* a);
 
