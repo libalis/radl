@@ -54,8 +54,8 @@ io* malloc_io() {
     getline(&line, &len, i);
     a->label= (int)strtof(line, NULL);
     fclose(i);
-    len = 0;
-    memset(line, 0, len);
+    free(line);
+    line = NULL;
 
     FILE* f = fopen("./weights/masks.txt", "r");
     getline(&line, &len, f);
@@ -76,33 +76,13 @@ io* malloc_io() {
 }
 
 void free_io(io* a) {
-    if(a == NULL) {
-        return;
-    }
-    if(a->conv_bias != NULL) {
-        free_matrix(a->conv_bias);
-        a->conv_bias = NULL;
-    }
-    if(a->fc_bias != NULL) {
-        free_matrix(a->fc_bias);
-        a->fc_bias = NULL;
-    }
-    if(a->fc_weights) {
-        free_matrix(a->fc_weights);
-        a->fc_weights = NULL;
-    }
+    free_matrix(a->conv_bias);
+    free_matrix(a->fc_bias);
+    free_matrix(a->fc_weights);
+    free_matrix(a->image);
     for(int i = 0; i < a->masks_len; i++) {
-        if(a->masks[i] != NULL) {
-            free_matrix(a->masks[i]);
-            a->masks[i] = NULL;
-        }
+        free_matrix(a->masks[i]);
     }
-    if(a->masks != NULL) {
-        free(a->masks);
-        a->masks = NULL;
-    }
-    if(a != NULL) {
-        free(a);
-        a = NULL;
-    }
+    free(a->masks);
+    free(a);
 }

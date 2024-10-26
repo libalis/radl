@@ -18,8 +18,6 @@ matrix* transpose(matrix* a) {
             c->m[j][i] = a->m[i][j];
         }
     }
-    free_matrix(a);
-    a = NULL;
     return c;
 }
 
@@ -40,21 +38,16 @@ matrix* malloc_matrix(int x, int y) {
 }
 
 void free_matrix(matrix* a) {
-    if(a == NULL) {
-        return;
-    }
     for(int i = 0; i < a->x; i++) {
-        if(a->m[i] != NULL) {
-            free(a->m[i]);
-            a->m[i] = NULL;
-        }
+        free(a->m[i]);
     }
-    if(a->m != NULL) {
-        free(a->m);
-        a->m = NULL;
+    free(a->m);
+    free(a);
+}
+
+void free_matrix_ptr(matrix** a, int len) {
+    for(int i = 0; i < len; i++) {
+        free_matrix(a[i]);
     }
-    if(a != NULL) {
-        free(a);
-        a = NULL;
-    }
+    free(a);
 }
