@@ -30,3 +30,13 @@ cd "Rechnerarchitekturen für Deep-Learning Anwendungen/Source Code/py"
 ./tf.py
 deactivate
 ```
+```sh
+git rebase -i HEAD~X
+# X is the number of commits to go back
+# Move to the line of your commit, change pick into reword,
+# then change your commit message:
+git commit --amend
+# Finish the rebase with:
+git rebase --continue
+git push --force
+```
