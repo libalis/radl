@@ -35,7 +35,7 @@ git rebase -i HEAD~X
 # X is the number of commits to go back
 # Move to the line of your commit, change pick into reword,
 # then change your commit message:
-git commit --amend
+git commit --amend --author="John Doe <john@doe.org>" --no-edit
 # Finish the rebase with:
 git rebase --continue
 git push --force
