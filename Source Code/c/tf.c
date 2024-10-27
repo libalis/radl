@@ -54,8 +54,8 @@ matrix** maxpool(matrix** a, int len) {
     matrix** c = malloc(len * sizeof(matrix*));
     for(int m = 0; m < len; m++) {
         c[m] = malloc_matrix(a[0]->x / pool_len, a[0]->y / pool_len);
-        for(int i = 0; i < c[m]->x; i += pool_len) {
-            for(int j = 0; j < c[m]->y; j += pool_len) {
+        for(int i = 0; i < a[m]->x; i += pool_len) {
+            for(int j = 0; j < a[m]->y; j += pool_len) {
                 float max_val = a[m]->m[i][j];
                 for(int k = 0; k < pool_len; k++) {
                     for(int l = 0; l < pool_len; l++) {
