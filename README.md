@@ -40,3 +40,12 @@ git commit --amend --author="John Doe <john@doe.org>" --no-edit
 git rebase --continue
 git push --force
 ```
+```sh
+git pull --rebase origin main
+```
+```sh
+./build/main
+gdb ./build/main
+valgrind ./build/main
+gprof ./build/main gmon.out > gmon.txt
+```

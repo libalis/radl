@@ -102,7 +102,6 @@ epochs = 1
 
 # train the weights by looping repeatedly over all the data (and shuffling in between)
 for i in range(epochs):
-    bool = True
     session.run(train_init_op)
     accuracy = 0
     loss = 0
@@ -111,17 +110,6 @@ for i in range(epochs):
             data_batch = session.run(next_data_batch)
             image_batch = data_batch[0]
             label_batch = data_batch[1]
-            if bool:
-                bool = False
-                f = open("./weights/image.txt", "w")
-                f.close()
-                with open("./weights/image.txt", "ab") as f:
-                    image = image_batch[0, :, :, 0]
-                    np.savetxt(f, image.shape, fmt='%f')
-                    f.write(b"\n")
-                    np.savetxt(f, image, fmt="%f")
-                with open("./weights/label.txt", "w") as f:
-                    f.write(f"{label_batch[0]}\n")
             session.run(train_op, feed_dict={images:image_batch, labels:label_batch})
             accuracy = session.run(accuracy_op, feed_dict={images:image_batch, labels:label_batch})
             loss = session.run(loss_op, feed_dict={images:image_batch, labels:label_batch})
@@ -129,42 +117,35 @@ for i in range(epochs):
             break
     print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss: {loss * 100:.2f}%")
 
-# save output
-# first two lines are the shape
+# esure the directory exists
 try:
     os.mkdir("./weights")
 except:
     pass
 
-f = open("./weights/conv_bias.txt", "w")
-f.close()
-with open("./weights/conv_bias.txt", "ab") as f:
+# save output
+with open("./weights/conv_bias.txt", "w") as f:
+    # first two lines are the shape
     np.savetxt(f, conv_bias.shape, fmt='%f')
-    f.write(b"\n")
+    f.write("\n")
     np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
 
-f = open("./weights/fc_bias.txt", "w")
-f.close()
-with open("./weights/fc_bias.txt", "ab") as f:
+with open("./weights/fc_bias.txt", "w") as f:
     np.savetxt(f, fc_bias.shape, fmt='%f')
-    f.write(b"\n")
+    f.write("\n")
     np.savetxt(f, fc_bias.eval(session=session), fmt='%f')
 
-f = open("./weights/fc_weights.txt", "w")
-f.close()
-with open("./weights/fc_weights.txt", "ab") as f:
-    np.savetxt(f, fc_weights.shape, fmt='%f')
-    f.write(b"\n")
-    np.savetxt(f, tf.transpose(fc_weights).eval(session=session), fmt='%f')
+with open("./weights/fc_weights.txt", "w") as f:
+    np.savetxt(f, tf.transpose(fc_weights).shape, fmt='%f')
+    f.write("\n")
+    np.savetxt(f, fc_weights.eval(session=session), fmt='%f')
 
 # save how many masks there are
 with open("./weights/masks.txt", "w") as f:
     f.write(f"{masks.shape[3]}\n")
 
 for i in range(masks.shape[3]):
-        f = open(f"./weights/masks_{i}.txt", "w")
-        f.close()
-        with open(f"./weights/masks_{i}.txt", "ab") as f:
+        with open(f"./weights/masks_{i}.txt", "w") as f:
             np.savetxt(f, masks[:, :, 0, i].shape, fmt='%f')
-            f.write(b"\n")
+            f.write("\n")
             np.savetxt(f, masks[:, :, 0, i].eval(session=session), fmt='%f')

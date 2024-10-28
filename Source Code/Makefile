@@ -1,6 +1,6 @@
 PROGRAM = main
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g -pg
 BUILD_DIR = ./build
 C_DIR = ./c
 H_DIR = ./h
