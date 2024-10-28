@@ -17,7 +17,7 @@ norm_img = image / 255.0
 # add zero padding to the image
 pad_img = np.pad(norm_img, pad_width=1, mode='constant', constant_values=0)
 
-# esure the directory exists
+# ensure the directory exists
 try:
     os.mkdir("./weights")
 except:

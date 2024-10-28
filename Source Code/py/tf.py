@@ -117,7 +117,7 @@ for i in range(epochs):
             break
     print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss: {loss * 100:.2f}%")
 
-# esure the directory exists
+# ensure the directory exists
 try:
     os.mkdir("./weights")
 except:
