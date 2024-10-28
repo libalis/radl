@@ -7,13 +7,14 @@
 int main(int argc, char* argv[]) {
     start_timer();
 
-    for(int j = 0; j < 100; j++) {
+    for(int j = 0; j < 1; j++) {
 
-        system("./py/export_image.py &>/dev/null");
+        // system("./py/export_image.py &>/dev/null");
 
         io* i = malloc_io();
 
-        matrix** c = conv2d(i->image, i->masks, i->masks_len);
+        matrix** flipped_masks = flip_kernels(i->masks, i->masks_len);
+        matrix** c = conv2d(i->image, flipped_masks, i->masks_len);
         matrix** b = biasing(c, i->masks_len, i->conv_bias);
         matrix** r = relu(b, i->masks_len);
         matrix** m = maxpool(r, i->masks_len);
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]) {
         free_matrix_ptr(r, i->masks_len);
         free_matrix_ptr(b, i->masks_len);
         free_matrix_ptr(c, i->masks_len);
+        free_matrix_ptr(flipped_masks, i->masks_len);
 
         free_io(i);
 

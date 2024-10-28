@@ -11,6 +11,19 @@ void print_matrix(matrix* a) {
     }
 }
 
+matrix** flip_kernels(matrix** a, int len) {
+    matrix** c = malloc(len * sizeof(matrix*));
+    for(int i = 0; i < len; i++) {
+        c[i] = malloc_matrix(a[i]->x, a[i]->y);
+        for (int j = 0; j < a[i]->x; j++) {
+            for (int k = 0; k < a[i]->y; k++) {
+                c[i]->m[a[i]->x - j - 1][a[i]->y - k - 1] = a[i]->m[j][k];
+            }
+        }
+    }
+    return c;
+}
+
 matrix* transpose(matrix* a) {
     matrix* c = malloc_matrix(a->y, a->x);
     for(int i = 0; i < a->x; i++) {

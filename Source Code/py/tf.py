@@ -22,7 +22,7 @@ tf.disable_eager_execution()
 # normalizes images
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
+    return tf.cast(image, tf.float32) / 255.0, label
 
 # tfds provide images of type 'tf.uint8', while the model expects 'tf.float32', therefore, you need to normalize images
 train_ds = train_ds.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
@@ -68,7 +68,7 @@ convolution = tf.nn.conv2d(input_layer, masks, strides=[1, 1, 1, 1], padding='VA
 convolution = tf.add(convolution, conv_bias, name='biasing')
 convolution = tf.nn.relu(convolution, name='ReLU')
 pooling = tf.nn.max_pool2d(convolution, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
-hidden_layer = tensorflow.keras.layers.Flatten()(pooling)
+hidden_layer = tf.manip.reshape(pooling, [1, 14 * 14 * 4])
 output_layer = tf.add(tf.matmul(hidden_layer, fc_weights, name='matmul'), fc_bias, name='add')
 
 # feed the correct labels into the net
