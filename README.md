@@ -46,6 +46,6 @@ git pull --rebase origin main
 ```sh
 ./build/main
 gdb ./build/main
-valgrind ./build/main
+valgrind --leak-check=full --show-leak-kinds=all ./build/main
 gprof ./build/main gmon.out > gmon.txt
 ```
