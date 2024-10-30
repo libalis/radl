@@ -25,7 +25,7 @@ git clone git@gitlab.cs.fau.de:cu14mowo/radl.git "Rechnerarchitekturen für Deep
 ```sh
 python -m venv venv
 source venv/bin/activate
-pip install tensorflow tensorflow-datasets
+pip install tensorflow tensorflow_datasets
 cd "Rechnerarchitekturen für Deep-Learning Anwendungen/Source Code/py"
 ./tf.py
 deactivate
