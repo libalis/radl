@@ -36,12 +36,10 @@ train_ds = train_ds.map(lambda image, label: (tf.pad(image, [[1, 1], [1, 1], [0,
 # cache the modified data in memory
 train_ds = train_ds.cache()
 
-# shuffling and dividing in batches as before
-batch_size = 1
-train_ds = train_ds.shuffle(60000).batch(batch_size)
-
-# it is good practice to end the pipeline by prefetching for performance
-train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
+# shuffling and dividing in batches
+shuffle_size = 60000
+batch_size = 128
+train_ds = train_ds.shuffle(shuffle_size).batch(batch_size)
 
 # define iterator over batches of data
 data_iterator = tf.data.Iterator.from_structure(tf.data.get_output_types(train_ds), tf.data.get_output_shapes(train_ds))
@@ -68,7 +66,7 @@ convolution = tf.nn.conv2d(input_layer, masks, strides=[1, 1, 1, 1], padding='VA
 convolution = tf.add(convolution, conv_bias, name='biasing')
 convolution = tf.nn.relu(convolution, name='ReLU')
 pooling = tf.nn.max_pool2d(convolution, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
-hidden_layer = tf.manip.reshape(pooling, [1, 14 * 14 * 4])
+hidden_layer = tf.keras.layers.Flatten()(pooling)
 output_layer = tf.add(tf.matmul(hidden_layer, fc_weights, name='matmul'), fc_bias, name='add')
 
 # feed the correct labels into the net
@@ -98,7 +96,7 @@ learning_rate = 0.01
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 train_op = optimizer.minimize(loss_op)
 
-epochs = 1
+epochs = 10
 
 # train the weights by looping repeatedly over all the data (and shuffling in between)
 for i in range(epochs):
@@ -115,7 +113,7 @@ for i in range(epochs):
             loss = session.run(loss_op, feed_dict={images:image_batch, labels:label_batch})
         except tf.errors.OutOfRangeError:
             break
-    print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss: {loss * 100:.2f}%")
+    print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss {loss * 100:.2f}%")
 
 # ensure the directory exists
 try:

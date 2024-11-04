@@ -1,4 +1,5 @@
 #include "../h/tf.h"
+#include <math.h>
 #include <stdlib.h>
 
 int max(matrix* a) {
@@ -39,9 +40,9 @@ matrix* matmul(matrix* a, matrix* b) {
 matrix* flatten(matrix** a, int len) {
     matrix* c = malloc_matrix(len * a[0]->x * a[0]->y, 1);
     int index = 0;
-    for(int m = 0; m < len; m++) {
-        for(int i = 0; i < a[0]->x; i++) {
-            for(int j = 0; j < a[0]->y; j++) {
+    for(int i = 0; i < a[0]->x; i++) {
+        for(int j = 0; j < a[0]->y; j++) {
+            for(int m = 0; m < len; m++) {
                 c->m[index++][0] = a[m]->m[i][j];
             }
         }
@@ -66,6 +67,19 @@ matrix** maxpool(matrix** a, int len) {
                     }
                 }
                 c[m]->m[i / pool_len][j / pool_len] = max_val;
+            }
+        }
+    }
+    return c;
+}
+
+matrix** hyperbolic_tangent(matrix** a, int len) {
+    matrix** c = malloc(len * sizeof(matrix*));
+    for(int m = 0; m < len; m++) {
+        c[m] = malloc_matrix(a[m]->x, a[m]->y);
+        for(int i = 0; i < a[m]->x; i++) {
+            for(int j = 0; j < a[m]->y; j++) {
+                c[m]->m[i][j] = tanh(a[m]->m[i][j]);
             }
         }
     }

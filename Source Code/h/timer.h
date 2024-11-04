@@ -3,10 +3,11 @@
 
 #include <sys/time.h>
 
-static struct timeval start_time, end_time;
+typedef struct timeval timeval;
 
-void start_timer();
-long stop_timer_us();
-float stop_timer();
+timeval start_timer();
+timeval stop_timer();
+long delta_time_us(timeval start_time, timeval end_time);
+float delta_time_s(timeval start_time, timeval end_time);
 
 #endif

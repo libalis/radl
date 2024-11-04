@@ -1,4 +1,5 @@
 #include "../h/io.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,7 @@ matrix* io_to_matrix(char* a) {
     }
     free(line);
     line = NULL;
+    assert(x > 0);
     matrix* m = malloc_matrix(x, y);
     for(int i = 0; i < m->x; i++) {
         getline(&line, &len, f);
