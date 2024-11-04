@@ -42,6 +42,7 @@ git push --force
 ```
 ```sh
 git pull --rebase origin main
+git push --tags
 ```
 ```sh
 ./build/main
