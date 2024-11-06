@@ -4,6 +4,36 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CONV_BIAS ("./data/conv_bias.txt")
+#define FC_BIAS ("./data/fc_bias.txt")
+#define FC_WEIGHTS ("./data/fc_weights.txt")
+#define IMAGE_LEN ("./tmp/image_len.txt")
+#define IMAGE ("./tmp/image_.txt")
+#define LABEL ("./tmp/label_.txt")
+#define MASKS_LEN ("./data/masks_len.txt")
+#define MASKS ("./data/masks_.txt")
+
+int get_decimals(int a) {
+    int c = 1;
+    for(; a > 0; a /= 10) {
+        c++;
+    }
+    return c;
+}
+
+int get_value(char* a) {
+    FILE* f = fopen(a, "r");
+    char* line = NULL;
+    size_t len = 0;
+    getline(&line, &len, f);
+    int c = (int)strtof(line, NULL);
+    fclose(f);
+    free(line);
+    line = NULL;
+    len = 0;
+    return c;
+}
+
 matrix* io_to_matrix(char* a) {
     // first two rows show the dimensions
     // first row: y (except 'conv_bias' and 'fc_bias' because there is only one row, which is x)
@@ -45,31 +75,35 @@ matrix* io_to_matrix(char* a) {
 
 io* malloc_io() {
     io* a = malloc(sizeof(io));
-    a->conv_bias = io_to_matrix("./weights/conv_bias.txt");
-    a->fc_bias = io_to_matrix("./weights/fc_bias.txt");
-    a->fc_weights = io_to_matrix("./weights/fc_weights.txt");
-    a->image = io_to_matrix("./weights/image.txt");
+    a->conv_bias = io_to_matrix(CONV_BIAS);
+    a->fc_bias = io_to_matrix(FC_BIAS);
+    a->fc_weights = io_to_matrix(FC_WEIGHTS);
+    a->image_len = get_value(IMAGE_LEN);
 
-    FILE* i = fopen("./weights/label.txt", "r");
-    char* line = NULL;
-    size_t len = 0;
-    getline(&line, &len, i);
-    a->label= (int)strtof(line, NULL);
-    fclose(i);
-    free(line);
-    line = NULL;
+    a->image = malloc(a->image_len * sizeof(matrix*));
+    for(int i = 0; i < a->image_len; i++) {
+        char* c = malloc(strlen(IMAGE) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
+        snprintf(c, strlen(IMAGE) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./tmp/image_%d.txt", i);
+        a->image[i] = io_to_matrix(c);
+        free(c);
+        c = NULL;
+    }
 
-    FILE* f = fopen("./weights/masks.txt", "r");
-    getline(&line, &len, f);
-    a->masks_len = (int)strtof(line, NULL);
-    fclose(f);
-    free(line);
-    line = NULL;
+    a->label = malloc(a->image_len * sizeof(int));
+    for(int i = 0; i < a->image_len; i++) {
+        char* c = malloc(strlen(LABEL) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
+        snprintf(c, strlen(LABEL) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./tmp/label_%d.txt", i);
+        a->label[i] = get_value(c);
+        free(c);
+        c = NULL;
+    }
+
+    a->masks_len = get_value(MASKS_LEN);
 
     a->masks = malloc(a->masks_len * sizeof(matrix*));
     for(int i = 0; i < a->masks_len; i++) {
-        char* c = malloc(strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1);
-        snprintf(c, strlen("./weights/masks_.txt") * sizeof(char) + sizeof(int) + 1, "./weights/masks_%d.txt", i);
+        char* c = malloc(strlen(MASKS) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
+        snprintf(c, strlen(MASKS) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./data/masks_%d.txt", i);
         a->masks[i] = io_to_matrix(c);
         free(c);
         c = NULL;
@@ -81,7 +115,11 @@ void free_io(io* a) {
     free_matrix(a->conv_bias);
     free_matrix(a->fc_bias);
     free_matrix(a->fc_weights);
-    free_matrix(a->image);
+    for(int i = 0; i < a->image_len; i++) {
+        free_matrix(a->image[i]);
+    }
+    free(a->image);
+    free(a->label);
     for(int i = 0; i < a->masks_len; i++) {
         free_matrix(a->masks[i]);
     }

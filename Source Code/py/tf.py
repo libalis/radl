@@ -96,7 +96,7 @@ learning_rate = 0.01
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 train_op = optimizer.minimize(loss_op)
 
-epochs = 10
+epochs = 100
 
 # train the weights by looping repeatedly over all the data (and shuffling in between)
 for i in range(epochs):
@@ -117,33 +117,33 @@ for i in range(epochs):
 
 # ensure the directory exists
 try:
-    os.mkdir("./weights")
+    os.mkdir("./data")
 except:
     pass
 
 # save output
-with open("./weights/conv_bias.txt", "w") as f:
+with open("./data/conv_bias.txt", "w") as f:
     # first two lines are the shape
     np.savetxt(f, conv_bias.shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
 
-with open("./weights/fc_bias.txt", "w") as f:
+with open("./data/fc_bias.txt", "w") as f:
     np.savetxt(f, fc_bias.shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, fc_bias.eval(session=session), fmt='%f')
 
-with open("./weights/fc_weights.txt", "w") as f:
+with open("./data/fc_weights.txt", "w") as f:
     np.savetxt(f, tf.transpose(fc_weights).shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, fc_weights.eval(session=session), fmt='%f')
 
 # save how many masks there are
-with open("./weights/masks.txt", "w") as f:
+with open("./data/masks_len.txt", "w") as f:
     f.write(f"{masks.shape[3]}\n")
 
 for i in range(masks.shape[3]):
-        with open(f"./weights/masks_{i}.txt", "w") as f:
+        with open(f"./data/masks_{i}.txt", "w") as f:
             np.savetxt(f, masks[:, :, 0, i].shape, fmt='%f')
             f.write("\n")
             np.savetxt(f, masks[:, :, 0, i].eval(session=session), fmt='%f')

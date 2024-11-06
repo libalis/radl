@@ -38,7 +38,7 @@ train_ds = train_ds.cache()
 
 # shuffling and dividing in batches
 shuffle_size = 60000
-batch_size = 128
+batch_size = 60000
 train_ds = train_ds.shuffle(shuffle_size).batch(batch_size)
 
 # define iterator over batches of data
@@ -68,17 +68,23 @@ for i in range(epochs):
 
 # ensure the directory exists
 try:
-    os.mkdir("./weights")
+    os.mkdir("./tmp")
 except:
     pass
 
+# save how many images there are
+with open("./tmp/image_len.txt", "w") as f:
+    f.write(f"{batch_size}\n")
+
 # save output
-with open("./weights/image.txt", "w") as f:
-    # first two lines are the shape
-    np.savetxt(f, image_batch[0, :, :, 0].shape, fmt="%f")
-    f.write("\n")
-    np.savetxt(f, image_batch[0, :, :, 0], fmt="%f")
+for i in range(batch_size):
+    with open(f"./tmp/image_{i}.txt", "w") as f:
+        # first two lines are the shape
+        np.savetxt(f, image_batch[i, :, :, 0].shape, fmt="%f")
+        f.write("\n")
+        np.savetxt(f, image_batch[i, :, :, 0], fmt="%f")
 
 # save label
-with open("./weights/label.txt", "w") as f:
-    f.write(f"{label_batch[0]}\n")
+for i in range(batch_size):
+    with open(f"./tmp/label_{i}.txt", "w") as f:
+        f.write(f"{label_batch[i]}\n")
