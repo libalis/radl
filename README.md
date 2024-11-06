@@ -45,8 +45,8 @@ git pull --rebase origin main
 git push --tags
 ```
 ```sh
-./build/main
-gdb ./build/main
-valgrind --leak-check=full --show-leak-kinds=all ./build/main
-gprof ./build/main gmon.out > gmon.txt
+./build/tf
+gdb -ex run ./build/tf
+valgrind --leak-check=full --show-leak-kinds=all ./build/tf
+gprof ./build/tf gmon.out > gmon.txt
 ```

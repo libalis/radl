@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         system("bash -c \"rm -rf ./tmp\"");
     }
 
-    system("bash -c \"mkdir ./csv\"");
+    system("bash -c \"mkdir -p ./csv\"");
 
     FILE* f = fopen("./csv/benchmark.csv", "w");
     fprintf(f, "malloc_time_us_avg,processing_time_us_avg,total_time_us_avg\n%ld,%ld,%ld\n", malloc_time / 10, processing_time / 10, total_time / 10);
