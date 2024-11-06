@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
     long processing_time = 0;
     long total_time = 0;
 
-    for(int i = 0; i < 1; i++) {
+    for(int i = 0; i < 10; i++) {
 
         system("bash -c \"./py/export_image.py &>/dev/null\"");
 
