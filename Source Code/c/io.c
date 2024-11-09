@@ -13,7 +13,7 @@
 #define MASKS_LEN ("./data/masks_len.txt")
 #define MASKS ("./data/masks_.txt")
 
-int get_decimals(int a) {
+static int get_decimals(int a) {
     int c = 1;
     for(; a > 0; a /= 10) {
         c++;
@@ -21,7 +21,7 @@ int get_decimals(int a) {
     return c;
 }
 
-int get_value(char* a) {
+static int get_value(char* a) {
     FILE* f = fopen(a, "r");
     char* line = NULL;
     size_t len = 0;

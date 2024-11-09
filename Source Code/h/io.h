@@ -14,8 +14,6 @@ typedef struct io {
     matrix** masks;
 } io;
 
-int get_decimals(int a);
-int get_value(char* a);
 matrix* io_to_matrix(char* a);
 io* malloc_io();
 void free_io(io* a);
