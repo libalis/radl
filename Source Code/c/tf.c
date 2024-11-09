@@ -1,6 +1,11 @@
 #include "../h/tf.h"
 #include <math.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#ifndef THREADS
+#define THREADS (sysconf(_SC_NPROCESSORS_ONLN))
+#endif
 
 int max(matrix* a) {
     float max_val = a->m[0][0];
