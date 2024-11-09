@@ -4,14 +4,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CONV_BIAS ("./data/conv_bias.txt")
-#define FC_BIAS ("./data/fc_bias.txt")
-#define FC_WEIGHTS ("./data/fc_weights.txt")
-#define IMAGE_LEN ("./tmp/image_len.txt")
-#define IMAGE ("./tmp/image_.txt")
-#define LABEL ("./tmp/label_.txt")
-#define MASKS_LEN ("./data/masks_len.txt")
-#define MASKS ("./data/masks_.txt")
+#ifndef CONV_BIAS
+    #define CONV_BIAS ("./data/conv_bias.txt")
+#endif
+#ifndef FC_BIAS
+    #define FC_BIAS ("./data/fc_bias.txt")
+#endif
+#ifndef FC_WEIGHTS
+    #define FC_WEIGHTS ("./data/fc_weights.txt")
+#endif
+#ifndef IMAGE_LEN
+    #define IMAGE_LEN ("./tmp/image_len.txt")
+#endif
+#ifndef IMAGE
+    #define IMAGE ("./tmp/image_.txt")
+#endif
+#ifndef LABEL
+    #define LABEL ("./tmp/label_.txt")
+#endif
+#ifndef MASKS_LEN
+    #define MASKS_LEN ("./data/masks_len.txt")
+#endif
+#ifndef MASKS
+    #define MASKS ("./data/masks_.txt")
+#endif
 
 static int get_decimals(int a) {
     int c = 1;

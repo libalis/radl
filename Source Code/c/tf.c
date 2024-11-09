@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #ifndef THREADS
-#define THREADS (sysconf(_SC_NPROCESSORS_ONLN))
+    #define THREADS (sysconf(_SC_NPROCESSORS_ONLN))
 #endif
 
 int max(matrix* a) {
