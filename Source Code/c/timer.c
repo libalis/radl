@@ -1,5 +1,6 @@
-#include "../h/timer.h"
 #include <stdlib.h>
+
+#include "../h/timer.h"
 
 timeval start_timer() {
     timeval start_time;

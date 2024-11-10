@@ -1,8 +1,10 @@
-#include "../h/io.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../h/io.h"
+#include "../h/utils.h"
 
 #ifndef CONV_BIAS
     #define CONV_BIAS ("./data/conv_bias.txt")
@@ -28,27 +30,6 @@
 #ifndef MASKS
     #define MASKS ("./data/masks_.txt")
 #endif
-
-static int get_decimals(int a) {
-    int c = 1;
-    for(; a > 0; a /= 10) {
-        c++;
-    }
-    return c;
-}
-
-static int get_value(char* a) {
-    FILE* f = fopen(a, "r");
-    char* line = NULL;
-    size_t len = 0;
-    getline(&line, &len, f);
-    int c = (int)strtof(line, NULL);
-    fclose(f);
-    free(line);
-    line = NULL;
-    len = 0;
-    return c;
-}
 
 matrix* io_to_matrix(char* a) {
     // first two rows show the dimensions

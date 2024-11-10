@@ -1,6 +1,7 @@
-#include "../h/matrix.h"
 #include "stdio.h"
 #include "stdlib.h"
+
+#include "../h/matrix.h"
 
 void print_matrix(matrix* a) {
     for(int i = 0; i < a->x; i++) {

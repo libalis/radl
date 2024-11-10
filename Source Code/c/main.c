@@ -1,16 +1,17 @@
-#include "../h/io.h"
-#include "../h/tf.h"
-#include "../h/timer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include "../h/io.h"
+#include "../h/tf.h"
+#include "../h/timer.h"
 
 #ifndef RUNS
     #define RUNS (10)
 #endif
 
 int main(int argc, char* argv[]) {
-    long threads[4] = {1, 4, sysconf(_SC_NPROCESSORS_ONLN), sysconf(_SC_NPROCESSORS_ONLN) * 2};
+    long ts[] = {1, 4, sysconf(_SC_NPROCESSORS_ONLN), sysconf(_SC_NPROCESSORS_ONLN) * 2};
 
     system("bash -c \"./py/export_image.py\"");
 
@@ -20,14 +21,14 @@ int main(int argc, char* argv[]) {
     fprintf(f, "malloc_time_us_avg,processing_time_us_avg,total_time_us_avg,threads\n");
     fclose(f);
 
-    for(int t = 0; t < sizeof(threads) / sizeof(threads[0]); t++) {
-        #define THREADS (threads[t])
+    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
+        #define THREADS (ts[t])
         long malloc_time = 0;
         long processing_time = 0;
         long total_time = 0;
         for(int i = 0; i < RUNS; i++) {
             #ifdef DEBUG
-                printf("Cycle %d start", i);
+                printf("Cycle %d start\n", i);
             #endif
 
             timeval start_time = start_timer();
