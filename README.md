@@ -1,4 +1,5 @@
 # Rechnerarchitekturen für Deep-Learning Anwendungen
+You can find the Source Code README [here](Source\ Code/README.md)
 ```sh
 NAME="Robert Kagan"
 EMAIL=robert.kagan@fau.de
@@ -23,19 +24,11 @@ echo -e "\tIdentityFile ~/.ssh/fau" >> ~/.ssh/config
 git clone git@gitlab.cs.fau.de:cu14mowo/radl.git "Rechnerarchitekturen für Deep-Learning Anwendungen"
 ```
 ```sh
-python -m venv venv
-source venv/bin/activate
-pip install tensorflow tensorflow_datasets
-cd "Rechnerarchitekturen für Deep-Learning Anwendungen/Source Code/py"
-./tf.py
-deactivate
-```
-```sh
 git rebase -i HEAD~X
 # X is the number of commits to go back
 # Move to the line of your commit, change pick into reword,
 # then change your commit message:
-git commit --amend --author="John Doe <john@doe.org>" --no-edit
+git commit --amend --author="$NAME <$EMAIL>" --no-edit
 # Finish the rebase with:
 git rebase --continue
 git push --force
@@ -43,10 +36,4 @@ git push --force
 ```sh
 git pull --rebase origin main
 git push --tags
-```
-```sh
-./build/tf
-gdb -ex run ./build/tf
-valgrind --leak-check=full --show-leak-kinds=all ./build/tf
-gprof ./build/tf gmon.out > gmon.txt
 ```

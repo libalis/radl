@@ -1,11 +1,12 @@
 PROGRAM := tf
 CC := gcc
+CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -pthread -lm
 BUILD_DIR := ./build
 C_DIR := ./c
 H_DIR := ./h
 
 IO := $(C_DIR)/io.c $(H_DIR)/io.h
-MAIN := $(C_DIR)/main.c
+MAIN := $(C_DIR)/main.c $(H_DIR)/main.h
 MATRIX := $(C_DIR)/matrix.c $(H_DIR)/matrix.h
 MT := $(C_DIR)/mt.c $(H_DIR)/mt.h
 TF := $(C_DIR)/tf.c $(H_DIR)/tf.h
@@ -18,14 +19,10 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 debug:
-	$(MAKE) CFLAGS="-g -DDEBUG"
+	$(MAKE) CFLAGS="$(CFLAGS) -g -DDEBUG"
 
 $(BUILD_DIR)/$(PROGRAM): $(IO) $(MAIN) $(MATRIX) $(MT) $(TF) $(TIMER) $(UTILS)
 	mkdir -p $(BUILD_DIR)
-ifdef CFLAGS
-	$(CC) $(CFLAGS) -o $@ $^ -pthread -lm
-else
-	$(CC) -o $@ $^ -pthread -lm
-endif
+	$(CC) $(CFLAGS) -o $@ $^
 
 .PHONY: all clean debug
