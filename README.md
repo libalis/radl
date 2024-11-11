@@ -1,5 +1,5 @@
 # Rechnerarchitekturen für Deep-Learning Anwendungen
-You can find the Source Code README [here](Source\ Code/README.md)
+You can find the Source Code README [here](./Source%20Code/README.md)
 ```sh
 NAME="Robert Kagan"
 EMAIL=robert.kagan@fau.de
