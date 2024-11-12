@@ -6,7 +6,7 @@
 
 long THREADS = 1;
 
-void *add_routine(void *arg) {
+void *add_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->c->x; i += THREADS) {
         for(int j = 0; j < mt->c->y; j++) {
@@ -16,7 +16,7 @@ void *add_routine(void *arg) {
     return NULL;
 }
 
-void *biasing_routine(void *arg) {
+void *biasing_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
         for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
@@ -26,7 +26,7 @@ void *biasing_routine(void *arg) {
     return NULL;
 }
 
-void *conv2d_routine(void *arg) {
+void *conv2d_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a->x - mt->b_ptr[mt->m]->x + 1; i += THREADS) {
         for(int j = 0; j < mt->a->y - mt->b_ptr[mt->m]->y + 1; j++) {
@@ -42,7 +42,7 @@ void *conv2d_routine(void *arg) {
     return NULL;
 }
 
-void *flatten_routine(void *arg) {
+void *flatten_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a_ptr[0]->x; i += THREADS) {
         for(int j = 0; j < mt->a_ptr[0]->y; j++) {
@@ -55,7 +55,7 @@ void *flatten_routine(void *arg) {
     return NULL;
 }
 
-void *flip_kernels_routine(void *arg) {
+void *flip_kernels_mt(void *arg) {
     mt_arg *mt = arg;
     for (int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
         for (int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
@@ -65,7 +65,7 @@ void *flip_kernels_routine(void *arg) {
     return NULL;
 }
 
-void *hyperbolic_tangent_routine(void *arg) {
+void *hyperbolic_tangent_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
         for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
@@ -75,7 +75,7 @@ void *hyperbolic_tangent_routine(void *arg) {
     return NULL;
 }
 
-void *matmul_routine(void *arg) {
+void *matmul_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->c->x; i += THREADS) {
         for(int k = 0; k < mt->c->y; k++) {
@@ -87,7 +87,7 @@ void *matmul_routine(void *arg) {
     return NULL;
 }
 
-void *maxpool_routine(void *arg) {
+void *maxpool_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx * POOL_LEN; i < mt->a_ptr[mt->m]->x; i += THREADS * POOL_LEN) {
         for(int j = 0; j < mt->a_ptr[mt->m]->y; j += POOL_LEN) {
@@ -106,7 +106,7 @@ void *maxpool_routine(void *arg) {
     return NULL;
 }
 
-void *relu_routine(void *arg) {
+void *relu_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
         for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
@@ -120,7 +120,7 @@ void *relu_routine(void *arg) {
     return NULL;
 }
 
-void *transpose_routine(void *arg) {
+void *transpose_mt(void *arg) {
     mt_arg *mt = arg;
     for(int i = mt->idx; i < mt->a->x; i += THREADS) {
         for(int j = 0; j < mt->a->y; j++) {
@@ -130,11 +130,11 @@ void *transpose_routine(void *arg) {
     return NULL;
 }
 
-void mt(void *(*start_routine)(void *), mt_arg *arg) {
+void mt(void *(*mt)(void *), mt_arg *arg) {
     pthread_t tids[THREADS];
     for(int i = 0; i < THREADS; i++) {
         arg[i].idx = i;
-        pthread_create(&tids[i], NULL, start_routine, &arg[i]);
+        pthread_create(&tids[i], NULL, mt, &arg[i]);
     }
     for(int i = 0; i < THREADS; i++) {
         pthread_join(tids[i], NULL);

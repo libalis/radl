@@ -1,12 +1,8 @@
 #ifndef MAIN_H
     #define MAIN_H
 
-    #ifndef RUNS
-        #ifndef DEBUG
-            #define RUNS (4)
-        #else
-            #define RUNS (1)
-        #endif
+    #ifndef BENCHMARK
+        #define BENCHMARK ("./csv/benchmark.csv")
     #endif
 
     #ifndef EPOCHS

@@ -21,15 +21,15 @@
         int m;
     } mt_arg;
 
-    void *add_routine(void *arg);
-    void *biasing_routine(void *arg);
-    void *conv2d_routine(void *arg);
-    void *flatten_routine(void *arg);
-    void *flip_kernels_routine(void *arg);
-    void *hyperbolic_tangent_routine(void *arg);
-    void *matmul_routine(void *arg);
-    void *maxpool_routine(void *arg);
-    void *relu_routine(void *arg);
-    void *transpose_routine(void *arg);
-    void mt(void *(*start_routine)(void *), mt_arg *arg);
+    void *add_mt(void *arg);
+    void *biasing_mt(void *arg);
+    void *conv2d_mt(void *arg);
+    void *flatten_mt(void *arg);
+    void *flip_kernels_mt(void *arg);
+    void *hyperbolic_tangent_mt(void *arg);
+    void *matmul_mt(void *arg);
+    void *maxpool_mt(void *arg);
+    void *relu_mt(void *arg);
+    void *transpose_mt(void *arg);
+    void mt(void *(*mt)(void *), mt_arg *arg);
 #endif

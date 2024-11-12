@@ -10,17 +10,18 @@
 #include "../h/utils.h"
 
 int main(int argc, char *argv[]) {
-    long ts[] = {1, 4, sysconf(_SC_NPROCESSORS_ONLN), sysconf(_SC_NPROCESSORS_ONLN) * 2};
+    long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
+    long ts[] = {1, 4, 5, 8, 11, 16};
 
     system("bash -c \"./py/export_image.py\"");
 
     system("bash -c \"mkdir -p ./csv\"");
 
-    FILE *f = fopen("./csv/benchmark.csv", "w");
+    FILE *f = fopen(BENCHMARK, "w");
     fprintf(f, "malloc_time_us_avg,processing_time_us_avg,total_time_us_avg,threads\n");
     fclose(f);
 
-    for(int t = 0; t < RUNS; t++) {
+    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
         THREADS = ts[t];
         long malloc_time = 0;
         long processing_time = 0;
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
             total_time += delta_time_us(start_time, stop_timer());
         }
 
-        FILE *f = fopen("./csv/benchmark.csv", "a");
+        FILE *f = fopen(BENCHMARK, "a");
         fprintf(f, "%ld,%ld,%ld,%ld\n", malloc_time / EPOCHS, processing_time / EPOCHS, total_time / EPOCHS, THREADS);
         fclose(f);
     }

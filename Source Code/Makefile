@@ -1,17 +1,10 @@
 PROGRAM := tf
 CC := gcc
+ICX := /opt/intel/oneapi/compiler/latest/bin/icx
 CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -pthread -lm
 BUILD_DIR := ./build
 C_DIR := ./c
 H_DIR := ./h
-
-IO := $(C_DIR)/io.c $(H_DIR)/io.h
-MAIN := $(C_DIR)/main.c $(H_DIR)/main.h
-MATRIX := $(C_DIR)/matrix.c $(H_DIR)/matrix.h
-MT := $(C_DIR)/mt.c $(H_DIR)/mt.h
-TF := $(C_DIR)/tf.c $(H_DIR)/tf.h
-TIMER := $(C_DIR)/timer.c $(H_DIR)/timer.h
-UTILS := $(C_DIR)/utils.c $(H_DIR)/utils.h
 
 all: $(BUILD_DIR)/$(PROGRAM)
 
@@ -21,8 +14,18 @@ clean:
 debug:
 	$(MAKE) CFLAGS="$(CFLAGS) -g -DDEBUG"
 
-$(BUILD_DIR)/$(PROGRAM): $(IO) $(MAIN) $(MATRIX) $(MT) $(TF) $(TIMER) $(UTILS)
+intel:
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) -DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
+
+debug_intel:
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) -g -DDEBUG -DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
+
+$(BUILD_DIR)/$(PROGRAM): $(patsubst $(C_DIR)/%.c, $(BUILD_DIR)/%.o, $(wildcard $(C_DIR)/*.c))
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-.PHONY: all clean debug
+$(BUILD_DIR)/%.o: $(C_DIR)/%.c
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+.PHONY: all clean debug intel debug_intel

@@ -9,7 +9,7 @@ matrix *add(matrix *a, matrix *b) {
         arg[i].b = b;
         arg[i].c = c;
     }
-    mt(add_routine, arg);
+    mt(add_mt, arg);
     return c;
 }
 
@@ -24,7 +24,7 @@ matrix **biasing(matrix **a, int len, matrix *b) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(biasing_routine, arg);
+        mt(biasing_mt, arg);
     }
     return c;
 }
@@ -40,7 +40,7 @@ matrix **conv2d(matrix *a, matrix **b, int len) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(conv2d_routine, arg);
+        mt(conv2d_mt, arg);
     }
     return c;
 }
@@ -53,7 +53,7 @@ matrix *flatten(matrix **a, int len) {
         arg[i].len = len;
         arg[i].c = c;
     }
-    mt(flatten_routine, arg);
+    mt(flatten_mt, arg);
     return c;
 }
 
@@ -67,7 +67,7 @@ matrix **flip_kernels(matrix **a, int len) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(flip_kernels_routine, arg);
+        mt(flip_kernels_mt, arg);
     }
     return c;
 }
@@ -82,7 +82,7 @@ matrix **hyperbolic_tangent(matrix **a, int len) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(hyperbolic_tangent_routine, arg);
+        mt(hyperbolic_tangent_mt, arg);
     }
     return c;
 }
@@ -95,7 +95,7 @@ matrix *matmul(matrix *a, matrix *b) {
         arg[i].b = b;
         arg[i].c = c;
     }
-    mt(matmul_routine, arg);
+    mt(matmul_mt, arg);
     return c;
 }
 
@@ -109,7 +109,7 @@ matrix **maxpool(matrix **a, int len) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(maxpool_routine, arg);
+        mt(maxpool_mt, arg);
     }
     return c;
 }
@@ -124,7 +124,7 @@ matrix **relu(matrix **a, int len) {
             arg[i].c_ptr = c;
             arg[i].m = m;
         }
-        mt(relu_routine, arg);
+        mt(relu_mt, arg);
     }
     return c;
 }
@@ -136,6 +136,6 @@ matrix *transpose(matrix *a) {
         arg[i].a = a;
         arg[i].c = c;
     }
-    mt(transpose_routine, arg);
+    mt(transpose_mt, arg);
     return c;
 }
