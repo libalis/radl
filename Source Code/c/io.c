@@ -11,18 +11,17 @@ matrix *io_to_matrix(char *a) {
     char *line = NULL;
     size_t len = 0;
     getline(&line, &len, f);
-    int y = (int)strtof(line, NULL);
+    int x = (int)strtof(line, NULL);
     free(line);
     line = NULL;
     getline(&line, &len, f);
-    int x;
+    int y;
     if(strcmp(line, "\n")) {
-        x = (int)strtof(line, NULL);
+        y = (int)strtof(line, NULL);
         free(line);
         line = NULL;
         getline(&line, &len, f);
     } else {
-        x = y;
         y = 1;
     }
     free(line);

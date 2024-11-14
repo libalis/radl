@@ -8,8 +8,10 @@ matrix *add(matrix *a, matrix *b) {
         arg[i].a = a;
         arg[i].b = b;
         arg[i].c = c;
+        arg[i].start_routine = add_mt;
+        push_mt(&arg[i]);
     }
-    mt(add_mt, arg);
+    wait_mt();
     return c;
 }
 
@@ -23,8 +25,10 @@ matrix **biasing(matrix **a, int len, matrix *b) {
             arg[i].b = b;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = biasing_mt;
+            push_mt(&arg[i]);
         }
-        mt(biasing_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -39,8 +43,10 @@ matrix **conv2d(matrix *a, matrix **b, int len) {
             arg[i].len = len;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = conv2d_mt;
+            push_mt(&arg[i]);
         }
-        mt(conv2d_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -52,8 +58,10 @@ matrix *flatten(matrix **a, int len) {
         arg[i].a_ptr = a;
         arg[i].len = len;
         arg[i].c = c;
+        arg[i].start_routine = flatten_mt;
+        push_mt(&arg[i]);
     }
-    mt(flatten_mt, arg);
+    wait_mt();
     return c;
 }
 
@@ -66,8 +74,10 @@ matrix **flip_kernels(matrix **a, int len) {
             arg[i].len = len;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = flip_kernels_mt;
+            push_mt(&arg[i]);
         }
-        mt(flip_kernels_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -81,8 +91,10 @@ matrix **hyperbolic_tangent(matrix **a, int len) {
             arg[i].len = len;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = hyperbolic_tangent_mt;
+            push_mt(&arg[i]);
         }
-        mt(hyperbolic_tangent_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -94,8 +106,10 @@ matrix *matmul(matrix *a, matrix *b) {
         arg[i].a = a;
         arg[i].b = b;
         arg[i].c = c;
+        arg[i].start_routine = matmul_mt;
+        push_mt(&arg[i]);
     }
-    mt(matmul_mt, arg);
+    wait_mt();
     return c;
 }
 
@@ -108,8 +122,10 @@ matrix **maxpool(matrix **a, int len) {
             arg[i].len = len;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = maxpool_mt;
+            push_mt(&arg[i]);
         }
-        mt(maxpool_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -123,8 +139,10 @@ matrix **relu(matrix **a, int len) {
             arg[i].len = len;
             arg[i].c_ptr = c;
             arg[i].m = m;
+            arg[i].start_routine = relu_mt;
+            push_mt(&arg[i]);
         }
-        mt(relu_mt, arg);
+        wait_mt();
     }
     return c;
 }
@@ -135,7 +153,9 @@ matrix *transpose(matrix *a) {
     for(int i = 0; i < THREADS; i++) {
         arg[i].a = a;
         arg[i].c = c;
+        arg[i].start_routine = transpose_mt;
+        push_mt(&arg[i]);
     }
-    mt(transpose_mt, arg);
+    wait_mt();
     return c;
 }

@@ -13,5 +13,9 @@
         #endif
     #endif
 
+    #ifndef EXPORT
+        #define EXPORT ("bash -c \"./py/export_image.py\"")
+    #endif
+
     int main(int argc, char *argv[]);
 #endif

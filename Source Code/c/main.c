@@ -13,31 +13,40 @@ int main(int argc, char *argv[]) {
     long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
     long ts[] = {1, 4, 5, 8, 11, 16};
 
-    system("bash -c \"./py/export_image.py\"");
+    system(EXPORT);
 
     system("bash -c \"mkdir -p ./csv\"");
 
     FILE *f = fopen(BENCHMARK, "w");
-    fprintf(f, "malloc_time_us_avg,processing_time_us_avg,total_time_us_avg,threads\n");
+    fprintf(f, "create_mt_time_us,malloc_io_time_us,processing_time_us,free_io_time_us,join_mt_time_us,total_time_us,threads\n");
     fclose(f);
 
-    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
-        THREADS = ts[t];
-        long malloc_time = 0;
-        long processing_time = 0;
-        long total_time = 0;
+    int RUNS;
+    #ifndef DEBUG
+        RUNS = sizeof(ts) / sizeof(ts[0]);
+    #else
+        RUNS = 1;
+    #endif
+    for(int t = 0; t < RUNS; t++) {
+        long create_mt_time_us = 0;
+        long malloc_io_time_us = 0;
+        long processing_time_us = 0;
+        long free_io_time_us = 0;
+        long join_mt_time_us = 0;
+        long total_time_us = 0;
         for(int i = 0; i < EPOCHS; i++) {
             #ifdef DEBUG
                 printf("Run %d start\n", i);
             #endif
 
             timeval start_time = start_timer();
+            create_mt(ts[t]);
+            create_mt_time_us += delta_time_us(start_time, stop_timer());
+            timeval next_time = start_timer();
 
             io *io = malloc_io();
-
-            malloc_time += delta_time_us(start_time, stop_timer());
-
-            timeval half_time = start_timer();
+            malloc_io_time_us += delta_time_us(next_time, stop_timer());
+            next_time = start_timer();
 
             int accurate = 0;
 
@@ -85,16 +94,22 @@ int main(int argc, char *argv[]) {
                 printf("accuracy: %f%%\n", (float)accurate / io->image_len * 100);
             #endif
 
-            processing_time += delta_time_us(half_time, stop_timer());
+            processing_time_us += delta_time_us(next_time, stop_timer());
+            next_time = start_timer();
 
             free_io(io);
+            free_io_time_us += delta_time_us(next_time, stop_timer());
+            next_time = start_timer();
 
-            total_time += delta_time_us(start_time, stop_timer());
+            join_mt();
+            join_mt_time_us += delta_time_us(next_time, stop_timer());
+
+            total_time_us += delta_time_us(start_time, stop_timer());
+
+            FILE *f = fopen(BENCHMARK, "a");
+            fprintf(f, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
+            fclose(f);
         }
-
-        FILE *f = fopen(BENCHMARK, "a");
-        fprintf(f, "%ld,%ld,%ld,%ld\n", malloc_time / EPOCHS, processing_time / EPOCHS, total_time / EPOCHS, THREADS);
-        fclose(f);
     }
 
     system("bash -c \"rm -rf ./tmp\"");

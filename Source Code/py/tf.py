@@ -134,7 +134,7 @@ with open("./data/fc_bias.txt", "w") as f:
     np.savetxt(f, fc_bias.eval(session=session), fmt='%f')
 
 with open("./data/fc_weights.txt", "w") as f:
-    np.savetxt(f, tf.transpose(fc_weights).shape, fmt='%f')
+    np.savetxt(f, fc_weights.shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, fc_weights.eval(session=session), fmt='%f')
 
