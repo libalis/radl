@@ -1,5 +1,4 @@
 # A Hybrid CPU-GPU Framework with Multithreading, SIMD, and Evaluation of Efficiency Metrics
-- - -
 ## Dependencies:
 - [gcc](https://gcc.gnu.org/)
 - [glib](https://docs.gtk.org/glib/)
