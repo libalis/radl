@@ -1,4 +1,4 @@
-CPU,TDP(W)
-AMD Ryzen 7 3800XT,105
-Apple M3 Pro 11-Core,27
-Intel Core i7 1065G7,15
+CPU,TDP(W),Number of (performance) cores,Number of threads
+AMD Ryzen 7 3800XT,105,8,16
+Apple M3 Pro 11-Core,27,5,11
+Intel Core i7 1065G7,15,4,8
