@@ -28,12 +28,6 @@ int main(int argc, char *argv[]) {
         RUNS = 1;
     #endif
     for(int t = 0; t < RUNS; t++) {
-        long create_mt_time_us = 0;
-        long malloc_io_time_us = 0;
-        long processing_time_us = 0;
-        long free_io_time_us = 0;
-        long join_mt_time_us = 0;
-        long total_time_us = 0;
         for(int i = 0; i < EPOCHS; i++) {
             #ifdef DEBUG
                 printf("Run %d start\n", i);
@@ -41,11 +35,11 @@ int main(int argc, char *argv[]) {
 
             timeval start_time = start_timer();
             create_mt(ts[t]);
-            create_mt_time_us += delta_time_us(start_time, stop_timer());
+            long create_mt_time_us = delta_time_us(start_time, stop_timer());
             timeval next_time = start_timer();
 
             io *io = malloc_io();
-            malloc_io_time_us += delta_time_us(next_time, stop_timer());
+            long malloc_io_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
             int accurate = 0;
@@ -94,17 +88,17 @@ int main(int argc, char *argv[]) {
                 printf("accuracy: %f%%\n", (float)accurate / io->image_len * 100);
             #endif
 
-            processing_time_us += delta_time_us(next_time, stop_timer());
+            long processing_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
             free_io(io);
-            free_io_time_us += delta_time_us(next_time, stop_timer());
+            long free_io_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
             join_mt();
-            join_mt_time_us += delta_time_us(next_time, stop_timer());
+            long join_mt_time_us = delta_time_us(next_time, stop_timer());
 
-            total_time_us += delta_time_us(start_time, stop_timer());
+            long total_time_us = delta_time_us(start_time, stop_timer());
 
             FILE *f = fopen(BENCHMARK, "a");
             fprintf(f, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
