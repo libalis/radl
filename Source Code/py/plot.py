@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from ast import TypeVarTuple
 import pandas as pd # type: ignore
 import numpy as np # type: ignore
 import matplotlib.pyplot as plt # type: ignore
@@ -8,8 +7,8 @@ label_amd = "AMD Ryzen 7 3800XT"
 label_apple = "Apple M3 Pro 11-Core"
 label_intel = "Intel Core i7 1065G7"
 
-foreground_color = '#fafafa'
-background_color = '#242424'
+foreground_color = '#242424'
+background_color = '#ffffff'
 
 threads = [1, 4, 5, 8, 11, 16]
 tdp = [105, 27, 15]
@@ -204,9 +203,9 @@ for f in figures:
             ax.bar(indices, df_apple['max'], width=bar_width, label=f"{label_apple} Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple['avg'], width=bar_width, label=f"{label_apple} Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple['min'], width=bar_width, label=f"{label_apple} Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Performance", fontsize=12, color=foreground_color, loc='center')
         case "performance_xl":
@@ -216,9 +215,9 @@ for f in figures:
             ax.bar(indices, df_apple_xl['max'], width=bar_width, label=f"{label_apple} Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_xl['avg'], width=bar_width, label=f"{label_apple} Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_xl['min'], width=bar_width, label=f"{label_apple} Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['min'], width=bar_width, label=f"{label_intel} Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Performance XL", fontsize=12, color=foreground_color, loc='center')
         case "overhead":
@@ -228,9 +227,9 @@ for f in figures:
             ax.bar(indices, df_apple_overhead['max'], width=bar_width, label=f"{label_apple} Overhead Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_overhead['avg'], width=bar_width, label=f"{label_apple} Overhead Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_overhead['min'], width=bar_width, label=f"{label_apple} Overhead Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Overhead", fontsize=12, color=foreground_color, loc='center')
         case "overhead_xl":
@@ -240,9 +239,9 @@ for f in figures:
             ax.bar(indices, df_apple_xl_overhead['max'], width=bar_width, label=f"{label_apple} Overhead Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_xl_overhead['avg'], width=bar_width, label=f"{label_apple} Overhead Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices, df_apple_xl_overhead['min'], width=bar_width, label=f"{label_apple} Overhead Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_xl_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Overhead XL", fontsize=12, color=foreground_color, loc='center')
         case "icx":
@@ -252,9 +251,9 @@ for f in figures:
             ax.bar(indices - bar_width, df_amd_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['max'], width=bar_width, label=f"{label_amd} Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['avg'], width=bar_width, label=f"{label_amd} Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['min'], width=bar_width, label=f"{label_amd} Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['max'], width=bar_width, label=f"{label_amd} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['avg'], width=bar_width, label=f"{label_amd} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['min'], width=bar_width, label=f"{label_amd} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
@@ -267,9 +266,9 @@ for f in figures:
             ax.bar(indices - bar_width, df_amd_xl_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_xl_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_xl_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_xl_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_xl_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_xl_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_xl_intel['max'], width=bar_width, label=f"{label_intel} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_xl_intel['avg'], width=bar_width, label=f"{label_intel} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices + bar_width, df_intel_xl_intel['min'], width=bar_width, label=f"{label_intel} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
@@ -277,7 +276,7 @@ for f in figures:
             ax.set_title("ICX vs. GCC XL", fontsize=12, color=foreground_color, loc='center')
 
     ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
-    ax.set_ylabel("Total Time Avg (µs)", fontsize=12, color=foreground_color)
+    ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
     ax.set_xticks(indices)
     ax.set_xticklabels(threads, color=foreground_color)
     ax.tick_params(axis='x', colors=foreground_color)  # X-axis tick marks and labels
@@ -296,17 +295,17 @@ for f in figures:
 
     match f:
         case "performance":
-            plt.savefig("../Benchmarks/mt/Performance.png")
+            plt.savefig("../Graphs/mt/Performance.png")
         case "performance_xl":
-            plt.savefig("../Benchmarks/mt/Performance XL.png")
+            plt.savefig("../Graphs/mt/Performance XL.png")
         case "overhead":
-            plt.savefig("../Benchmarks/mt/Overhead.png")
+            plt.savefig("../Graphs/mt/Overhead.png")
         case "overhead_xl":
-            plt.savefig("../Benchmarks/mt/Overhead XL.png")
+            plt.savefig("../Graphs/mt/Overhead XL.png")
         case "icx":
-            plt.savefig("../Benchmarks/mt/ICX vs. GCC.png")
+            plt.savefig("../Graphs/mt/ICX vs. GCC.png")
         case "icx_xl":
-            plt.savefig("../Benchmarks/mt/ICX vs. GCC XL.png")
+            plt.savefig("../Graphs/mt/ICX vs. GCC XL.png")
 
     # plt.show()
     plt.close(fig)

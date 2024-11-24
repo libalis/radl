@@ -7,65 +7,71 @@
 - [pkg-config](https://freedesktop.org/wiki/Software/pkg-config/)
 - [python](https://www.python.org/)
 - - -
+## Prerequisites:
+```bash
+python -m venv ./venv
+source ./venv/bin/activate
+pip install --upgrade matplotlib numpy pandas pip tensorflow tensorflow_datasets
+deactivate
+```
+- - -
 ## Building:
-```sh
+```bash
 make clean
 make
 ```
 Intel:
-```sh
+```bash
 make clean
 make intel
 ```
 XL:
-```sh
+```bash
 make clean
 make xl
 ```
 XL and Intel:
-```sh
+```bash
 make clean
 make xl_intel
 ```
 - - -
 ## Debugging:
-```sh
+```bash
 make clean
 make debug
+source ./venv/bin/activate
 gdb -ex run ./build/tf
 valgrind --leak-check=full --show-leak-kinds=all ./build/tf
+deactivate
 ```
 Intel:
-```sh
+```bash
 make clean
 make debug_intel
+source ./venv/bin/activate
 gdb -ex run ./build/tf
 valgrind --leak-check=full --show-leak-kinds=all ./build/tf
+deactivate
 ```
 - - -
 ## Running:
 > **! Make sure you are in the Source Code directory !**
-```sh
-python -m venv ./venv
+```bash
 source ./venv/bin/activate
-pip install --upgrade pip tensorflow tensorflow_datasets
 ./build/tf
 deactivate
 ```
 - - -
 ## Benchmarking:
-```sh
-python -m venv ./venv
+```bash
 source ./venv/bin/activate
-pip install --upgrade pip tensorflow tensorflow_datasets
 make benchmark
 deactivate
 ```
 Including Intel:
-```sh
-python -m venv ./venv
+```bash
 source ./venv/bin/activate
-pip install --upgrade pip tensorflow tensorflow_datasets
 make benchmark_intel
 deactivate
 ```
