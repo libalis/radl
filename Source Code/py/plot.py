@@ -182,8 +182,6 @@ CREATE FIGURES
  4 icx
  5 icx xl
 """
-
-
 figures = ["performance", "performance_xl", "overhead", "overhead_xl", "icx", "icx_xl"]
 for f in figures:
     bar_width = 0.25
@@ -251,12 +249,12 @@ for f in figures:
             ax.bar(indices - bar_width, df_amd_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - bar_width, df_amd_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['max'], width=bar_width, label=f"{label_amd} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['avg'], width=bar_width, label=f"{label_amd} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['min'], width=bar_width, label=f"{label_amd} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_intel['max'], width=bar_width, label=f"{label_intel} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_intel['avg'], width=bar_width, label=f"{label_intel} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + bar_width, df_intel_intel['min'], width=bar_width, label=f"{label_intel} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("ICX vs. GCC", fontsize=12, color=foreground_color, loc='center')
         case "icx_xl":
