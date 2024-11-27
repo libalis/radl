@@ -76,9 +76,10 @@ void hyperbolic_tangent_mt(mt_arg *mt) {
 
 void matmul_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->c->x; i += THREADS) {
-        for(int k = 0; k < mt->c->y; k++) {
-            for(int j = 0; j < mt->a->y; j++) {
-                mt->c->m[i][k] = mt->c->m[i][k] + mt->a->m[i][j] * mt->b->m[j][k];
+        for(int j = 0; j < mt->c->y; j++) {
+            mt->c->m[i][j] = 0.0;
+            for(int k = 0; k < mt->a->y; k++) {
+                mt->c->m[i][j] = mt->c->m[i][j] + mt->a->m[i][k] * mt->b->m[k][j];
             }
         }
     }
@@ -177,6 +178,6 @@ void join_mt() {
     for(long i = 0; i < THREADS; i++) {
         pthread_join(tids[i], NULL);
     }
-    pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
+    pthread_mutex_destroy(&mutex);
 }

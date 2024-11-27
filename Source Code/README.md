@@ -41,8 +41,9 @@ make xl_intel
 make clean
 make debug
 source ./venv/bin/activate
-gdb -ex run ./build/tf
+gdb -ex "set debuginfod enabled on" -ex run ./build/tf
 valgrind --leak-check=full --show-leak-kinds=all ./build/tf
+gprof ./build/tf gmon.out > gmon.txt
 deactivate
 ```
 Intel:
@@ -50,8 +51,9 @@ Intel:
 make clean
 make debug_intel
 source ./venv/bin/activate
-gdb -ex run ./build/tf
+gdb -ex "set debuginfod enabled on" -ex run ./build/tf
 valgrind --leak-check=full --show-leak-kinds=all ./build/tf
+gprof ./build/tf gmon.out > gmon.txt
 deactivate
 ```
 - - -

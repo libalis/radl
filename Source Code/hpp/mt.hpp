@@ -10,13 +10,6 @@
         #define POOL_LEN (2)
     #endif
 
-    extern GAsyncQueue *queue;
-    extern long THREADS;
-    extern long counter;
-    extern pthread_cond_t cond;
-    extern pthread_mutex_t mutex;
-    extern pthread_t tids[];
-
     typedef struct mt_arg {
         long idx;
         matrix **a_ptr;
@@ -29,6 +22,13 @@
         int m;
         void (*start_routine)(struct mt_arg *mt);
     } mt_arg;
+
+    extern GAsyncQueue *queue;
+    extern long THREADS;
+    extern long counter;
+    extern pthread_cond_t cond;
+    extern pthread_mutex_t mutex;
+    extern pthread_t tids[];
 
     void add_mt(mt_arg *mt);
     void biasing_mt(mt_arg *mt);
