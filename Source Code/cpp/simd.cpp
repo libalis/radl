@@ -1,4 +1,4 @@
-#include "../h/simd.h"
+#include "../hpp/simd.hpp"
 
 void add_simd(simd_arg *arg) {
     return;

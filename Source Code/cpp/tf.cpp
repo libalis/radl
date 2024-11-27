@@ -1,5 +1,5 @@
-#include "../h/mt.h"
-#include "../h/tf.h"
+#include "../hpp/mt.hpp"
+#include "../hpp/tf.hpp"
 
 matrix *add(matrix *a, matrix *b) {
     matrix *c = malloc_matrix(a->x, a->y);

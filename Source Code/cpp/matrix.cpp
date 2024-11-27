@@ -1,7 +1,7 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "../h/matrix.h"
+#include "../hpp/matrix.hpp"
 
 void print_matrix(matrix *a) {
     for(int i = 0; i < a->x; i++) {
@@ -13,12 +13,12 @@ void print_matrix(matrix *a) {
 }
 
 matrix *malloc_matrix(int x, int y) {
-    matrix *a = malloc(sizeof(matrix));
+    matrix *a = (matrix*)malloc(sizeof(matrix));
     a->x = x;
     a->y = y;
-    a->m = malloc(a->x * sizeof(float*));
+    a->m = (float**)malloc(a->x * sizeof(float*));
     for(int i = 0; i < a->x; i++) {
-        a->m[i] = malloc(a->y * sizeof(float));
+        a->m[i] = (float*)malloc(a->y * sizeof(float));
     }
     for(int i = 0; i < a->x; i++) {
         for(int j = 0; j < a->y; j++) {
@@ -29,7 +29,7 @@ matrix *malloc_matrix(int x, int y) {
 }
 
 matrix **malloc_matrix_ptr(int len, int x, int y) {
-    matrix **c = malloc(len * sizeof(matrix*));
+    matrix **c = (matrix**)malloc(len * sizeof(matrix*));
     for(int i = 0; i < len; i++) {
         c[i] = malloc_matrix(x, y);
     }

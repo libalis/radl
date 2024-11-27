@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../h/mt.h"
+#include "../hpp/mt.hpp"
 
 GAsyncQueue *queue = NULL;
 long THREADS = 1;
@@ -126,9 +126,9 @@ void transpose_mt(mt_arg *mt) {
 }
 
 static void *start_mt(void *arg) {
-    mt_arg *mt = arg;
+    mt_arg *mt = (mt_arg*)arg;
     while(1) {
-        mt_arg *head = g_async_queue_pop(queue);
+        mt_arg *head = (mt_arg*)g_async_queue_pop(queue);
         head->idx = mt->idx;
         head->start_routine(head);
     }
@@ -161,7 +161,7 @@ void create_mt(long threads) {
     }
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
-    mt_arg *mt = malloc(THREADS * sizeof(mt_arg));
+    mt_arg *mt = (mt_arg*)malloc(THREADS * sizeof(mt_arg));
     for(long i = 0; i < THREADS; i++) {
         mt[i].idx = i;
         pthread_create(&tids[i], NULL, start_mt, &mt[i]);

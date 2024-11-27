@@ -1,11 +1,11 @@
 PROGRAM := tf
-CC := gcc
-ICX := /opt/intel/oneapi/compiler/latest/bin/icx
+CC := g++
+ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
 CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -pthread
 LDFLAGS := -lm
 BUILD_DIR := ./build
-C_DIR := ./c
-H_DIR := ./h
+CPP_DIR := ./cpp
+HPP_DIR := ./hpp
 
 all: $(BUILD_DIR)/$(PROGRAM)
 
@@ -14,7 +14,7 @@ clean:
 
 debug:
 	$(MAKE) CFLAGS="$(CFLAGS) \
-	-g -DDEBUG"
+	-g -pg -DDEBUG"
 
 xl:
 	$(MAKE) CFLAGS="$(CFLAGS) \
@@ -32,7 +32,7 @@ intel:
 
 debug_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-g -DDEBUG \
+	-g -pg -DDEBUG \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 xl_intel:
@@ -62,11 +62,11 @@ benchmark_intel:
 	$(MAKE) xl_intel
 	./$(BUILD_DIR)/$(PROGRAM)
 
-$(BUILD_DIR)/$(PROGRAM): $(patsubst $(C_DIR)/%.c, $(BUILD_DIR)/%.o, $(wildcard $(C_DIR)/*.c))
+$(BUILD_DIR)/$(PROGRAM): $(patsubst $(CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(wildcard $(CPP_DIR)/*.cpp))
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(BUILD_DIR)/%.o: $(C_DIR)/%.c $(H_DIR)/%.h
+$(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS)
 

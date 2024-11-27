@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../h/utils.h"
+#include "../hpp/utils.hpp"
 
 int get_decimals(int a) {
     int c = 1;
@@ -11,7 +11,7 @@ int get_decimals(int a) {
     return c;
 }
 
-int get_value(char *a) {
+int get_value(const char *a) {
     FILE *f = fopen(a, "r");
     char *line = NULL;
     size_t len = 0;

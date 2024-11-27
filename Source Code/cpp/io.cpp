@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../h/io.h"
-#include "../h/utils.h"
+#include "../hpp/io.hpp"
+#include "../hpp/utils.hpp"
 
-matrix *io_to_matrix(char *a) {
+matrix *io_to_matrix(const char *a) {
     FILE *f = fopen(a, "r");
     char *line = NULL;
     size_t len = 0;
@@ -41,20 +41,20 @@ matrix *io_to_matrix(char *a) {
 }
 
 io *malloc_io() {
-    io *a = malloc(sizeof(io));
+    io *a = (io*)malloc(sizeof(io));
     a->conv_bias = io_to_matrix(CONV_BIAS);
     a->fc_bias = io_to_matrix(FC_BIAS);
     a->fc_weights = io_to_matrix(FC_WEIGHTS);
     a->image_len = get_value(IMAGE_LEN);
 
-    a->image = malloc(a->image_len * sizeof(matrix*));
+    a->image = (matrix**)malloc(a->image_len * sizeof(matrix*));
     for(int i = 0; i < a->image_len; i++) {
         char *c = g_strdup_printf(IMAGE, i);
         a->image[i] = io_to_matrix(c);
         free(c);
     }
 
-    a->label = malloc(a->image_len * sizeof(int));
+    a->label = (int*)malloc(a->image_len * sizeof(int));
     for(int i = 0; i < a->image_len; i++) {
         char *c = g_strdup_printf(LABEL, i);
         a->label[i] = get_value(c);
@@ -63,7 +63,7 @@ io *malloc_io() {
 
     a->masks_len = get_value(MASKS_LEN);
 
-    a->masks = malloc(a->masks_len * sizeof(matrix*));
+    a->masks = (matrix**)malloc(a->masks_len * sizeof(matrix*));
     for(int i = 0; i < a->masks_len; i++) {
         char *c = g_strdup_printf(MASKS, i);
         a->masks[i] = io_to_matrix(c);

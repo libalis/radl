@@ -4,7 +4,7 @@
     #include <glib.h>
     #include <pthread.h>
 
-    #include "../h/matrix.h"
+    #include "../hpp/matrix.hpp"
 
     #ifndef POOL_LEN
         #define POOL_LEN (2)

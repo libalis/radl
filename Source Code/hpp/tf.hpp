@@ -1,7 +1,7 @@
 #ifndef TF_H
     #define TF_H
 
-    #include "matrix.h"
+    #include "../hpp/matrix.hpp"
 
     matrix *add(matrix *a, matrix *b);
     matrix **biasing(matrix **a, int len, matrix *b);

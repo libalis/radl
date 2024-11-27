@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../h/io.h"
-#include "../h/main.h"
-#include "../h/mt.h"
-#include "../h/tf.h"
-#include "../h/timer.h"
-#include "../h/utils.h"
+#include "../hpp/io.hpp"
+#include "../hpp/main.hpp"
+#include "../hpp/mt.hpp"
+#include "../hpp/tf.hpp"
+#include "../hpp/timer.hpp"
+#include "../hpp/utils.hpp"
 
 int main(int argc, char *argv[]) {
     long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);

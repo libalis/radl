@@ -1,7 +1,7 @@
 #ifndef IO_H
     #define IO_H
 
-    #include "matrix.h"
+    #include "../hpp/matrix.hpp"
 
     #ifndef CONV_BIAS
         #define CONV_BIAS ("./data/conv_bias.txt")
@@ -39,7 +39,7 @@
         matrix **masks;
     } io;
 
-    matrix *io_to_matrix(char *a);
+    matrix *io_to_matrix(const char *a);
     io *malloc_io();
     void free_io(io *a);
 #endif
