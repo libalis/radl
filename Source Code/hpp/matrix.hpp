@@ -4,7 +4,7 @@
     typedef struct matrix {
         int x;
         int y;
-        float **m;
+        float *m;
     } matrix;
 
     void print_matrix(matrix *a);

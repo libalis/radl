@@ -11,6 +11,10 @@ int get_decimals(int a) {
     return c;
 }
 
+int get_idx(int i, int j, int y) {
+    return i * y + j;
+}
+
 int get_value(const char *a) {
     FILE *f = fopen(a, "r");
     char *line = NULL;
@@ -25,10 +29,10 @@ int get_value(const char *a) {
 }
 
 int index_of_max_element(matrix *a) {
-    float max_val = a->m[0][0];
+    float max_val = a->m[get_idx(0, 0, a->y)];
     int idx = 0;
     for(int i = 0; i < a->y; i++) {
-        float curr_val = a->m[0][i];
+        float curr_val = a->m[get_idx(0, i, a->y)];
         if(curr_val > max_val) {
             max_val = curr_val;
             idx = i;
