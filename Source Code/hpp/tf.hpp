@@ -3,6 +3,10 @@
 
     #include "../hpp/matrix.hpp"
 
+    #ifndef POOL_LEN
+        #define POOL_LEN (2)
+    #endif
+
     matrix *add(matrix *a, matrix *b, matrix *c);
     matrix **biasing(matrix **a, int len, matrix *b, matrix **c);
     matrix **conv2d(matrix *a, matrix **b, int len, matrix **c);

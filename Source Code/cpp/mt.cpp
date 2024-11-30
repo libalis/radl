@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "../hpp/mt.hpp"
+#include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 
 GAsyncQueue *queue = NULL;

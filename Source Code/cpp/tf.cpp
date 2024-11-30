@@ -1,5 +1,8 @@
 #include <math.h>
-#include <omp.h>
+
+#ifdef OMP
+    #include <omp.h>
+#endif
 
 #include "../hpp/mt.hpp"
 #include "../hpp/tf.hpp"
@@ -13,6 +16,7 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
         c = malloc_matrix(a->x, a->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = a->m[get_idx(i, j, a->y)] + b->m[get_idx(i, j, b->y)];
@@ -37,10 +41,11 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[m]->x; i++) {
-                for(int j = 0; j < a[m]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[m]->y)] = a[m]->m[get_idx(i, j, a[m]->y)] + b->m[get_idx(m, 0, b->y)];
+            for(int i = 0; i < a[0]->x; i++) {
+                for(int j = 0; j < a[0]->y; j++) {
+                    c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(i, j, a[0]->y)] + b->m[get_idx(m, 0, b->y)];
                 }
             }
         }
@@ -67,16 +72,17 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
         c = malloc_matrix_ptr(len, a->x - b[0]->x + 1, a->y - b[0]->y + 1);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a->x - b[m]->x + 1; i++) {
-                for(int j = 0; j < a->y - b[m]->y + 1; j++) {
+            for(int i = 0; i < a->x - b[0]->x + 1; i++) {
+                for(int j = 0; j < a->y - b[0]->y + 1; j++) {
                     float sum = 0.0;
-                    for(int k = 0; k < b[m]->x; k++) {
-                        for(int l = 0; l < b[m]->y; l++) {
-                            sum += a->m[get_idx(i + k, j + l, a->y)] * b[m]->m[get_idx(k, l, b[m]->y)];
+                    for(int k = 0; k < b[0]->x; k++) {
+                        for(int l = 0; l < b[0]->y; l++) {
+                            sum += a->m[get_idx(i + k, j + l, a->y)] * b[m]->m[get_idx(k, l, b[0]->y)];
                         }
                     }
-                    c[m]->m[get_idx(i, j, c[m]->y)] = sum;
+                    c[m]->m[get_idx(i, j, c[0]->y)] = sum;
                 }
             }
         }
@@ -103,11 +109,12 @@ matrix *flatten(matrix **a, int len, matrix *c) {
         c = malloc_matrix(len * a[0]->x * a[0]->y, 1);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int i = 0; i < a[0]->x; i++) {
             for(int j = 0; j < a[0]->y; j++) {
                 for(int m = 0; m < len; m++) {
                     int idx = i * a[0]->y * len + j * len + m;
-                    c->m[get_idx(idx, 0, c->y)] = a[m]->m[get_idx(i, j, a[m]->y)];
+                    c->m[get_idx(idx, 0, c->y)] = a[m]->m[get_idx(i, j, a[0]->y)];
                 }
             }
         }
@@ -130,10 +137,11 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for (int i = 0; i < a[m]->x; i++) {
-                for (int j = 0; j < a[m]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[m]->y)] = a[m]->m[get_idx(a[m]->x - i - 1, a[m]->y - j - 1, a[m]->y)];
+            for (int i = 0; i < a[0]->x; i++) {
+                for (int j = 0; j < a[0]->y; j++) {
+                    c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(a[0]->x - i - 1, a[0]->y - j - 1, a[0]->y)];
                 }
             }
         }
@@ -159,10 +167,11 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[m]->x; i++) {
-                for(int j = 0; j < a[m]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[m]->y)] = tanh(a[m]->m[get_idx(i, j, a[m]->y)]);
+            for(int i = 0; i < a[0]->x; i++) {
+                for(int j = 0; j < a[0]->y; j++) {
+                    c[m]->m[get_idx(i, j, c[0]->y)] = tanh(a[m]->m[get_idx(i, j, a[0]->y)]);
                 }
             }
         }
@@ -188,6 +197,7 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
         c = malloc_matrix(a->x, b->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = 0.0;
@@ -215,19 +225,20 @@ matrix **maxpool(matrix **a, int len, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x / POOL_LEN, a[0]->y / POOL_LEN);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[m]->x; i += POOL_LEN) {
-                for(int j = 0; j < a[m]->y; j += POOL_LEN) {
-                    float max_val = a[m]->m[get_idx(i, j, a[m]->y)];
+            for(int i = 0; i < a[0]->x; i += POOL_LEN) {
+                for(int j = 0; j < a[0]->y; j += POOL_LEN) {
+                    float max_val = a[m]->m[get_idx(i, j, a[0]->y)];
                     for(int k = 0; k < POOL_LEN; k++) {
                         for(int l = 0; l < POOL_LEN; l++) {
-                            float curr_val = a[m]->m[get_idx(i + k, j + l, a[m]->y)];
+                            float curr_val = a[m]->m[get_idx(i + k, j + l, a[0]->y)];
                             if(curr_val > max_val) {
                                 max_val = curr_val;
                             }
                         }
                     }
-                    c[m]->m[get_idx(i / POOL_LEN, j / POOL_LEN, c[m]->y)] = max_val;
+                    c[m]->m[get_idx(i / POOL_LEN, j / POOL_LEN, c[0]->y)] = max_val;
                 }
             }
         }
@@ -253,14 +264,15 @@ matrix **relu(matrix **a, int len, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[m]->x; i++) {
-                for(int j = 0; j < a[m]->y; j++) {
+            for(int i = 0; i < a[0]->x; i++) {
+                for(int j = 0; j < a[0]->y; j++) {
                     float val = 0.0;
-                    if(a[m]->m[get_idx(i, j, a[m]->y)] > 0.0) {
-                        val = a[m]->m[get_idx(i, j, a[m]->y)];
+                    if(a[m]->m[get_idx(i, j, a[0]->y)] > 0.0) {
+                        val = a[m]->m[get_idx(i, j, a[0]->y)];
                     }
-                    c[m]->m[get_idx(i, j, c[m]->y)] = val;
+                    c[m]->m[get_idx(i, j, c[0]->y)] = val;
                 }
             }
         }
@@ -286,6 +298,7 @@ matrix *transpose(matrix *a, matrix *c) {
         c = malloc_matrix(a->y, a->x);
     }
     #ifdef OMP
+        #pragma omp parallel for collapse(2)
         for(int i = 0; i < a->x; i++) {
             for(int j = 0; j < a->y; j++) {
                 c->m[get_idx(j, i, c->y)] = a->m[get_idx(i, j, a->y)];

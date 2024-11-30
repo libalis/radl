@@ -1,3 +1,7 @@
+#ifdef OMP
+    #include <omp.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,6 +17,13 @@ int main(int argc, char *argv[]) {
     long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
     long ts[] = {1, 4, 5, 8, 11, 16};
 
+    long create_mt_time_us = 0;
+    long malloc_time_us = 0;
+    long processing_time_us = 0;
+    long free_time_us = 0;
+    long join_mt_time_us = 0;
+    long total_time_us = 0;
+
     system(EXPORT);
 
     system("bash -c \"mkdir -p ./csv\"");
@@ -22,7 +33,7 @@ int main(int argc, char *argv[]) {
     fclose(file);
 
     int RUNS;
-    #ifndef DEBUG
+    #if !defined(DEBUG) && !defined(OMP) && !defined(NVIDIA)
         RUNS = sizeof(ts) / sizeof(ts[0]);
     #else
         RUNS = 1;
@@ -34,9 +45,15 @@ int main(int argc, char *argv[]) {
             #endif
 
             timeval start_time = start_timer();
-            create_mt(ts[t]);
-            long create_mt_time_us = delta_time_us(start_time, stop_timer());
-            timeval next_time = start_timer();
+            timeval next_time = start_time;
+
+            #if !defined(OMP) && !defined(NVIDIA)
+                create_mt(ts[t]);
+                create_mt_time_us = delta_time_us(start_time, stop_timer());
+                next_time = start_timer();
+            #elif defined(OMP)
+                THREADS = omp_get_max_threads();
+            #endif
 
             io *io = malloc_io();
             #ifdef DEBUG
@@ -55,7 +72,7 @@ int main(int argc, char *argv[]) {
             matrix *mm = malloc_matrix(transposed_f->x, io->fc_weights->y);
             matrix *transposed_fc_bias = malloc_matrix(io->fc_bias->y, io->fc_bias->x);
             matrix *a = malloc_matrix(mm->x, mm->y);
-            long malloc_time_us = delta_time_us(next_time, stop_timer());
+            malloc_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
             #ifdef DEBUG
@@ -92,7 +109,7 @@ int main(int argc, char *argv[]) {
                 printf("accuracy: %f%%\n", (float)accurate / io->image_len * 100);
             #endif
 
-            long processing_time_us = delta_time_us(next_time, stop_timer());
+            processing_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
             free_matrix(a);
@@ -112,13 +129,15 @@ int main(int argc, char *argv[]) {
                 free_matrix_ptr(flipped_masks, io->masks_len);
             #endif
             free_io(io);
-            long free_time_us = delta_time_us(next_time, stop_timer());
+            free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
-            join_mt();
-            long join_mt_time_us = delta_time_us(next_time, stop_timer());
+            #if !defined(OMP) && !defined(NVIDIA)
+                join_mt();
+                join_mt_time_us = delta_time_us(next_time, stop_timer());
+            #endif
 
-            long total_time_us = delta_time_us(start_time, stop_timer());
+            total_time_us = delta_time_us(start_time, stop_timer());
 
             FILE *file = fopen(BENCHMARK, "a");
             fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_time_us, processing_time_us, free_time_us, join_mt_time_us, total_time_us, THREADS);

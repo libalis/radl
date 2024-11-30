@@ -6,10 +6,6 @@
 
     #include "../hpp/matrix.hpp"
 
-    #ifndef POOL_LEN
-        #define POOL_LEN (2)
-    #endif
-
     typedef struct mt_arg {
         long idx;
         matrix **a_ptr;
