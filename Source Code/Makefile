@@ -1,7 +1,7 @@
 PROGRAM := tf
 CC := g++
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
-CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -Wno-unused-command-line-argument
+CFLAGS := $(shell pkg-config --cflags --libs glib-2.0)
 LDFLAGS := -lm
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
@@ -50,17 +50,20 @@ xl:
 
 intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
+	-Wno-unused-command-line-argument \
 	-pthread \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
+	-Wno-unused-command-line-argument \
 	-qopenmp \
 	-DOMP \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_intel.csv\\\"\""
 
 omp_xl_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
+	-Wno-unused-command-line-argument \
 	-qopenmp \
 	-DOMP \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\" \
@@ -73,6 +76,7 @@ omp_xl_intel:
 
 xl_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
+	-Wno-unused-command-line-argument \
 	-pthread \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\" \
 	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
@@ -83,12 +87,12 @@ xl_intel:
 	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
 
 nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(CFLAGS) \
+	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-pthread//g') \
 	-DNVIDIA \
 	-DBENCHMARK=\"\\\"./csv/benchmark_nvidia.csv\\\"\""
 
 xl_nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(CFLAGS) \
+	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-pthread//g') \
 	-DNVIDIA \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\" \
 	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
@@ -101,40 +105,40 @@ xl_nvidia:
 benchmark:
 	$(MAKE) clean
 	$(MAKE)
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) omp
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) omp_xl
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
 	$(MAKE) benchmark
 	$(MAKE) clean
 	$(MAKE) intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) omp_intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) omp_xl_intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl_intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_nvidia:
 	$(MAKE) benchmark_intel
 	$(MAKE) clean
 	$(MAKE) nvidia
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl_nvidia
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/$(PROGRAM): $(patsubst $(CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(wildcard $(CPP_DIR)/*.cpp))
 	mkdir -p $(BUILD_DIR)

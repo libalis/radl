@@ -1,0 +1,449 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 41.69      0.05     0.05     1021    49.00    74.33  conv2d_mt(mt_arg*)
+ 33.35      0.09     0.04 23599090     0.00     0.00  get_idx(int, int, int)
+  8.34      0.10     0.01      128    78.17   131.37  matmul_mt(mt_arg*)
+  8.34      0.11     0.01                             get_decimals(int)
+  8.34      0.12     0.01                             _init
+  0.00      0.12     0.00   401408     0.00     0.00  std::tanh(float)
+  0.00      0.12     0.00     8446     0.00     0.00  wait_mt()
+  0.00      0.12     0.00     4225     0.00     0.00  push_mt(mt_arg*)
+  0.00      0.12     0.00      512     0.00     3.99  biasing_mt(mt_arg*)
+  0.00      0.12     0.00      512     0.00     1.99  maxpool_mt(mt_arg*)
+  0.00      0.12     0.00      512     0.00     0.03  flip_kernels_mt(mt_arg*)
+  0.00      0.12     0.00      512     0.00     2.66  hyperbolic_tangent_mt(mt_arg*)
+  0.00      0.12     0.00      512     0.00     3.44  relu_mt(mt_arg*)
+  0.00      0.12     0.00      256     0.00     0.00  conv2d(matrix*, matrix**, int, matrix**)
+  0.00      0.12     0.00      256     0.00     0.00  transpose(matrix*, matrix*)
+  0.00      0.12     0.00      255     0.00     1.35  transpose_mt(mt_arg*)
+  0.00      0.12     0.00      168     0.00     0.00  free_matrix(matrix*)
+  0.00      0.12     0.00      168     0.00     1.43  malloc_matrix(int, int)
+  0.00      0.12     0.00      135     0.00     2.97  io_to_matrix(char const*)
+  0.00      0.12     0.00      130     0.00     0.00  get_value(char const*)
+  0.00      0.12     0.00      128     0.00     2.66  flatten_mt(mt_arg*)
+  0.00      0.12     0.00      128     0.00     0.00  flip_kernels(matrix**, int, matrix**)
+  0.00      0.12     0.00      128     0.00     0.00  hyperbolic_tangent(matrix**, int, matrix**)
+  0.00      0.12     0.00      128     0.00     0.02  index_of_max_element(matrix*)
+  0.00      0.12     0.00      128     0.00     0.00  add(matrix*, matrix*, matrix*)
+  0.00      0.12     0.00      128     0.00     0.00  relu(matrix**, int, matrix**)
+  0.00      0.12     0.00      128     0.00     0.00  matmul(matrix*, matrix*, matrix*)
+  0.00      0.12     0.00      128     0.00     0.00  biasing(matrix**, int, matrix*, matrix**)
+  0.00      0.12     0.00      128     0.00     0.00  flatten(matrix**, int, matrix*)
+  0.00      0.12     0.00      128     0.00     0.00  maxpool(matrix**, int, matrix**)
+  0.00      0.12     0.00      127     0.00     0.05  add_mt(mt_arg*)
+  0.00      0.12     0.00        7     0.00     0.00  free_matrix_ptr(matrix**, int)
+  0.00      0.12     0.00        7     0.00     5.70  malloc_matrix_ptr(int, int, int)
+  0.00      0.12     0.00        6     0.00     0.00  stop_timer()
+  0.00      0.12     0.00        6     0.00     0.00  delta_time_us(timeval, timeval)
+  0.00      0.12     0.00        5     0.00     0.00  start_timer()
+  0.00      0.12     0.00        1     0.00     0.00  free_io(io*)
+  0.00      0.12     0.00        1     0.00     0.00  join_mt()
+  0.00      0.12     0.00        1     0.00     0.00  create_mt(long)
+  0.00      0.12     0.00        1     0.00   401.16  malloc_io()
+  0.00      0.12     0.00        1     0.00     0.00  stop_mt(mt_arg*)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 8.33% of 0.12 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     83.0    0.00    0.10                 start_mt(void*) [1]
+                0.05    0.03    1021/1021        conv2d_mt(mt_arg*) [2]
+                0.01    0.01     128/128         matmul_mt(mt_arg*) [4]
+                0.00    0.00     512/512         biasing_mt(mt_arg*) [7]
+                0.00    0.00     512/512         relu_mt(mt_arg*) [8]
+                0.00    0.00     512/512         hyperbolic_tangent_mt(mt_arg*) [9]
+                0.00    0.00     512/512         maxpool_mt(mt_arg*) [10]
+                0.00    0.00     255/255         transpose_mt(mt_arg*) [14]
+                0.00    0.00     128/128         flatten_mt(mt_arg*) [15]
+                0.00    0.00     512/512         flip_kernels_mt(mt_arg*) [18]
+                0.00    0.00     127/127         add_mt(mt_arg*) [19]
+                0.00    0.00       1/1           stop_mt(mt_arg*) [46]
+-----------------------------------------------
+                0.05    0.03    1021/1021        start_mt(void*) [1]
+[2]     63.2    0.05    0.03    1021         conv2d_mt(mt_arg*) [2]
+                0.03    0.00 15252857/23599090     get_idx(int, int, int) [3]
+                0.00    0.00    1024/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00    1408/23599090     index_of_max_element(matrix*) [20]
+                0.00    0.00    3810/23599090     add_mt(mt_arg*) [19]
+                0.00    0.00    9216/23599090     flip_kernels_mt(mt_arg*) [18]
+                0.00    0.00  123090/23599090     io_to_matrix(char const*) [12]
+                0.00    0.00  141188/23599090     malloc_matrix(int, int) [16]
+                0.00    0.00  200704/23599090     flatten_mt(mt_arg*) [15]
+                0.00    0.00  203244/23599090     transpose_mt(mt_arg*) [14]
+                0.00    0.00  602112/23599090     maxpool_mt(mt_arg*) [10]
+                0.00    0.00  802816/23599090     hyperbolic_tangent_mt(mt_arg*) [9]
+                0.00    0.00 1039061/23599090     relu_mt(mt_arg*) [8]
+                0.00    0.00 1204224/23599090     biasing_mt(mt_arg*) [7]
+                0.01    0.00 4015360/23599090     matmul_mt(mt_arg*) [4]
+                0.03    0.00 15252857/23599090     conv2d_mt(mt_arg*) [2]
+[3]     33.3    0.04    0.00 23599090         get_idx(int, int, int) [3]
+-----------------------------------------------
+                0.01    0.01     128/128         start_mt(void*) [1]
+[4]     14.0    0.01    0.01     128         matmul_mt(mt_arg*) [4]
+                0.01    0.00 4015360/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     128/8446        wait_mt() [25]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]      8.3    0.01    0.00                 get_decimals(int) [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]      8.3    0.01    0.00                 _init [6]
+-----------------------------------------------
+                0.00    0.00     512/512         start_mt(void*) [1]
+[7]      1.7    0.00    0.00     512         biasing_mt(mt_arg*) [7]
+                0.00    0.00 1204224/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     512/512         start_mt(void*) [1]
+[8]      1.5    0.00    0.00     512         relu_mt(mt_arg*) [8]
+                0.00    0.00 1039061/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     512/512         start_mt(void*) [1]
+[9]      1.1    0.00    0.00     512         hyperbolic_tangent_mt(mt_arg*) [9]
+                0.00    0.00  802816/23599090     get_idx(int, int, int) [3]
+                0.00    0.00  401408/401408      std::tanh(float) [24]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     512/512         start_mt(void*) [1]
+[10]     0.9    0.00    0.00     512         maxpool_mt(mt_arg*) [10]
+                0.00    0.00  602112/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                                                 <spontaneous>
+[11]     0.4    0.00    0.00                 main [11]
+                0.00    0.00       1/1           malloc_io() [13]
+                0.00    0.00       7/7           malloc_matrix_ptr(int, int, int) [17]
+                0.00    0.00       5/168         malloc_matrix(int, int) [16]
+                0.00    0.00     128/128         index_of_max_element(matrix*) [20]
+                0.00    0.00     256/256         conv2d(matrix*, matrix**, int, matrix**) [27]
+                0.00    0.00     256/256         transpose(matrix*, matrix*) [28]
+                0.00    0.00     128/128         flip_kernels(matrix**, int, matrix**) [31]
+                0.00    0.00     128/128         biasing(matrix**, int, matrix*, matrix**) [36]
+                0.00    0.00     128/128         hyperbolic_tangent(matrix**, int, matrix**) [32]
+                0.00    0.00     128/128         relu(matrix**, int, matrix**) [34]
+                0.00    0.00     128/128         maxpool(matrix**, int, matrix**) [38]
+                0.00    0.00     128/128         flatten(matrix**, int, matrix*) [37]
+                0.00    0.00     128/128         matmul(matrix*, matrix*, matrix*) [35]
+                0.00    0.00     128/128         add(matrix*, matrix*, matrix*) [33]
+                0.00    0.00       7/7           free_matrix_ptr(matrix**, int) [39]
+                0.00    0.00       6/6           stop_timer() [40]
+                0.00    0.00       6/6           delta_time_us(timeval, timeval) [41]
+                0.00    0.00       5/5           start_timer() [42]
+                0.00    0.00       5/168         free_matrix(matrix*) [29]
+                0.00    0.00       1/1           create_mt(long) [45]
+                0.00    0.00       1/1           free_io(io*) [43]
+                0.00    0.00       1/1           join_mt() [44]
+-----------------------------------------------
+                0.00    0.00     135/135         malloc_io() [13]
+[12]     0.3    0.00    0.00     135         io_to_matrix(char const*) [12]
+                0.00    0.00  123090/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     135/168         malloc_matrix(int, int) [16]
+-----------------------------------------------
+                0.00    0.00       1/1           main [11]
+[13]     0.3    0.00    0.00       1         malloc_io() [13]
+                0.00    0.00     135/135         io_to_matrix(char const*) [12]
+                0.00    0.00     130/130         get_value(char const*) [30]
+-----------------------------------------------
+                0.00    0.00     255/255         start_mt(void*) [1]
+[14]     0.3    0.00    0.00     255         transpose_mt(mt_arg*) [14]
+                0.00    0.00  203244/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     255/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         start_mt(void*) [1]
+[15]     0.3    0.00    0.00     128         flatten_mt(mt_arg*) [15]
+                0.00    0.00  200704/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     128/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00       5/168         main [11]
+                0.00    0.00      28/168         malloc_matrix_ptr(int, int, int) [17]
+                0.00    0.00     135/168         io_to_matrix(char const*) [12]
+[16]     0.2    0.00    0.00     168         malloc_matrix(int, int) [16]
+                0.00    0.00  141188/23599090     get_idx(int, int, int) [3]
+-----------------------------------------------
+                0.00    0.00       7/7           main [11]
+[17]     0.0    0.00    0.00       7         malloc_matrix_ptr(int, int, int) [17]
+                0.00    0.00      28/168         malloc_matrix(int, int) [16]
+-----------------------------------------------
+                0.00    0.00     512/512         start_mt(void*) [1]
+[18]     0.0    0.00    0.00     512         flip_kernels_mt(mt_arg*) [18]
+                0.00    0.00    9216/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     127/127         start_mt(void*) [1]
+[19]     0.0    0.00    0.00     127         add_mt(mt_arg*) [19]
+                0.00    0.00    3810/23599090     get_idx(int, int, int) [3]
+                0.00    0.00     127/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[20]     0.0    0.00    0.00     128         index_of_max_element(matrix*) [20]
+                0.00    0.00    1408/23599090     get_idx(int, int, int) [3]
+-----------------------------------------------
+                0.00    0.00  401408/401408      hyperbolic_tangent_mt(mt_arg*) [9]
+[24]     0.0    0.00    0.00  401408         std::tanh(float) [24]
+-----------------------------------------------
+                0.00    0.00     127/8446        add_mt(mt_arg*) [19]
+                0.00    0.00     128/8446        flatten_mt(mt_arg*) [15]
+                0.00    0.00     128/8446        matmul_mt(mt_arg*) [4]
+                0.00    0.00     128/8446        add(matrix*, matrix*, matrix*) [33]
+                0.00    0.00     128/8446        flatten(matrix**, int, matrix*) [37]
+                0.00    0.00     128/8446        matmul(matrix*, matrix*, matrix*) [35]
+                0.00    0.00     255/8446        transpose_mt(mt_arg*) [14]
+                0.00    0.00     256/8446        transpose(matrix*, matrix*) [28]
+                0.00    0.00     512/8446        biasing_mt(mt_arg*) [7]
+                0.00    0.00     512/8446        flip_kernels_mt(mt_arg*) [18]
+                0.00    0.00     512/8446        hyperbolic_tangent_mt(mt_arg*) [9]
+                0.00    0.00     512/8446        maxpool_mt(mt_arg*) [10]
+                0.00    0.00     512/8446        relu_mt(mt_arg*) [8]
+                0.00    0.00     512/8446        biasing(matrix**, int, matrix*, matrix**) [36]
+                0.00    0.00     512/8446        flip_kernels(matrix**, int, matrix**) [31]
+                0.00    0.00     512/8446        hyperbolic_tangent(matrix**, int, matrix**) [32]
+                0.00    0.00     512/8446        maxpool(matrix**, int, matrix**) [38]
+                0.00    0.00     512/8446        relu(matrix**, int, matrix**) [34]
+                0.00    0.00    1024/8446        conv2d_mt(mt_arg*) [2]
+                0.00    0.00    1024/8446        conv2d(matrix*, matrix**, int, matrix**) [27]
+[25]     0.0    0.00    0.00    8446         wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00       1/4225        join_mt() [44]
+                0.00    0.00     128/4225        add(matrix*, matrix*, matrix*) [33]
+                0.00    0.00     128/4225        flatten(matrix**, int, matrix*) [37]
+                0.00    0.00     128/4225        matmul(matrix*, matrix*, matrix*) [35]
+                0.00    0.00     256/4225        transpose(matrix*, matrix*) [28]
+                0.00    0.00     512/4225        biasing(matrix**, int, matrix*, matrix**) [36]
+                0.00    0.00     512/4225        flip_kernels(matrix**, int, matrix**) [31]
+                0.00    0.00     512/4225        hyperbolic_tangent(matrix**, int, matrix**) [32]
+                0.00    0.00     512/4225        maxpool(matrix**, int, matrix**) [38]
+                0.00    0.00     512/4225        relu(matrix**, int, matrix**) [34]
+                0.00    0.00    1024/4225        conv2d(matrix*, matrix**, int, matrix**) [27]
+[26]     0.0    0.00    0.00    4225         push_mt(mt_arg*) [26]
+-----------------------------------------------
+                0.00    0.00     256/256         main [11]
+[27]     0.0    0.00    0.00     256         conv2d(matrix*, matrix**, int, matrix**) [27]
+                0.00    0.00    1024/4225        push_mt(mt_arg*) [26]
+                0.00    0.00    1024/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     256/256         main [11]
+[28]     0.0    0.00    0.00     256         transpose(matrix*, matrix*) [28]
+                0.00    0.00     256/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     256/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00       5/168         main [11]
+                0.00    0.00      28/168         free_matrix_ptr(matrix**, int) [39]
+                0.00    0.00     135/168         free_io(io*) [43]
+[29]     0.0    0.00    0.00     168         free_matrix(matrix*) [29]
+-----------------------------------------------
+                0.00    0.00     130/130         malloc_io() [13]
+[30]     0.0    0.00    0.00     130         get_value(char const*) [30]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[31]     0.0    0.00    0.00     128         flip_kernels(matrix**, int, matrix**) [31]
+                0.00    0.00     512/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[32]     0.0    0.00    0.00     128         hyperbolic_tangent(matrix**, int, matrix**) [32]
+                0.00    0.00     512/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[33]     0.0    0.00    0.00     128         add(matrix*, matrix*, matrix*) [33]
+                0.00    0.00     128/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     128/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[34]     0.0    0.00    0.00     128         relu(matrix**, int, matrix**) [34]
+                0.00    0.00     512/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[35]     0.0    0.00    0.00     128         matmul(matrix*, matrix*, matrix*) [35]
+                0.00    0.00     128/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     128/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[36]     0.0    0.00    0.00     128         biasing(matrix**, int, matrix*, matrix**) [36]
+                0.00    0.00     512/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[37]     0.0    0.00    0.00     128         flatten(matrix**, int, matrix*) [37]
+                0.00    0.00     128/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     128/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00     128/128         main [11]
+[38]     0.0    0.00    0.00     128         maxpool(matrix**, int, matrix**) [38]
+                0.00    0.00     512/4225        push_mt(mt_arg*) [26]
+                0.00    0.00     512/8446        wait_mt() [25]
+-----------------------------------------------
+                0.00    0.00       7/7           main [11]
+[39]     0.0    0.00    0.00       7         free_matrix_ptr(matrix**, int) [39]
+                0.00    0.00      28/168         free_matrix(matrix*) [29]
+-----------------------------------------------
+                0.00    0.00       6/6           main [11]
+[40]     0.0    0.00    0.00       6         stop_timer() [40]
+-----------------------------------------------
+                0.00    0.00       6/6           main [11]
+[41]     0.0    0.00    0.00       6         delta_time_us(timeval, timeval) [41]
+-----------------------------------------------
+                0.00    0.00       5/5           main [11]
+[42]     0.0    0.00    0.00       5         start_timer() [42]
+-----------------------------------------------
+                0.00    0.00       1/1           main [11]
+[43]     0.0    0.00    0.00       1         free_io(io*) [43]
+                0.00    0.00     135/168         free_matrix(matrix*) [29]
+-----------------------------------------------
+                0.00    0.00       1/1           main [11]
+[44]     0.0    0.00    0.00       1         join_mt() [44]
+                0.00    0.00       1/4225        push_mt(mt_arg*) [26]
+-----------------------------------------------
+                0.00    0.00       1/1           main [11]
+[45]     0.0    0.00    0.00       1         create_mt(long) [45]
+-----------------------------------------------
+                0.00    0.00       1/1           start_mt(void*) [1]
+[46]     0.0    0.00    0.00       1         stop_mt(mt_arg*) [46]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [7] biasing_mt(mt_arg*)    [17] malloc_matrix_ptr(int, int, int) [38] maxpool(matrix**, int, matrix**)
+  [15] flatten_mt(mt_arg*)    [32] hyperbolic_tangent(matrix**, int, matrix**) [26] push_mt(mt_arg*)
+  [10] maxpool_mt(mt_arg*)    [20] index_of_max_element(matrix*) [8] relu_mt(mt_arg*)
+  [40] stop_timer()            [9] hyperbolic_tangent_mt(mt_arg*) [25] wait_mt()
+  [29] free_matrix(matrix*)   [33] add(matrix*, matrix*, matrix*) [2] conv2d_mt(mt_arg*)
+  [42] start_timer()          [34] relu(matrix**, int, matrix**) [45] create_mt(long)
+  [31] flip_kernels(matrix**, int, matrix**) [19] add_mt(mt_arg*) [30] get_value(char const*)
+   [5] get_decimals(int)      [27] conv2d(matrix*, matrix**, int, matrix**) [13] malloc_io()
+  [12] io_to_matrix(char const*) [35] matmul(matrix*, matrix*, matrix*) [4] matmul_mt(mt_arg*)
+  [14] transpose_mt(mt_arg*)  [36] biasing(matrix**, int, matrix*, matrix**) [28] transpose(matrix*, matrix*)
+  [41] delta_time_us(timeval, timeval) [37] flatten(matrix**, int, matrix*) [46] stop_mt(mt_arg*) (mt.cpp)
+  [16] malloc_matrix(int, int) [43] free_io(io*)          [24] std::tanh(float)
+  [18] flip_kernels_mt(mt_arg*) [3] get_idx(int, int, int) [6] _init
+  [39] free_matrix_ptr(matrix**, int) [44] join_mt()
