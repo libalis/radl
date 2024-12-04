@@ -1,8 +1,8 @@
 PROGRAM := tf
-CC := g++
+CC := clang
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
-CFLAGS := $(shell pkg-config --cflags --libs glib-2.0)
-LDFLAGS := -lm
+CFLAGS := -Wno-unused-command-line-argument
+LDFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -lm
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
 CU_DIR := ./cu
@@ -50,20 +50,17 @@ xl:
 
 intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-Wno-unused-command-line-argument \
 	-pthread \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-Wno-unused-command-line-argument \
 	-qopenmp \
 	-DOMP \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_intel.csv\\\"\""
 
 omp_xl_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-Wno-unused-command-line-argument \
 	-qopenmp \
 	-DOMP \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\" \
@@ -76,7 +73,6 @@ omp_xl_intel:
 
 xl_intel:
 	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-Wno-unused-command-line-argument \
 	-pthread \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\" \
 	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
@@ -87,12 +83,13 @@ xl_intel:
 	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
 
 nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-pthread//g') \
+	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-Wno-unused-command-line-argument//g') \
 	-DNVIDIA \
-	-DBENCHMARK=\"\\\"./csv/benchmark_nvidia.csv\\\"\""
+	-DBENCHMARK=\"\\\"./csv/benchmark_nvidia.csv\\\"\"" \
+	LDFLAGS="$(shell echo $(LDFLAGS) | sed 's/-pthread//g')"
 
 xl_nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-pthread//g') \
+	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-Wno-unused-command-line-argument//g') \
 	-DNVIDIA \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\" \
 	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
@@ -100,7 +97,8 @@ xl_nvidia:
 	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
 	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
 	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\"" \
+	LDFLAGS="$(shell echo $(LDFLAGS) | sed 's/-pthread//g')"
 
 benchmark:
 	$(MAKE) clean

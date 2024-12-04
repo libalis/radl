@@ -15,12 +15,12 @@
         int len;
         matrix **c_ptr;
         matrix *c;
+        int i;
         int m;
         void (*start_routine)(struct mt_arg *mt);
     } mt_arg;
 
     extern GAsyncQueue *queue;
-    extern long THREADS;
     extern long counter;
     extern pthread_cond_t cond;
     extern pthread_mutex_t mutex;

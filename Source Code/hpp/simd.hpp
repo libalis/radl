@@ -1,18 +1,16 @@
 #ifndef SIMD_H
     #define SIMD_H
 
-    typedef struct simd_arg {
-        int i;
-    } simd_arg;
+    #include "../hpp/mt.hpp"
 
-    void add_simd(simd_arg *arg);
-    void biasing_simd(simd_arg *arg);
-    void conv2d_simd(simd_arg *arg);
-    void flatten_simd(simd_arg *arg);
-    void flip_kernels_simd(simd_arg *arg);
-    void hyperbolic_tangent_simd(simd_arg *arg);
-    void matmul_simd(simd_arg *arg);
-    void maxpool_simd(simd_arg *arg);
-    void relu_simd(simd_arg *arg);
-    void transpose_simd(simd_arg *arg);
+    void add_simd(mt_arg *mt);
+    void biasing_simd(mt_arg *mt);
+    void conv2d_simd(mt_arg *mt);
+    void flatten_simd(mt_arg *mt);
+    void flip_kernels_simd(mt_arg *mt);
+    void hyperbolic_tangent_simd(mt_arg *mt);
+    void matmul_simd(mt_arg *mt);
+    void maxpool_simd(mt_arg *mt);
+    void relu_simd(mt_arg *mt);
+    void transpose_simd(mt_arg *mt);
 #endif

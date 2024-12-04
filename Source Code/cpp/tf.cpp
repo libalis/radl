@@ -11,6 +11,8 @@
     #include "../hpp/utils.hpp"
 #endif
 
+long THREADS = 1;
+
 matrix *add(matrix *a, matrix *b, matrix *c) {
     if(c == NULL) {
         c = malloc_matrix(a->x, a->y);

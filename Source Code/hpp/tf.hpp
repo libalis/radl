@@ -7,6 +7,8 @@
         #define POOL_LEN (2)
     #endif
 
+    extern long THREADS;
+
     matrix *add(matrix *a, matrix *b, matrix *c);
     matrix **biasing(matrix **a, int len, matrix *b, matrix **c);
     matrix **conv2d(matrix *a, matrix **b, int len, matrix **c);

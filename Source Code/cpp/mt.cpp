@@ -3,11 +3,11 @@
 #include <stdlib.h>
 
 #include "../hpp/mt.hpp"
+#include "../hpp/simd.hpp"
 #include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 
 GAsyncQueue *queue = NULL;
-long THREADS = 1;
 long counter = 0;
 pthread_cond_t cond;
 pthread_mutex_t mutex;
@@ -24,9 +24,14 @@ void add_mt(mt_arg *mt) {
 
 void biasing_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
-        for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
-            mt->c_ptr[mt->m]->m[get_idx(i, j, mt->c_ptr[mt->m]->y)] = mt->a_ptr[mt->m]->m[get_idx(i, j, mt->a_ptr[mt->m]->y)] + mt->b->m[get_idx(mt->m, 0, mt->b->y)];
-        }
+        #ifndef DEBUG
+            for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
+                mt->c_ptr[mt->m]->m[get_idx(i, j, mt->c_ptr[mt->m]->y)] = mt->a_ptr[mt->m]->m[get_idx(i, j, mt->a_ptr[mt->m]->y)] + mt->b->m[get_idx(mt->m, 0, mt->b->y)];
+            }
+        #else
+            mt->i = i;
+            biasing_simd(mt);
+        #endif
     }
     wait_mt();
 }

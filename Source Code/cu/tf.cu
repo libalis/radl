@@ -3,6 +3,8 @@
 #include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 
+long THREADS = 16;
+
 matrix *add(matrix *a, matrix *b, matrix *c) {
     if(c == NULL) {
         c = malloc_matrix(a->x, a->y);
@@ -87,7 +89,6 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
     cudaMalloc(&d_mask, bytes_m);
 
     // Calculate grid dimensions
-    int THREADS = 16;
     int BLOCKS = ((N ) + THREADS - 1) / THREADS;
 
     // Dimension launch arguments
@@ -194,8 +195,6 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
 
     cudaMemcpy(d_a, a->m, bytes_a, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b->m, bytes_b, cudaMemcpyHostToDevice);
-
-    int THREADS = 16;
 
     int BLOCKS_X = (N + THREADS - 1) / THREADS; // N / THREADS;
     int BLOCKS_Y = (M + THREADS - 1) / THREADS; // M / THREADS;
