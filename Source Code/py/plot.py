@@ -6,277 +6,388 @@ import matplotlib.pyplot as plt # type: ignore
 label_amd = "AMD Ryzen 7 3800XT"
 label_apple = "Apple M3 Pro 11-Core"
 label_intel = "Intel Core i7 1065G7"
+label_intel_nvidia = "NVIDIA GeForce MX350"
+label_amd_nvidia = "NVIDIA GeForce RTX 2080"
 
 foreground_color = '#242424'
 background_color = '#ffffff'
 
 threads = [1, 4, 5, 8, 11, 16]
-tdp = [105, 27, 15]
+threads_omp = [8, 11, 16]
 
 """
 READ BENCHMARKS
 """
 # amd
-df_amd_raw = pd.read_csv("./csv/mt/amd/benchmark.csv")
-df_amd_xl_raw = pd.read_csv("./csv/mt/amd/benchmark_xl.csv")
-df_amd_intel_raw = pd.read_csv("./csv/mt/amd/benchmark_intel.csv")
-df_amd_xl_intel_raw = pd.read_csv("./csv/mt/amd/benchmark_xl_intel.csv")
+df_amd_raw = pd.read_csv("./csv/omp/amd/benchmark.csv")
+df_amd_intel_raw = pd.read_csv("./csv/omp/amd/benchmark_intel.csv")
+df_amd_nvidia_raw = pd.read_csv("./csv/omp/amd/benchmark_nvidia.csv")
+df_amd_omp_raw = pd.read_csv("./csv/omp/amd/benchmark_omp.csv")
+df_amd_omp_intel_raw = pd.read_csv("./csv/omp/amd/benchmark_omp_intel.csv")
+df_amd_omp_xl_raw = pd.read_csv("./csv/omp/amd/benchmark_omp_xl.csv")
+df_amd_omp_xl_intel_raw = pd.read_csv("./csv/omp/amd/benchmark_omp_xl_intel.csv")
+df_amd_xl_raw = pd.read_csv("./csv/omp/amd/benchmark_xl.csv")
+df_amd_xl_intel_raw = pd.read_csv("./csv/omp/amd/benchmark_xl_intel.csv")
+df_amd_xl_nvidia_raw = pd.read_csv("./csv/omp/amd/benchmark_xl_nvidia.csv")
 
 tt_amd = df_amd_raw['total_time_us'].values
-create_mt_amd = df_amd_raw['create_mt_time_us'].values
-join_mt_amd = df_amd_raw['join_mt_time_us'].values
-
-tt_amd_xl = df_amd_xl_raw['total_time_us'].values
-create_mt_amd_xl = df_amd_xl_raw['create_mt_time_us'].values
-join_mt_amd_xl = df_amd_xl_raw['join_mt_time_us'].values
-
 tt_amd_intel = df_amd_intel_raw['total_time_us'].values
-create_mt_amd_intel = df_amd_intel_raw['create_mt_time_us'].values
-join_mt_amd_intel = df_amd_intel_raw['join_mt_time_us'].values
-
+tt_amd_nvidia = df_amd_nvidia_raw['total_time_us'].values
+tt_amd_omp = df_amd_omp_raw['total_time_us'].values
+tt_amd_omp_intel = df_amd_omp_intel_raw['total_time_us'].values
+tt_amd_omp_xl = df_amd_omp_xl_raw['total_time_us'].values
+tt_amd_omp_xl_intel = df_amd_omp_xl_intel_raw['total_time_us'].values
+tt_amd_xl = df_amd_xl_raw['total_time_us'].values
 tt_amd_xl_intel = df_amd_xl_intel_raw['total_time_us'].values
-create_mt_amd_xl_intel = df_amd_xl_intel_raw['create_mt_time_us'].values
-join_mt_amd_xl_intel = df_amd_xl_intel_raw['join_mt_time_us'].values
+tt_amd_xl_nvidia = df_amd_xl_nvidia_raw['total_time_us'].values
 
 # apple
-df_apple_raw = pd.read_csv("./csv/mt/apple/benchmark.csv")
-df_apple_xl_raw = pd.read_csv("./csv/mt/apple/benchmark_xl.csv")
+df_apple_raw = pd.read_csv("./csv/omp/apple/benchmark.csv")
+df_apple_omp_raw = pd.read_csv("./csv/omp/apple/benchmark_omp.csv")
+df_apple_omp_xl_raw = pd.read_csv("./csv/omp/apple/benchmark_omp_xl.csv")
+df_apple_xl_raw = pd.read_csv("./csv/omp/apple/benchmark_xl.csv")
 
 tt_apple = df_apple_raw['total_time_us'].values
-create_mt_apple = df_apple_raw['create_mt_time_us'].values
-join_mt_apple = df_apple_raw['join_mt_time_us'].values
-
-create_mt_apple_xl = df_apple_xl_raw['create_mt_time_us'].values
+tt_apple_omp = df_apple_omp_raw['total_time_us'].values
+tt_apple_omp_xl = df_apple_omp_xl_raw['total_time_us'].values
 tt_apple_xl = df_apple_xl_raw['total_time_us'].values
-join_mt_apple_xl = df_apple_xl_raw['join_mt_time_us'].values
 
 # intel
-df_intel_raw = pd.read_csv("./csv/mt/intel/benchmark.csv")
-df_intel_xl_raw = pd.read_csv("./csv/mt/intel/benchmark_xl.csv")
-df_intel_intel_raw = pd.read_csv("./csv/mt/intel/benchmark_intel.csv")
-df_intel_xl_intel_raw = pd.read_csv("./csv/mt/intel/benchmark_xl_intel.csv")
+df_intel_raw = pd.read_csv("./csv/omp/intel/benchmark.csv")
+df_intel_intel_raw = pd.read_csv("./csv/omp/intel/benchmark_intel.csv")
+df_intel_nvidia_raw = pd.read_csv("./csv/omp/intel/benchmark_nvidia.csv")
+df_intel_omp_raw = pd.read_csv("./csv/omp/intel/benchmark_omp.csv")
+df_intel_omp_intel_raw = pd.read_csv("./csv/omp/intel/benchmark_omp_intel.csv")
+df_intel_omp_xl_raw = pd.read_csv("./csv/omp/intel/benchmark_omp_xl.csv")
+df_intel_omp_xl_intel_raw = pd.read_csv("./csv/omp/intel/benchmark_omp_xl_intel.csv")
+df_intel_xl_raw = pd.read_csv("./csv/omp/intel/benchmark_xl.csv")
+df_intel_xl_intel_raw = pd.read_csv("./csv/omp/intel/benchmark_xl_intel.csv")
+df_intel_xl_nvidia_raw = pd.read_csv("./csv/omp/intel/benchmark_xl_nvidia.csv")
 
 tt_intel = df_intel_raw['total_time_us'].values
-create_mt_intel= df_intel_raw['create_mt_time_us'].values
-join_mt_intel= df_intel_raw['join_mt_time_us'].values
-
-tt_intel_xl = df_intel_xl_raw['total_time_us'].values
-create_mt_intel_xl = df_intel_xl_raw['create_mt_time_us'].values
-join_mt_intel_xl = df_intel_xl_raw['join_mt_time_us'].values
-
 tt_intel_intel = df_intel_intel_raw['total_time_us'].values
-create_mt_intel_intel= df_intel_intel_raw['create_mt_time_us'].values
-join_mt_intel_intel = df_intel_intel_raw['join_mt_time_us'].values
-
+tt_intel_nvidia = df_intel_nvidia_raw['total_time_us'].values
+tt_intel_omp = df_intel_omp_raw['total_time_us'].values
+tt_intel_omp_intel = df_intel_omp_intel_raw['total_time_us'].values
+tt_intel_omp_xl = df_intel_omp_xl_raw['total_time_us'].values
+tt_intel_omp_xl_intel = df_intel_omp_xl_intel_raw['total_time_us'].values
+tt_intel_xl = df_intel_xl_raw['total_time_us'].values
 tt_intel_xl_intel = df_intel_xl_intel_raw['total_time_us'].values
-create_mt_intel_xl_intel= df_intel_xl_intel_raw['create_mt_time_us'].values
-join_mt_intel_xl_intel = df_intel_xl_intel_raw['join_mt_time_us'].values
+tt_intel_xl_nvidia = df_intel_xl_nvidia_raw['total_time_us'].values
 
 """
 CREATE DATA FRAMES
 """
 # amd
 df_amd = pd.DataFrame({
-    'min': [0.0] * len(threads),
-    'avg': [0.0] * len(threads),
-    'max': [0.0] * len(threads)
+    'min': [0.0] * len(threads_omp),
+    'avg': [0.0] * len(threads_omp),
+    'max': [0.0] * len(threads_omp)
 })
-df_amd_overhead = df_amd.copy(deep=True)
-df_amd_xl = df_amd.copy(deep=True)
-df_amd_xl_overhead = df_amd.copy(deep=True)
 df_amd_intel = df_amd.copy(deep=True)
-df_amd_intel_overhead = df_amd.copy(deep=True)
+df_amd_nvidia = df_amd.copy(deep=True)
+df_amd_omp = df_amd.copy(deep=True)
+df_amd_omp_intel = df_amd.copy(deep=True)
+df_amd_omp_xl = df_amd.copy(deep=True)
+df_amd_omp_xl_intel = df_amd.copy(deep=True)
+df_amd_xl = df_amd.copy(deep=True)
 df_amd_xl_intel = df_amd.copy(deep=True)
-df_amd_xl_intel_overhead = df_amd.copy(deep=True)
+df_amd_xl_nvidia = df_amd.copy(deep=True)
 
 # apple
 df_apple = df_amd.copy(deep=True)
-df_apple_overhead = df_amd.copy(deep=True)
-df_apple_xl = df_apple.copy(deep=True)
-df_apple_xl_overhead = df_amd.copy(deep=True)
+df_apple_omp = df_amd.copy(deep=True)
+df_apple_omp_xl = df_apple.copy(deep=True)
+df_apple_xl = df_amd.copy(deep=True)
 
 # intel
 df_intel = df_amd.copy(deep=True)
-df_intel_overhead = df_amd.copy(deep=True)
-df_intel_xl = df_amd.copy(deep=True)
-df_intel_xl_overhead = df_amd.copy(deep=True)
 df_intel_intel = df_amd.copy(deep=True)
-df_intel_intel_overhead = df_amd.copy(deep=True)
+df_intel_nvidia = df_amd.copy(deep=True)
+df_intel_omp = df_amd.copy(deep=True)
+df_intel_omp_intel = df_amd.copy(deep=True)
+df_intel_omp_xl = df_amd.copy(deep=True)
+df_intel_omp_xl_intel = df_amd.copy(deep=True)
+df_intel_xl = df_amd.copy(deep=True)
 df_intel_xl_intel = df_amd.copy(deep=True)
-df_intel_xl_intel_overhead = df_amd.copy(deep=True)
+df_intel_xl_nvidia = df_amd.copy(deep=True)
 
 # Fill DFs with Minimum, Average, Maximum values
 for i in range(len(threads)):
     # amd
-    df_amd.loc[i, 'min'] = np.min(tt_amd[10*i:10*(i+1)])
-    df_amd.loc[i, 'avg'] = np.average(tt_amd[10*i:10*(i+1)])
-    df_amd.loc[i, 'max'] = np.max(tt_amd[10*i:10*(i+1)])
-    df_amd_overhead.loc[i, 'min'] = np.min(create_mt_amd[10*i:10*(i+1)] + join_mt_amd[10*i:10*(i+1)])
-    df_amd_overhead.loc[i, 'avg'] = np.average(create_mt_amd[10*i:10*(i+1)] + join_mt_amd[10*i:10*(i+1)])
-    df_amd_overhead.loc[i, 'max'] = np.max(create_mt_amd[10*i:10*(i+1)] + join_mt_amd[10*i:10*(i+1)])
-    df_amd_xl.loc[i, 'min'] = np.min(tt_amd_xl[10*i:10*(i+1)])
-    df_amd_xl.loc[i, 'avg'] = np.average(tt_amd_xl[10*i:10*(i+1)])
-    df_amd_xl.loc[i, 'max'] = np.max(tt_amd_xl[10*i:10*(i+1)])
-    df_amd_xl_overhead.loc[i, 'min'] = np.min(create_mt_amd_xl[10*i:10*(i+1)] + join_mt_amd_xl[10*i:10*(i+1)])
-    df_amd_xl_overhead.loc[i, 'avg'] = np.average(create_mt_amd_xl[10*i:10*(i+1)] + join_mt_amd_xl[10*i:10*(i+1)])
-    df_amd_xl_overhead.loc[i, 'max'] = np.max(create_mt_amd_xl[10*i:10*(i+1)] + join_mt_amd_xl[10*i:10*(i+1)])
-    df_amd_intel.loc[i, 'min'] = np.min(tt_amd_intel[10*i:10*(i+1)])
-    df_amd_intel.loc[i, 'avg'] = np.average(tt_amd_intel[10*i:10*(i+1)])
-    df_amd_intel.loc[i, 'max'] = np.max(tt_amd_intel[10*i:10*(i+1)])
-    df_amd_intel_overhead.loc[i, 'min'] = np.min(create_mt_amd_intel[10*i:10*(i+1)] + join_mt_amd_intel[10*i:10*(i+1)])
-    df_amd_intel_overhead.loc[i, 'avg'] = np.average(create_mt_amd_intel[10*i:10*(i+1)] + join_mt_amd_intel[10*i:10*(i+1)])
-    df_amd_intel_overhead.loc[i, 'max'] = np.max(create_mt_amd_intel[10*i:10*(i+1)] + join_mt_amd_intel[10*i:10*(i+1)])
-    df_amd_xl_intel.loc[i, 'min'] = np.min(tt_amd_xl_intel[10*i:10*(i+1)])
-    df_amd_xl_intel.loc[i, 'avg'] = np.average(tt_amd_xl_intel[10*i:10*(i+1)])
-    df_amd_xl_intel.loc[i, 'max'] = np.max(tt_amd_xl_intel[10*i:10*(i+1)])
-    df_amd_xl_intel_overhead.loc[i, 'min'] = np.min(create_mt_amd_xl_intel[10*i:10*(i+1)] + join_mt_amd_xl_intel[10*i:10*(i+1)])
-    df_amd_xl_intel_overhead.loc[i, 'avg'] = np.average(create_mt_amd_xl_intel[10*i:10*(i+1)] + join_mt_amd_xl_intel[10*i:10*(i+1)])
-    df_amd_xl_intel_overhead.loc[i, 'max'] = np.max(create_mt_amd_xl_intel[10*i:10*(i+1)] + join_mt_amd_xl_intel[10*i:10*(i+1)])
+    if threads[i] == 16:
+        df_amd.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd[10*i:10*(i+1)])
+        df_amd.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd[10*i:10*(i+1)])
+        df_amd.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd[10*i:10*(i+1)])
+        df_amd_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_intel[10*i:10*(i+1)])
+        df_amd_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_intel[10*i:10*(i+1)])
+        df_amd_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_intel[10*i:10*(i+1)])
+        df_amd_nvidia.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_nvidia[0:10])
+        df_amd_nvidia.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_nvidia[0:10])
+        df_amd_nvidia.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_nvidia[0:10])
+        df_amd_omp.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_omp[0:10])
+        df_amd_omp.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_omp[0:10])
+        df_amd_omp.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_omp[0:10])
+        df_amd_omp_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_omp_intel[0:10])
+        df_amd_omp_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_omp_intel[0:10])
+        df_amd_omp_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_omp_intel[0:10])
+        df_amd_omp_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_omp_xl[0:10])
+        df_amd_omp_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_omp_xl[0:10])
+        df_amd_omp_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_omp_xl[0:10])
+        df_amd_omp_xl_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_omp_xl_intel[0:10])
+        df_amd_omp_xl_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_omp_xl_intel[0:10])
+        df_amd_omp_xl_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_omp_xl_intel[0:10])
+        df_amd_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_xl[10*i:10*(i+1)])
+        df_amd_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_xl[10*i:10*(i+1)])
+        df_amd_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_xl[10*i:10*(i+1)])
+        df_amd_xl_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_xl_intel[10*i:10*(i+1)])
+        df_amd_xl_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_xl_intel[10*i:10*(i+1)])
+        df_amd_xl_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_xl_intel[10*i:10*(i+1)])
+        df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_amd_xl_nvidia[0:10])
+        df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_amd_xl_nvidia[0:10])
+        df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_xl_nvidia[0:10])
 
     # apple
-    df_apple.loc[i, 'min'] = np.min(tt_apple[10*i:10*(i+1)])
-    df_apple.loc[i, 'avg'] = np.average(tt_apple[10*i:10*(i+1)])
-    df_apple.loc[i, 'max'] = np.max(tt_apple[10*i:10*(i+1)])
-    df_apple_overhead.loc[i, 'min'] = np.min(create_mt_apple[10*i:10*(i+1)] + join_mt_apple[10*i:10*(i+1)])
-    df_apple_overhead.loc[i, 'avg'] = np.average(create_mt_apple[10*i:10*(i+1)] + join_mt_apple[10*i:10*(i+1)])
-    df_apple_overhead.loc[i, 'max'] = np.max(create_mt_apple[10*i:10*(i+1)] + join_mt_apple[10*i:10*(i+1)])
-    df_apple_xl.loc[i, 'min'] = np.min(tt_apple_xl[10*i:10*(i+1)])
-    df_apple_xl.loc[i, 'avg'] = np.average(tt_apple_xl[10*i:10*(i+1)])
-    df_apple_xl.loc[i, 'max'] = np.max(tt_apple_xl[10*i:10*(i+1)])
-    df_apple_xl_overhead.loc[i, 'min'] = np.min(create_mt_apple_xl[10*i:10*(i+1)] + join_mt_apple_xl[10*i:10*(i+1)])
-    df_apple_xl_overhead.loc[i, 'avg'] = np.average(create_mt_apple_xl[10*i:10*(i+1)] + join_mt_apple_xl[10*i:10*(i+1)])
-    df_apple_xl_overhead.loc[i, 'max'] = np.max(create_mt_apple_xl[10*i:10*(i+1)] + join_mt_apple_xl[10*i:10*(i+1)])
+    if threads[i] == 11:
+        df_apple.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_apple[10*i:10*(i+1)])
+        df_apple.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_apple[10*i:10*(i+1)])
+        df_apple.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_apple[10*i:10*(i+1)])
+        df_apple_omp.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_apple_omp[0:10])
+        df_apple_omp.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_apple_omp[0:10])
+        df_apple_omp.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_apple_omp[0:10])
+        df_apple_omp_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_apple_omp_xl[0:10])
+        df_apple_omp_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_apple_omp_xl[0:10])
+        df_apple_omp_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_apple_omp_xl[0:10])
+        df_apple_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_apple_xl[10*i:10*(i+1)])
+        df_apple_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_apple_xl[10*i:10*(i+1)])
+        df_apple_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_apple_xl[10*i:10*(i+1)])
 
     # intel
-    df_intel.loc[i, 'min'] = np.min(tt_intel[10*i:10*(i+1)])
-    df_intel.loc[i, 'avg'] = np.average(tt_intel[10*i:10*(i+1)])
-    df_intel.loc[i, 'max'] = np.max(tt_intel[10*i:10*(i+1)])
-    df_intel_overhead.loc[i, 'min'] = np.min(create_mt_intel[10*i:10*(i+1)] + join_mt_intel[10*i:10*(i+1)])
-    df_intel_overhead.loc[i, 'avg'] = np.average(create_mt_intel[10*i:10*(i+1)] + join_mt_intel[10*i:10*(i+1)])
-    df_intel_overhead.loc[i, 'max'] = np.max(create_mt_intel[10*i:10*(i+1)] + join_mt_intel[10*i:10*(i+1)])
-    df_intel_xl.loc[i, 'min'] = np.min(tt_intel_xl[10*i:10*(i+1)])
-    df_intel_xl.loc[i, 'avg'] = np.average(tt_intel_xl[10*i:10*(i+1)])
-    df_intel_xl.loc[i, 'max'] = np.max(tt_intel_xl[10*i:10*(i+1)])
-    df_intel_xl_overhead.loc[i, 'min'] = np.min(create_mt_intel_xl[10*i:10*(i+1)] + join_mt_intel_xl[10*i:10*(i+1)])
-    df_intel_xl_overhead.loc[i, 'avg'] = np.average(create_mt_intel_xl[10*i:10*(i+1)] + join_mt_intel_xl[10*i:10*(i+1)])
-    df_intel_xl_overhead.loc[i, 'max'] = np.max(create_mt_intel_xl[10*i:10*(i+1)] + join_mt_intel_xl[10*i:10*(i+1)])
-    df_intel_intel.loc[i, 'min'] = np.min(tt_intel_intel[10*i:10*(i+1)])
-    df_intel_intel.loc[i, 'avg'] = np.average(tt_intel_intel[10*i:10*(i+1)])
-    df_intel_intel.loc[i, 'max'] = np.max(tt_intel_intel[10*i:10*(i+1)])
-    df_intel_intel_overhead.loc[i, 'min'] = np.min(create_mt_intel_intel[10*i:10*(i+1)] + join_mt_intel_intel[10*i:10*(i+1)])
-    df_intel_intel_overhead.loc[i, 'avg'] = np.average(create_mt_intel_intel[10*i:10*(i+1)] + join_mt_intel_intel[10*i:10*(i+1)])
-    df_intel_intel_overhead.loc[i, 'max'] = np.max(create_mt_intel_intel[10*i:10*(i+1)] + join_mt_intel_intel[10*i:10*(i+1)])
-    df_intel_xl_intel.loc[i, 'min'] = np.min(tt_intel_xl_intel[10*i:10*(i+1)])
-    df_intel_xl_intel.loc[i, 'avg'] = np.average(tt_intel_xl_intel[10*i:10*(i+1)])
-    df_intel_xl_intel.loc[i, 'max'] = np.max(tt_intel_xl_intel[10*i:10*(i+1)])
-    df_intel_xl_intel_overhead.loc[i, 'min'] = np.min(create_mt_intel_xl_intel[10*i:10*(i+1)] + join_mt_intel_xl_intel[10*i:10*(i+1)])
-    df_intel_xl_intel_overhead.loc[i, 'avg'] = np.average(create_mt_intel_xl_intel[10*i:10*(i+1)] + join_mt_intel_xl_intel[10*i:10*(i+1)])
-    df_intel_xl_intel_overhead.loc[i, 'max'] = np.max(create_mt_intel_xl_intel[10*i:10*(i+1)] + join_mt_intel_xl_intel[10*i:10*(i+1)])
+    if threads[i] == 8:
+        df_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel[10*i:10*(i+1)])
+        df_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel[10*i:10*(i+1)])
+        df_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel[10*i:10*(i+1)])
+        df_intel_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_intel[10*i:10*(i+1)])
+        df_intel_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_intel[10*i:10*(i+1)])
+        df_intel_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_intel[10*i:10*(i+1)])
+        df_intel_nvidia.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_nvidia[0:10])
+        df_intel_nvidia.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_nvidia[0:10])
+        df_intel_nvidia.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_nvidia[0:10])
+        df_intel_omp.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_omp[0:10])
+        df_intel_omp.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_omp[0:10])
+        df_intel_omp.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_omp[0:10])
+        df_intel_omp_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_omp_intel[0:10])
+        df_intel_omp_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_omp_intel[0:10])
+        df_intel_omp_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_omp_intel[0:10])
+        df_intel_omp_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_omp_xl[0:10])
+        df_intel_omp_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_omp_xl[0:10])
+        df_intel_omp_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_omp_xl[0:10])
+        df_intel_omp_xl_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_omp_xl_intel[0:10])
+        df_intel_omp_xl_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_omp_xl_intel[0:10])
+        df_intel_omp_xl_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_omp_xl_intel[0:10])
+        df_intel_xl.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_xl[10*i:10*(i+1)])
+        df_intel_xl.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_xl[10*i:10*(i+1)])
+        df_intel_xl.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_xl[10*i:10*(i+1)])
+        df_intel_xl_intel.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_xl_intel[10*i:10*(i+1)])
+        df_intel_xl_intel.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_xl_intel[10*i:10*(i+1)])
+        df_intel_xl_intel.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_xl_intel[10*i:10*(i+1)])
+        df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_intel_xl_nvidia[0:10])
+        df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_intel_xl_nvidia[0:10])
+        df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_intel_xl_nvidia[0:10])
 
 """
 CREATE FIGURES
- 0 performance
- 1 performance xl
- 2 overhead
- 3 overhead xl
- 4 icx
- 5 icx xl
 """
-figures = ["performance", "performance_xl", "overhead", "overhead_xl", "icx", "icx_xl"]
+figures = ["omp", "omp_xl", "omp_intel", "omp_xl_intel", "nvidia", "nvidia_xl"]
 for f in figures:
-    bar_width = 0.25
+    bar_width = 0.15
 
-    if f in ["icx", "icx_xl"]:
-        bar_width = 0.2
-
-    indices = np.arange(len(threads))
-
+    indices = np.arange(len(threads_omp))
     fig, ax = plt.subplots(figsize=(10, 6))
 
     match f:
-        case "performance":
-            ax.bar(indices - bar_width, df_amd['max'], width=bar_width, label=f"{label_amd} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd['avg'], width=bar_width, label=f"{label_amd} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd['min'], width=bar_width, label=f"{label_amd} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple['max'], width=bar_width, label=f"{label_apple} Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple['avg'], width=bar_width, label=f"{label_apple} Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple['min'], width=bar_width, label=f"{label_apple} Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+        case "omp":
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            ax.set_title("Performance", fontsize=12, color=foreground_color, loc='center')
-        case "performance_xl":
-            ax.bar(indices - bar_width, df_amd_xl['max'], width=bar_width, label=f"{label_amd} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl['avg'], width=bar_width, label=f"{label_amd} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl['min'], width=bar_width, label=f"{label_amd} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl['max'], width=bar_width, label=f"{label_apple} Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl['avg'], width=bar_width, label=f"{label_apple} Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl['min'], width=bar_width, label=f"{label_apple} Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp['max'], width=bar_width, label=f"{label_intel} OpenMP Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp['avg'], width=bar_width, label=f"{label_intel} OpenMP Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp['min'], width=bar_width, label=f"{label_intel} OpenMP Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple['max'], width=bar_width, label=f"{label_apple} Max", color='#f9f06b', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple['avg'], width=bar_width, label=f"{label_apple} Avg", color='#f6d32d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple['min'], width=bar_width, label=f"{label_apple} Min", color='#e5a50a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp['max'], width=bar_width, label=f"{label_apple} OpenMP Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp['avg'], width=bar_width, label=f"{label_apple} OpenMP Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp['min'], width=bar_width, label=f"{label_apple} OpenMP Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['max'], width=bar_width, label=f"{label_amd} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['avg'], width=bar_width, label=f"{label_amd} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['min'], width=bar_width, label=f"{label_amd} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp['max'], width=bar_width, label=f"{label_amd} OpenMP Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp['avg'], width=bar_width, label=f"{label_amd} OpenMP Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp['min'], width=bar_width, label=f"{label_amd} OpenMP Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
 
-            ax.set_title("Performance XL", fontsize=12, color=foreground_color, loc='center')
-        case "overhead":
-            ax.bar(indices - bar_width, df_amd_overhead['max'], width=bar_width, label=f"{label_amd} Overhead Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_overhead['avg'], width=bar_width, label=f"{label_amd} Overhead Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_overhead['min'], width=bar_width, label=f"{label_amd} Overhead Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_overhead['max'], width=bar_width, label=f"{label_apple} Overhead Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_overhead['avg'], width=bar_width, label=f"{label_apple} Overhead Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_overhead['min'], width=bar_width, label=f"{label_apple} Overhead Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.set_title("OpenMP", fontsize=12, color=foreground_color, loc='center')
+        case "omp_xl":
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            ax.set_title("Overhead", fontsize=12, color=foreground_color, loc='center')
-        case "overhead_xl":
-            ax.bar(indices - bar_width, df_amd_xl_overhead['max'], width=bar_width, label=f"{label_amd} Overhead Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl_overhead['avg'], width=bar_width, label=f"{label_amd} Overhead Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl_overhead['min'], width=bar_width, label=f"{label_amd} Overhead Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl_overhead['max'], width=bar_width, label=f"{label_apple} Overhead Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl_overhead['avg'], width=bar_width, label=f"{label_apple} Overhead Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_apple_xl_overhead['min'], width=bar_width, label=f"{label_apple} Overhead Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['max'], width=bar_width, label=f"{label_intel} Overhead Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['avg'], width=bar_width, label=f"{label_intel} Overhead Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_overhead['min'], width=bar_width, label=f"{label_intel} Overhead Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['min'], width=bar_width, label=f"{label_intel} XL Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl['max'], width=bar_width, label=f"{label_intel} OpenMP XL Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl['avg'], width=bar_width, label=f"{label_intel} OpenMP XL Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl['min'], width=bar_width, label=f"{label_intel} OpenMP XL Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_xl['max'], width=bar_width, label=f"{label_apple} XL Max", color='#f9f06b', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_xl['avg'], width=bar_width, label=f"{label_apple} XL Avg", color='#f6d32d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_xl['min'], width=bar_width, label=f"{label_apple} XL Min", color='#e5a50a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp_xl['max'], width=bar_width, label=f"{label_apple} OpenMP XL Max", color='#ffbe6f', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp_xl['avg'], width=bar_width, label=f"{label_apple} OpenMP XL Avg", color='#ff7800', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_omp_xl['min'], width=bar_width, label=f"{label_apple} OpenMP XL Min", color='#c64600', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['max'], width=bar_width, label=f"{label_amd} XL Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['avg'], width=bar_width, label=f"{label_amd} XL Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['min'], width=bar_width, label=f"{label_amd} XL Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl['max'], width=bar_width, label=f"{label_amd} OpenMP XL Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl['avg'], width=bar_width, label=f"{label_amd} OpenMP XL Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl['min'], width=bar_width, label=f"{label_amd} OpenMP XL Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
 
-            ax.set_title("Overhead XL", fontsize=12, color=foreground_color, loc='center')
-        case "icx":
-            ax.bar(indices - 2 * bar_width, df_amd['max'], width=bar_width, label=f"{label_amd} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 2 * bar_width, df_amd['avg'], width=bar_width, label=f"{label_amd} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 2 * bar_width, df_amd['min'], width=bar_width, label=f"{label_amd} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['max'], width=bar_width, label=f"{label_intel} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['avg'], width=bar_width, label=f"{label_intel} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_intel['min'], width=bar_width, label=f"{label_intel} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+            ax.set_title("OpenMP XL", fontsize=12, color=foreground_color, loc='center')
+        case "omp_intel":
+            threads_omp.pop(1)
+            indices = np.delete(indices, 2)
 
-            ax.set_title("ICX vs. GCC", fontsize=12, color=foreground_color, loc='center')
-        case "icx_xl":
-            ax.bar(indices - 2 * bar_width, df_amd_xl['max'], width=bar_width, label=f"{label_amd} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 2 * bar_width, df_amd_xl['avg'], width=bar_width, label=f"{label_amd} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 2 * bar_width, df_amd_xl['min'], width=bar_width, label=f"{label_amd} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl_intel['max'], width=bar_width, label=f"{label_amd} ICX Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl_intel['avg'], width=bar_width, label=f"{label_amd} ICX Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - bar_width, df_amd_xl_intel['min'], width=bar_width, label=f"{label_amd} ICX Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices, df_intel_xl_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_intel['max'], width=bar_width, label=f"{label_intel} ICX Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_intel['avg'], width=bar_width, label=f"{label_intel} ICX Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + bar_width, df_intel_xl_intel['min'], width=bar_width, label=f"{label_intel} ICX Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+            bar_width = 0.075
 
-            ax.set_title("ICX vs. GCC XL", fontsize=12, color=foreground_color, loc='center')
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
+
+            df_intel_omp.drop(df_intel_omp.index[1], inplace=True)
+            df_intel_omp.reset_index(drop=True, inplace=True)
+            df_intel_omp_intel.drop(df_intel_omp_intel.index[1], inplace=True)
+            df_intel_omp_intel.reset_index(drop=True, inplace=True)
+            df_amd_omp.drop(df_amd_omp.index[1], inplace=True)
+            df_amd_omp.reset_index(drop=True, inplace=True)
+            df_amd_omp_intel.drop(df_amd_omp_intel.index[1], inplace=True)
+            df_amd_omp_intel.reset_index(drop=True, inplace=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp['max'], width=bar_width, label=f"{label_intel} OpenMP Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp['avg'], width=bar_width, label=f"{label_intel} OpenMP Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp['min'], width=bar_width, label=f"{label_intel} OpenMP Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel['max'], width=bar_width, label=f"{label_intel} ICPX OpenMP Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel['avg'], width=bar_width, label=f"{label_intel} ICPX OpenMP Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel['min'], width=bar_width, label=f"{label_intel} ICPX OpenMP Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp['max'], width=bar_width, label=f"{label_amd} OpenMP Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp['avg'], width=bar_width, label=f"{label_amd} OpenMP Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp['min'], width=bar_width, label=f"{label_amd} OpenMP Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel['max'], width=bar_width, label=f"{label_amd} ICPX OpenMP Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel['avg'], width=bar_width, label=f"{label_amd} ICPX OpenMP Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel['min'], width=bar_width, label=f"{label_amd} ICPX OpenMP Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("OpenMP vs. ICPX OpenMP", fontsize=12, color=foreground_color, loc='center')
+        case "omp_xl_intel":
+            bar_width = 0.075
+
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
+
+            df_intel_omp_xl.drop(df_intel_omp_xl.index[1], inplace=True)
+            df_intel_omp.reset_index(drop=True, inplace=True)
+            df_intel_omp_xl_intel.drop(df_intel_omp_xl_intel.index[1], inplace=True)
+            df_intel_omp_xl_intel.reset_index(drop=True, inplace=True)
+            df_amd_omp_xl.drop(df_amd_omp_xl.index[1], inplace=True)
+            df_amd_omp_xl.reset_index(drop=True, inplace=True)
+            df_amd_omp_xl_intel.drop(df_amd_omp_xl_intel.index[1], inplace=True)
+            df_amd_omp_xl_intel.reset_index(drop=True, inplace=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl['max'], width=bar_width, label=f"{label_intel} OpenMP XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl['avg'], width=bar_width, label=f"{label_intel} OpenMP XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl['min'], width=bar_width, label=f"{label_intel} OpenMP XL Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel['max'], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel['avg'], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel['min'], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl['max'], width=bar_width, label=f"{label_amd} OpenMP XL Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl['avg'], width=bar_width, label=f"{label_amd} OpenMP XL Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl['min'], width=bar_width, label=f"{label_amd} OpenMP XL Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel['max'], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel['avg'], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel['min'], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("OpenMP vs. ICPX OpenMP XL", fontsize=12, color=foreground_color, loc='center')
+        case "nvidia":
+            bar_width = 0.075
+
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
+
+            df_intel.drop(df_intel.index[1], inplace=True)
+            df_intel.reset_index(drop=True, inplace=True)
+            df_intel_nvidia.drop(df_intel_nvidia.index[1], inplace=True)
+            df_intel_nvidia.reset_index(drop=True, inplace=True)
+            df_amd.drop(df_amd.index[1], inplace=True)
+            df_amd.reset_index(drop=True, inplace=True)
+            df_amd_nvidia.drop(df_amd_nvidia.index[1], inplace=True)
+            df_amd_nvidia.reset_index(drop=True, inplace=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel['min'], width=bar_width, label=f"{label_intel} Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia['max'], width=bar_width, label=f"{label_intel_nvidia} Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia['avg'], width=bar_width, label=f"{label_intel_nvidia} Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia['min'], width=bar_width, label=f"{label_intel_nvidia} Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['max'], width=bar_width, label=f"{label_amd} Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['avg'], width=bar_width, label=f"{label_amd} Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd['min'], width=bar_width, label=f"{label_amd} Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia['max'], width=bar_width, label=f"{label_amd_nvidia} Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia['avg'], width=bar_width, label=f"{label_amd_nvidia} Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia['min'], width=bar_width, label=f"{label_amd_nvidia} Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CPU vs. GPU", fontsize=12, color=foreground_color, loc='center')
+        case "nvidia_xl":
+            bar_width = 0.075
+
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
+
+            df_intel_xl.drop(df_intel_xl.index[1], inplace=True)
+            df_intel_xl.reset_index(drop=True, inplace=True)
+            df_intel_xl_nvidia.drop(df_intel_xl_nvidia.index[1], inplace=True)
+            df_intel_xl_nvidia.reset_index(drop=True, inplace=True)
+            df_amd_xl.drop(df_amd_xl.index[1], inplace=True)
+            df_amd_xl.reset_index(drop=True, inplace=True)
+            df_amd_xl_nvidia.drop(df_amd_xl_nvidia.index[1], inplace=True)
+            df_amd_xl_nvidia.reset_index(drop=True, inplace=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl['min'], width=bar_width, label=f"{label_intel} XL Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia['max'], width=bar_width, label=f"{label_intel_nvidia} XL Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia['avg'], width=bar_width, label=f"{label_intel_nvidia} XL Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia['min'], width=bar_width, label=f"{label_intel_nvidia} XL Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['max'], width=bar_width, label=f"{label_amd} XL Max", color='#f66151', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['avg'], width=bar_width, label=f"{label_amd} XL Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl['min'], width=bar_width, label=f"{label_amd} XL Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia['max'], width=bar_width, label=f"{label_amd_nvidia} XL Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia['avg'], width=bar_width, label=f"{label_amd_nvidia} XL Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia['min'], width=bar_width, label=f"{label_amd_nvidia} XL Min", color='#613583', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CPU vs. GPU XL", fontsize=12, color=foreground_color, loc='center')
 
     ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
+    if("nvidia" in f):
+        ax.set_xlabel("Device", fontsize=12, color=foreground_color)
     ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
     ax.set_xticks(indices)
-    ax.set_xticklabels(threads, color=foreground_color)
+    ax.set_xticklabels(threads_omp, color=foreground_color)
+    if("nvidia" in f):
+        ax.set_xticklabels(["Laptop", "Desktop"], color=foreground_color)
     ax.tick_params(axis='x', colors=foreground_color)  # X-axis tick marks and labels
     ax.tick_params(axis='y', colors=foreground_color)  # Y-axis tick marks and labels
     ax.legend(loc="upper left", bbox_to_anchor=(1, 1), facecolor=background_color, edgecolor=foreground_color, labelcolor=foreground_color)
@@ -288,22 +399,22 @@ for f in figures:
     fig.patch.set_facecolor(background_color)
     ax.set_facecolor(background_color)
 
-    # Show the plot
     plt.tight_layout()
 
     match f:
-        case "performance":
-            plt.savefig("../Graphs/mt/Performance.png")
-        case "performance_xl":
-            plt.savefig("../Graphs/mt/Performance XL.png")
-        case "overhead":
-            plt.savefig("../Graphs/mt/Overhead.png")
-        case "overhead_xl":
-            plt.savefig("../Graphs/mt/Overhead XL.png")
-        case "icx":
-            plt.savefig("../Graphs/mt/ICX vs. GCC.png")
-        case "icx_xl":
-            plt.savefig("../Graphs/mt/ICX vs. GCC XL.png")
+        case "omp":
+            plt.savefig("../Graphs/omp/OpenMP.png")
+        case "omp_xl":
+            plt.savefig("../Graphs/omp/OpenMP XL.png")
+        case "omp_intel":
+            plt.savefig("../Graphs/omp/OpenMP vs. ICPX OpenMP.png")
+        case "omp_xl_intel":
+            plt.savefig("../Graphs/omp/OpenMP vs. ICPX OpenMP XL.png")
+        case "nvidia":
+            plt.savefig("../Graphs/omp/CPU vs. GPU.png")
+        case "nvidia_xl":
+            plt.savefig("../Graphs/omp/CPU vs. GPU XL.png")
 
+    # Show the plot
     # plt.show()
     plt.close(fig)

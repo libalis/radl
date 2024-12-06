@@ -1,3 +1,4 @@
+.ropeproject
 Source Code/build/*.o
 Source Code/csv/benchmark*
 Source Code/gmon.out

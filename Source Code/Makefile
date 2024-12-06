@@ -8,6 +8,11 @@ CPP_DIR := ./cpp
 CU_DIR := ./cu
 HPP_DIR := ./hpp
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+	LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
+endif
+
 all: CFLAGS += -pthread
 all: $(BUILD_DIR)/$(PROGRAM)
 
@@ -18,6 +23,32 @@ debug:
 	$(MAKE) CFLAGS="$(CFLAGS) \
 	-pthread \
 	-g -pg -DDEBUG"
+
+ifeq ($(UNAME_S), Darwin)
+
+omp:
+	$(MAKE) CFLAGS="$(CFLAGS) \
+	-Xclang \
+	-fopenmp \
+	-I/opt/homebrew/opt/libomp/include \
+	-DOMP \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
+
+omp_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) \
+	-Xclang \
+	-fopenmp \
+	-I/opt/homebrew/opt/libomp/include \
+	-DOMP \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\" \
+	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
+	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
+	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
+	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
+	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
+	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+
+else
 
 omp:
 	$(MAKE) CFLAGS="$(CFLAGS) \
@@ -36,6 +67,8 @@ omp_xl:
 	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
 	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
 	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+
+endif
 
 xl:
 	$(MAKE) CFLAGS="$(CFLAGS) \
