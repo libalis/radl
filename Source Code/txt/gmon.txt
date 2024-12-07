@@ -2,45 +2,48 @@ Flat profile:
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls   s/call   s/call  name    
- 28.72    855.58   855.58    64298     0.01     0.01  conv2d_mt(mt_arg*)
- 19.16   1426.40   570.81                             _init
- 18.35   1973.22   546.83 56493420417     0.00     0.00  get_idx(int, int, int)
- 14.09   2393.12   419.89                             get_decimals(int)
-  7.48   2615.99   222.87    41877     0.01     0.01  matmul_mt(mt_arg*)
-  3.60   2723.25   107.26    62654     0.00     0.00  relu_mt(mt_arg*)
-  3.03   2813.56    90.31    63705     0.00     0.00  maxpool_mt(mt_arg*)
-  3.03   2903.72    90.15    62950     0.00     0.00  biasing_mt(mt_arg*)
-  1.05   2934.99    31.27     8100     0.00     0.01  io_to_matrix(char const*)
-  0.65   2954.39    19.40    15031     0.00     0.00  flatten_mt(mt_arg*)
-  0.50   2969.24    14.85    71034     0.00     0.00  transpose_mt(mt_arg*)
-  0.39   2980.74    11.51     9360     0.00     0.01  malloc_matrix(int, int)
-  0.01   2980.97     0.23                             start_mt(void*)
-  0.00   2981.11     0.14   587052     0.00     0.00  wait_mt()
-  0.00   2981.14     0.03     7680     0.00     0.00  relu(matrix**, int, matrix**)
-  0.00   2981.16     0.02     7680     0.00     0.00  conv2d(matrix*, matrix**, int, matrix**)
-  0.00   2981.18     0.02     7680     0.00     0.00  maxpool(matrix**, int, matrix**)
-  0.00   2981.20     0.02                             main
-  0.00   2981.21     0.01   911671     0.00     0.00  push_mt(mt_arg*)
-  0.00   2981.22     0.01    53733     0.00     0.00  add_mt(mt_arg*)
-  0.00   2981.23     0.01    15360     0.00     0.00  transpose(matrix*, matrix*)
-  0.00   2981.24     0.01     7680     0.00     0.00  biasing(matrix**, int, matrix*, matrix**)
-  0.00   2981.25     0.01       60     0.00     1.81  malloc_io()
-  0.00   2981.25     0.01      240     0.00     0.00  free_matrix_ptr(matrix**, int)
-  0.00   2981.25     0.00     9360     0.00     0.00  free_matrix(matrix*)
-  0.00   2981.25     0.00     7800     0.00     0.00  get_value(char const*)
-  0.00   2981.25     0.00     7680     0.00     0.00  index_of_max_element(matrix*)
-  0.00   2981.25     0.00     7680     0.00     0.00  add(matrix*, matrix*, matrix*)
-  0.00   2981.25     0.00     7680     0.00     0.00  matmul(matrix*, matrix*, matrix*)
-  0.00   2981.25     0.00     7680     0.00     0.00  flatten(matrix**, int, matrix*)
-  0.00   2981.25     0.00      431     0.00     0.00  stop_mt(mt_arg*)
-  0.00   2981.25     0.00      360     0.00     0.00  stop_timer()
-  0.00   2981.25     0.00      360     0.00     0.00  delta_time_us(timeval, timeval)
-  0.00   2981.25     0.00      300     0.00     0.00  start_timer()
-  0.00   2981.25     0.00      240     0.00     0.02  malloc_matrix_ptr(int, int, int)
-  0.00   2981.25     0.00       60     0.00     0.00  free_io(io*)
-  0.00   2981.25     0.00       60     0.00     0.00  join_mt()
-  0.00   2981.25     0.00       60     0.00     0.00  create_mt(long)
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 50.03      0.01     0.01   802816     0.01     0.01  conv2d_simd(mt_arg*)
+ 50.03      0.02     0.01     1280     7.82     7.82  matmul_simd(mt_arg*)
+  0.00      0.02     0.00    14336     0.00     0.00  biasing_simd(mt_arg*)
+  0.00      0.02     0.00     4224     0.00     0.00  push_mt(mt_arg*)
+  0.00      0.02     0.00     4224     0.00     0.00  wait_mt()
+  0.00      0.02     0.00     1024     0.00     9.77  conv2d_mt(mt_arg*)
+  0.00      0.02     0.00      512     0.00     0.00  biasing_mt(mt_arg*)
+  0.00      0.02     0.00      512     0.00     0.00  maxpool_mt(mt_arg*)
+  0.00      0.02     0.00      512     0.00     0.00  flip_kernels_mt(mt_arg*)
+  0.00      0.02     0.00      512     0.00     0.00  hyperbolic_tangent_mt(mt_arg*)
+  0.00      0.02     0.00      512     0.00     0.00  relu_mt(mt_arg*)
+  0.00      0.02     0.00      256     0.00     0.00  transpose_mt(mt_arg*)
+  0.00      0.02     0.00      256     0.00     0.00  conv2d(matrix*, matrix**, int, matrix**)
+  0.00      0.02     0.00      256     0.00     0.00  transpose(matrix*, matrix*)
+  0.00      0.02     0.00      140     0.00     0.00  free_matrix(matrix*)
+  0.00      0.02     0.00      140     0.00     0.00  malloc_matrix(int, int)
+  0.00      0.02     0.00      135     0.00     0.00  io_to_matrix(char const*)
+  0.00      0.02     0.00      130     0.00     0.00  get_value(char const*)
+  0.00      0.02     0.00      128     0.00     0.00  flatten_mt(mt_arg*)
+  0.00      0.02     0.00      128     0.00     0.00  flip_kernels(matrix**, int, matrix**)
+  0.00      0.02     0.00      128     0.00     0.00  hyperbolic_tangent(matrix**, int, matrix**)
+  0.00      0.02     0.00      128     0.00     0.00  index_of_max_element(matrix*)
+  0.00      0.02     0.00      128     0.00     0.00  add(matrix*, matrix*, matrix*)
+  0.00      0.02     0.00      128     0.00     0.00  relu(matrix**, int, matrix**)
+  0.00      0.02     0.00      128     0.00     0.00  add_mt(mt_arg*)
+  0.00      0.02     0.00      128     0.00     0.00  matmul(matrix*, matrix*, matrix*)
+  0.00      0.02     0.00      128     0.00     0.00  biasing(matrix**, int, matrix*, matrix**)
+  0.00      0.02     0.00      128     0.00     0.00  flatten(matrix**, int, matrix*)
+  0.00      0.02     0.00      128     0.00     0.00  maxpool(matrix**, int, matrix**)
+  0.00      0.02     0.00      128     0.00     0.00  add_simd(mt_arg*)
+  0.00      0.02     0.00      128     0.00    78.17  matmul_mt(mt_arg*)
+  0.00      0.02     0.00        7     0.00     0.00  free_matrix_ptr(matrix**, int)
+  0.00      0.02     0.00        7     0.00     0.00  malloc_matrix_ptr(int, int, int)
+  0.00      0.02     0.00        6     0.00     0.00  stop_timer()
+  0.00      0.02     0.00        6     0.00     0.00  delta_time_us(timeval, timeval)
+  0.00      0.02     0.00        5     0.00     0.00  start_timer()
+  0.00      0.02     0.00        1     0.00     0.00  free_io(io*)
+  0.00      0.02     0.00        1     0.00     0.00  join_mt()
+  0.00      0.02     0.00        1     0.00     0.00  create_mt(long)
+  0.00      0.02     0.00        1     0.00     0.00  malloc_io()
+  0.00      0.02     0.00        1     0.00     0.00  stop_mt(mt_arg*)
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -78,230 +81,193 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 2 byte(s) for 0.00% of 2981.25 seconds
+granularity: each sample hit covers 2 byte(s) for 49.97% of 0.02 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     62.9    0.23 1874.80                 start_mt(void*) [1]
-              855.58   73.55   64298/64298       conv2d_mt(mt_arg*) [2]
-              222.87   68.34   41877/41877       matmul_mt(mt_arg*) [6]
-              107.26   97.26   62654/62654       relu_mt(mt_arg*) [7]
-               90.15   93.57   62950/62950       biasing_mt(mt_arg*) [8]
-               90.31   69.84   63705/63705       maxpool_mt(mt_arg*) [9]
-               19.40   36.46   15031/15031       flatten_mt(mt_arg*) [13]
-               14.85   35.32   71034/71034       transpose_mt(mt_arg*) [15]
-                0.01    0.01   53733/53733       add_mt(mt_arg*) [21]
-                0.00    0.00     431/431         stop_mt(mt_arg*) [36]
+[1]    100.0    0.00    0.02                 start_mt(void*) [1]
+                0.00    0.01    1024/1024        conv2d_mt(mt_arg*) [4]
+                0.00    0.01     128/128         matmul_mt(mt_arg*) [5]
+                0.00    0.00     512/512         maxpool_mt(mt_arg*) [14]
+                0.00    0.00     512/512         relu_mt(mt_arg*) [17]
+                0.00    0.00     512/512         hyperbolic_tangent_mt(mt_arg*) [16]
+                0.00    0.00     512/512         biasing_mt(mt_arg*) [13]
+                0.00    0.00     512/512         flip_kernels_mt(mt_arg*) [15]
+                0.00    0.00     256/256         transpose_mt(mt_arg*) [18]
+                0.00    0.00     128/128         add_mt(mt_arg*) [31]
+                0.00    0.00     128/128         flatten_mt(mt_arg*) [25]
+                0.00    0.00       1/1           stop_mt(mt_arg*) [46]
 -----------------------------------------------
-              855.58   73.55   64298/64298       start_mt(void*) [1]
-[2]     31.2  855.58   73.55   64298         conv2d_mt(mt_arg*) [2]
-               73.54    0.00 7597033799/56493420417     get_idx(int, int, int) [4]
-                0.02    0.00   73480/587052      wait_mt() [17]
+                0.01    0.00  802816/802816      conv2d_mt(mt_arg*) [4]
+[2]     50.0    0.01    0.00  802816         conv2d_simd(mt_arg*) [2]
 -----------------------------------------------
-                                                 <spontaneous>
-[3]     19.1  570.81    0.00                 _init [3]
+                0.01    0.00    1280/1280        matmul_mt(mt_arg*) [5]
+[3]     50.0    0.01    0.00    1280         matmul_simd(mt_arg*) [3]
 -----------------------------------------------
-                0.00    0.00   84480/56493420417     index_of_max_element(matrix*) [29]
-                0.00    0.00  224599/56493420417     add_mt(mt_arg*) [21]
-               32.29    0.00 3335883703/56493420417     io_to_matrix(char const*) [12]
-               35.31    0.00 3647564283/56493420417     transpose_mt(mt_arg*) [15]
-               36.46    0.00 3766480100/56493420417     flatten_mt(mt_arg*) [13]
-               40.28    0.00 4161873091/56493420417     malloc_matrix(int, int) [14]
-               68.33    0.00 7059180182/56493420417     matmul_mt(mt_arg*) [6]
-               69.82    0.00 7213374948/56493420417     maxpool_mt(mt_arg*) [9]
-               73.54    0.00 7597033799/56493420417     conv2d_mt(mt_arg*) [2]
-               93.56    0.00 9665523280/56493420417     biasing_mt(mt_arg*) [8]
-               97.24    0.00 10046197952/56493420417     relu_mt(mt_arg*) [7]
-[4]     18.3  546.83    0.00 56493420417         get_idx(int, int, int) [4]
+                0.00    0.01    1024/1024        start_mt(void*) [1]
+[4]     50.0    0.00    0.01    1024         conv2d_mt(mt_arg*) [4]
+                0.01    0.00  802816/802816      conv2d_simd(mt_arg*) [2]
 -----------------------------------------------
-                                                 <spontaneous>
-[5]     14.1  419.89    0.00                 get_decimals(int) [5]
+                0.00    0.01     128/128         start_mt(void*) [1]
+[5]     50.0    0.00    0.01     128         matmul_mt(mt_arg*) [5]
+                0.01    0.00    1280/1280        matmul_simd(mt_arg*) [3]
 -----------------------------------------------
-              222.87   68.34   41877/41877       start_mt(void*) [1]
-[6]      9.8  222.87   68.34   41877         matmul_mt(mt_arg*) [6]
-               68.33    0.00 7059180182/56493420417     get_idx(int, int, int) [4]
-                0.01    0.00   42193/587052      wait_mt() [17]
+                0.00    0.00   14336/14336       biasing_mt(mt_arg*) [13]
+[10]     0.0    0.00    0.00   14336         biasing_simd(mt_arg*) [10]
 -----------------------------------------------
-              107.26   97.26   62654/62654       start_mt(void*) [1]
-[7]      6.9  107.26   97.26   62654         relu_mt(mt_arg*) [7]
-               97.24    0.00 10046197952/56493420417     get_idx(int, int, int) [4]
-                0.02    0.00   70940/587052      wait_mt() [17]
+                0.00    0.00     128/4224        add(matrix*, matrix*, matrix*) [29]
+                0.00    0.00     128/4224        flatten(matrix**, int, matrix*) [34]
+                0.00    0.00     128/4224        matmul(matrix*, matrix*, matrix*) [32]
+                0.00    0.00     256/4224        transpose(matrix*, matrix*) [20]
+                0.00    0.00     512/4224        biasing(matrix**, int, matrix*, matrix**) [33]
+                0.00    0.00     512/4224        flip_kernels(matrix**, int, matrix**) [26]
+                0.00    0.00     512/4224        hyperbolic_tangent(matrix**, int, matrix**) [27]
+                0.00    0.00     512/4224        maxpool(matrix**, int, matrix**) [35]
+                0.00    0.00     512/4224        relu(matrix**, int, matrix**) [30]
+                0.00    0.00    1024/4224        conv2d(matrix*, matrix**, int, matrix**) [19]
+[11]     0.0    0.00    0.00    4224         push_mt(mt_arg*) [11]
 -----------------------------------------------
-               90.15   93.57   62950/62950       start_mt(void*) [1]
-[8]      6.2   90.15   93.57   62950         biasing_mt(mt_arg*) [8]
-               93.56    0.00 9665523280/56493420417     get_idx(int, int, int) [4]
-                0.02    0.00   69199/587052      wait_mt() [17]
+                0.00    0.00     128/4224        add(matrix*, matrix*, matrix*) [29]
+                0.00    0.00     128/4224        flatten(matrix**, int, matrix*) [34]
+                0.00    0.00     128/4224        matmul(matrix*, matrix*, matrix*) [32]
+                0.00    0.00     256/4224        transpose(matrix*, matrix*) [20]
+                0.00    0.00     512/4224        biasing(matrix**, int, matrix*, matrix**) [33]
+                0.00    0.00     512/4224        flip_kernels(matrix**, int, matrix**) [26]
+                0.00    0.00     512/4224        hyperbolic_tangent(matrix**, int, matrix**) [27]
+                0.00    0.00     512/4224        maxpool(matrix**, int, matrix**) [35]
+                0.00    0.00     512/4224        relu(matrix**, int, matrix**) [30]
+                0.00    0.00    1024/4224        conv2d(matrix*, matrix**, int, matrix**) [19]
+[12]     0.0    0.00    0.00    4224         wait_mt() [12]
 -----------------------------------------------
-               90.31   69.84   63705/63705       start_mt(void*) [1]
-[9]      5.4   90.31   69.84   63705         maxpool_mt(mt_arg*) [9]
-               69.82    0.00 7213374948/56493420417     get_idx(int, int, int) [4]
-                0.02    0.00   66963/587052      wait_mt() [17]
+                0.00    0.00     512/512         start_mt(void*) [1]
+[13]     0.0    0.00    0.00     512         biasing_mt(mt_arg*) [13]
+                0.00    0.00   14336/14336       biasing_simd(mt_arg*) [10]
 -----------------------------------------------
-                                                 <spontaneous>
-[10]     3.9    0.02  115.49                 main [10]
-                0.01  108.38      60/60          malloc_io() [11]
-                0.00    5.31     240/240         malloc_matrix_ptr(int, int, int) [16]
-                0.37    1.29     300/9360        malloc_matrix(int, int) [14]
-                0.03    0.01    7680/7680        relu(matrix**, int, matrix**) [18]
-                0.02    0.01    7680/7680        maxpool(matrix**, int, matrix**) [19]
-                0.02    0.01    7680/7680        conv2d(matrix*, matrix**, int, matrix**) [20]
-                0.01    0.01    7680/7680        biasing(matrix**, int, matrix*, matrix**) [22]
-                0.01    0.00   15360/15360       transpose(matrix*, matrix*) [23]
-                0.01    0.00     240/240         free_matrix_ptr(matrix**, int) [25]
-                0.00    0.00    7680/7680        add(matrix*, matrix*, matrix*) [26]
-                0.00    0.00    7680/7680        matmul(matrix*, matrix*, matrix*) [27]
-                0.00    0.00    7680/7680        flatten(matrix**, int, matrix*) [28]
-                0.00    0.00    7680/7680        index_of_max_element(matrix*) [29]
-                0.00    0.00      60/60          join_mt() [30]
-                0.00    0.00     360/360         stop_timer() [37]
-                0.00    0.00     360/360         delta_time_us(timeval, timeval) [38]
-                0.00    0.00     300/300         start_timer() [39]
-                0.00    0.00     300/9360        free_matrix(matrix*) [34]
-                0.00    0.00      60/60          create_mt(long) [41]
-                0.00    0.00      60/60          free_io(io*) [40]
+                0.00    0.00     512/512         start_mt(void*) [1]
+[14]     0.0    0.00    0.00     512         maxpool_mt(mt_arg*) [14]
 -----------------------------------------------
-                0.01  108.38      60/60          main [10]
-[11]     3.6    0.01  108.38      60         malloc_io() [11]
-               31.27   77.11    8100/8100        io_to_matrix(char const*) [12]
-                0.00    0.00    7800/7800        get_value(char const*) [35]
+                0.00    0.00     512/512         start_mt(void*) [1]
+[15]     0.0    0.00    0.00     512         flip_kernels_mt(mt_arg*) [15]
 -----------------------------------------------
-               31.27   77.11    8100/8100        malloc_io() [11]
-[12]     3.6   31.27   77.11    8100         io_to_matrix(char const*) [12]
-                9.96   34.86    8100/9360        malloc_matrix(int, int) [14]
-               32.29    0.00 3335883703/56493420417     get_idx(int, int, int) [4]
+                0.00    0.00     512/512         start_mt(void*) [1]
+[16]     0.0    0.00    0.00     512         hyperbolic_tangent_mt(mt_arg*) [16]
 -----------------------------------------------
-               19.40   36.46   15031/15031       start_mt(void*) [1]
-[13]     1.9   19.40   36.46   15031         flatten_mt(mt_arg*) [13]
-               36.46    0.00 3766480100/56493420417     get_idx(int, int, int) [4]
-                0.00    0.00   17259/587052      wait_mt() [17]
+                0.00    0.00     512/512         start_mt(void*) [1]
+[17]     0.0    0.00    0.00     512         relu_mt(mt_arg*) [17]
 -----------------------------------------------
-                0.37    1.29     300/9360        main [10]
-                1.18    4.13     960/9360        malloc_matrix_ptr(int, int, int) [16]
-                9.96   34.86    8100/9360        io_to_matrix(char const*) [12]
-[14]     1.7   11.51   40.28    9360         malloc_matrix(int, int) [14]
-               40.28    0.00 4161873091/56493420417     get_idx(int, int, int) [4]
+                0.00    0.00     256/256         start_mt(void*) [1]
+[18]     0.0    0.00    0.00     256         transpose_mt(mt_arg*) [18]
 -----------------------------------------------
-               14.85   35.32   71034/71034       start_mt(void*) [1]
-[15]     1.7   14.85   35.32   71034         transpose_mt(mt_arg*) [15]
-               35.31    0.00 3647564283/56493420417     get_idx(int, int, int) [4]
-                0.02    0.00   73685/587052      wait_mt() [17]
+                0.00    0.00     256/256         main [9]
+[19]     0.0    0.00    0.00     256         conv2d(matrix*, matrix**, int, matrix**) [19]
+                0.00    0.00    1024/4224        push_mt(mt_arg*) [11]
+                0.00    0.00    1024/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    5.31     240/240         main [10]
-[16]     0.2    0.00    5.31     240         malloc_matrix_ptr(int, int, int) [16]
-                1.18    4.13     960/9360        malloc_matrix(int, int) [14]
+                0.00    0.00     256/256         main [9]
+[20]     0.0    0.00    0.00     256         transpose(matrix*, matrix*) [20]
+                0.00    0.00     256/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     256/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00    5445/587052      flatten(matrix**, int, matrix*) [28]
-                0.00    0.00    6989/587052      matmul(matrix*, matrix*, matrix*) [27]
-                0.00    0.00    7382/587052      add(matrix*, matrix*, matrix*) [26]
-                0.00    0.00   12961/587052      transpose(matrix*, matrix*) [23]
-                0.00    0.00   17259/587052      flatten_mt(mt_arg*) [13]
-                0.00    0.00   20769/587052      conv2d(matrix*, matrix**, int, matrix**) [20]
-                0.00    0.00   21681/587052      biasing(matrix**, int, matrix*, matrix**) [22]
-                0.01    0.00   21931/587052      maxpool(matrix**, int, matrix**) [19]
-                0.01    0.00   22070/587052      relu(matrix**, int, matrix**) [18]
-                0.01    0.00   42193/587052      matmul_mt(mt_arg*) [6]
-                0.01    0.00   54105/587052      add_mt(mt_arg*) [21]
-                0.02    0.00   66963/587052      maxpool_mt(mt_arg*) [9]
-                0.02    0.00   69199/587052      biasing_mt(mt_arg*) [8]
-                0.02    0.00   70940/587052      relu_mt(mt_arg*) [7]
-                0.02    0.00   73480/587052      conv2d_mt(mt_arg*) [2]
-                0.02    0.00   73685/587052      transpose_mt(mt_arg*) [15]
-[17]     0.0    0.14    0.00  587052         wait_mt() [17]
+                0.00    0.00       5/140         main [9]
+                0.00    0.00     135/140         free_io(io*) [42]
+[21]     0.0    0.00    0.00     140         free_matrix(matrix*) [21]
 -----------------------------------------------
-                0.03    0.01    7680/7680        main [10]
-[18]     0.0    0.03    0.01    7680         relu(matrix**, int, matrix**) [18]
-                0.01    0.00   22070/587052      wait_mt() [17]
-                0.00    0.00  169863/911671      push_mt(mt_arg*) [24]
+                0.00    0.00       5/140         main [9]
+                0.00    0.00     135/140         io_to_matrix(char const*) [23]
+[22]     0.0    0.00    0.00     140         malloc_matrix(int, int) [22]
 -----------------------------------------------
-                0.02    0.01    7680/7680        main [10]
-[19]     0.0    0.02    0.01    7680         maxpool(matrix**, int, matrix**) [19]
-                0.01    0.00   21931/587052      wait_mt() [17]
-                0.00    0.00  169195/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     135/135         malloc_io() [45]
+[23]     0.0    0.00    0.00     135         io_to_matrix(char const*) [23]
+                0.00    0.00     135/140         malloc_matrix(int, int) [22]
 -----------------------------------------------
-                0.02    0.01    7680/7680        main [10]
-[20]     0.0    0.02    0.01    7680         conv2d(matrix*, matrix**, int, matrix**) [20]
-                0.00    0.00   20769/587052      wait_mt() [17]
-                0.00    0.00  158463/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     130/130         malloc_io() [45]
+[24]     0.0    0.00    0.00     130         get_value(char const*) [24]
 -----------------------------------------------
-                0.01    0.01   53733/53733       start_mt(void*) [1]
-[21]     0.0    0.01    0.01   53733         add_mt(mt_arg*) [21]
-                0.01    0.00   54105/587052      wait_mt() [17]
-                0.00    0.00  224599/56493420417     get_idx(int, int, int) [4]
+                0.00    0.00     128/128         start_mt(void*) [1]
+[25]     0.0    0.00    0.00     128         flatten_mt(mt_arg*) [25]
 -----------------------------------------------
-                0.01    0.01    7680/7680        main [10]
-[22]     0.0    0.01    0.01    7680         biasing(matrix**, int, matrix*, matrix**) [22]
-                0.00    0.00   21681/587052      wait_mt() [17]
-                0.00    0.00  165150/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[26]     0.0    0.00    0.00     128         flip_kernels(matrix**, int, matrix**) [26]
+                0.00    0.00     512/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     512/4224        wait_mt() [12]
 -----------------------------------------------
-                0.01    0.00   15360/15360       main [10]
-[23]     0.0    0.01    0.00   15360         transpose(matrix*, matrix*) [23]
-                0.00    0.00   12961/587052      wait_mt() [17]
-                0.00    0.00   97600/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[27]     0.0    0.00    0.00     128         hyperbolic_tangent(matrix**, int, matrix**) [27]
+                0.00    0.00     512/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     512/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00     448/911671      join_mt() [30]
-                0.00    0.00   41832/911671      flatten(matrix**, int, matrix*) [28]
-                0.00    0.00   53796/911671      matmul(matrix*, matrix*, matrix*) [27]
-                0.00    0.00   55324/911671      add(matrix*, matrix*, matrix*) [26]
-                0.00    0.00   97600/911671      transpose(matrix*, matrix*) [23]
-                0.00    0.00  158463/911671      conv2d(matrix*, matrix**, int, matrix**) [20]
-                0.00    0.00  165150/911671      biasing(matrix**, int, matrix*, matrix**) [22]
-                0.00    0.00  169195/911671      maxpool(matrix**, int, matrix**) [19]
-                0.00    0.00  169863/911671      relu(matrix**, int, matrix**) [18]
-[24]     0.0    0.01    0.00  911671         push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[28]     0.0    0.00    0.00     128         index_of_max_element(matrix*) [28]
 -----------------------------------------------
-                0.01    0.00     240/240         main [10]
-[25]     0.0    0.01    0.00     240         free_matrix_ptr(matrix**, int) [25]
-                0.00    0.00     960/9360        free_matrix(matrix*) [34]
+                0.00    0.00     128/128         main [9]
+[29]     0.0    0.00    0.00     128         add(matrix*, matrix*, matrix*) [29]
+                0.00    0.00     128/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     128/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00    7680/7680        main [10]
-[26]     0.0    0.00    0.00    7680         add(matrix*, matrix*, matrix*) [26]
-                0.00    0.00    7382/587052      wait_mt() [17]
-                0.00    0.00   55324/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[30]     0.0    0.00    0.00     128         relu(matrix**, int, matrix**) [30]
+                0.00    0.00     512/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     512/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00    7680/7680        main [10]
-[27]     0.0    0.00    0.00    7680         matmul(matrix*, matrix*, matrix*) [27]
-                0.00    0.00    6989/587052      wait_mt() [17]
-                0.00    0.00   53796/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         start_mt(void*) [1]
+[31]     0.0    0.00    0.00     128         add_mt(mt_arg*) [31]
+                0.00    0.00     128/128         add_simd(mt_arg*) [36]
 -----------------------------------------------
-                0.00    0.00    7680/7680        main [10]
-[28]     0.0    0.00    0.00    7680         flatten(matrix**, int, matrix*) [28]
-                0.00    0.00    5445/587052      wait_mt() [17]
-                0.00    0.00   41832/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[32]     0.0    0.00    0.00     128         matmul(matrix*, matrix*, matrix*) [32]
+                0.00    0.00     128/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     128/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00    7680/7680        main [10]
-[29]     0.0    0.00    0.00    7680         index_of_max_element(matrix*) [29]
-                0.00    0.00   84480/56493420417     get_idx(int, int, int) [4]
+                0.00    0.00     128/128         main [9]
+[33]     0.0    0.00    0.00     128         biasing(matrix**, int, matrix*, matrix**) [33]
+                0.00    0.00     512/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     512/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00      60/60          main [10]
-[30]     0.0    0.00    0.00      60         join_mt() [30]
-                0.00    0.00     448/911671      push_mt(mt_arg*) [24]
+                0.00    0.00     128/128         main [9]
+[34]     0.0    0.00    0.00     128         flatten(matrix**, int, matrix*) [34]
+                0.00    0.00     128/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     128/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00     300/9360        main [10]
-                0.00    0.00     960/9360        free_matrix_ptr(matrix**, int) [25]
-                0.00    0.00    8100/9360        free_io(io*) [40]
-[34]     0.0    0.00    0.00    9360         free_matrix(matrix*) [34]
+                0.00    0.00     128/128         main [9]
+[35]     0.0    0.00    0.00     128         maxpool(matrix**, int, matrix**) [35]
+                0.00    0.00     512/4224        push_mt(mt_arg*) [11]
+                0.00    0.00     512/4224        wait_mt() [12]
 -----------------------------------------------
-                0.00    0.00    7800/7800        malloc_io() [11]
-[35]     0.0    0.00    0.00    7800         get_value(char const*) [35]
+                0.00    0.00     128/128         add_mt(mt_arg*) [31]
+[36]     0.0    0.00    0.00     128         add_simd(mt_arg*) [36]
 -----------------------------------------------
-                0.00    0.00     431/431         start_mt(void*) [1]
-[36]     0.0    0.00    0.00     431         stop_mt(mt_arg*) [36]
+                0.00    0.00       7/7           main [9]
+[37]     0.0    0.00    0.00       7         free_matrix_ptr(matrix**, int) [37]
 -----------------------------------------------
-                0.00    0.00     360/360         main [10]
-[37]     0.0    0.00    0.00     360         stop_timer() [37]
+                0.00    0.00       7/7           main [9]
+[38]     0.0    0.00    0.00       7         malloc_matrix_ptr(int, int, int) [38]
 -----------------------------------------------
-                0.00    0.00     360/360         main [10]
-[38]     0.0    0.00    0.00     360         delta_time_us(timeval, timeval) [38]
+                0.00    0.00       6/6           main [9]
+[39]     0.0    0.00    0.00       6         stop_timer() [39]
 -----------------------------------------------
-                0.00    0.00     300/300         main [10]
-[39]     0.0    0.00    0.00     300         start_timer() [39]
+                0.00    0.00       6/6           main [9]
+[40]     0.0    0.00    0.00       6         delta_time_us(timeval, timeval) [40]
 -----------------------------------------------
-                0.00    0.00      60/60          main [10]
-[40]     0.0    0.00    0.00      60         free_io(io*) [40]
-                0.00    0.00    8100/9360        free_matrix(matrix*) [34]
+                0.00    0.00       5/5           main [9]
+[41]     0.0    0.00    0.00       5         start_timer() [41]
 -----------------------------------------------
-                0.00    0.00      60/60          main [10]
-[41]     0.0    0.00    0.00      60         create_mt(long) [41]
+                0.00    0.00       1/1           main [9]
+[42]     0.0    0.00    0.00       1         free_io(io*) [42]
+                0.00    0.00     135/140         free_matrix(matrix*) [21]
+-----------------------------------------------
+                0.00    0.00       1/1           main [9]
+[43]     0.0    0.00    0.00       1         join_mt() [43]
+-----------------------------------------------
+                0.00    0.00       1/1           main [9]
+[44]     0.0    0.00    0.00       1         create_mt(long) [44]
+-----------------------------------------------
+                0.00    0.00       1/1           main [9]
+[45]     0.0    0.00    0.00       1         malloc_io() [45]
+                0.00    0.00     135/135         io_to_matrix(char const*) [23]
+                0.00    0.00     130/130         get_value(char const*) [24]
+-----------------------------------------------
+                0.00    0.00       1/1           start_mt(void*) [1]
+[46]     0.0    0.00    0.00       1         stop_mt(mt_arg*) [46]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -394,16 +360,17 @@ notice and this notice are preserved.
 
 Index by function name
 
-   [8] biasing_mt(mt_arg*)    [29] index_of_max_element(matrix*) [7] relu_mt(mt_arg*)
-  [13] flatten_mt(mt_arg*)    [26] add(matrix*, matrix*, matrix*) [17] wait_mt()
-   [9] maxpool_mt(mt_arg*)    [18] relu(matrix**, int, matrix**) [2] conv2d_mt(mt_arg*)
-  [37] stop_timer()           [21] add_mt(mt_arg*)        [41] create_mt(long)
-  [34] free_matrix(matrix*)   [20] conv2d(matrix*, matrix**, int, matrix**) [35] get_value(char const*)
-  [39] start_timer()          [27] matmul(matrix*, matrix*, matrix*) [11] malloc_io()
-   [5] get_decimals(int)      [22] biasing(matrix**, int, matrix*, matrix**) [6] matmul_mt(mt_arg*)
-  [12] io_to_matrix(char const*) [28] flatten(matrix**, int, matrix*) [23] transpose(matrix*, matrix*)
-  [15] transpose_mt(mt_arg*)  [40] free_io(io*)           [36] stop_mt(mt_arg*)
-  [38] delta_time_us(timeval, timeval) [4] get_idx(int, int, int) [1] start_mt(void*)
-  [14] malloc_matrix(int, int) [30] join_mt()              [3] _init
-  [25] free_matrix_ptr(matrix**, int) [19] maxpool(matrix**, int, matrix**) [10] main
-  [16] malloc_matrix_ptr(int, int, int) [24] push_mt(mt_arg*)
+  [13] biasing_mt(mt_arg*)    [15] flip_kernels_mt(mt_arg*) [43] join_mt()
+  [25] flatten_mt(mt_arg*)    [37] free_matrix_ptr(matrix**, int) [35] maxpool(matrix**, int, matrix**)
+  [14] maxpool_mt(mt_arg*)    [38] malloc_matrix_ptr(int, int, int) [11] push_mt(mt_arg*)
+  [39] stop_timer()           [27] hyperbolic_tangent(matrix**, int, matrix**) [17] relu_mt(mt_arg*)
+   [2] conv2d_simd(mt_arg*)   [28] index_of_max_element(matrix*) [12] wait_mt()
+  [21] free_matrix(matrix*)   [16] hyperbolic_tangent_mt(mt_arg*) [36] add_simd(mt_arg*)
+   [3] matmul_simd(mt_arg*)   [29] add(matrix*, matrix*, matrix*) [4] conv2d_mt(mt_arg*)
+  [41] start_timer()          [30] relu(matrix**, int, matrix**) [44] create_mt(long)
+  [10] biasing_simd(mt_arg*)  [31] add_mt(mt_arg*)        [24] get_value(char const*)
+  [26] flip_kernels(matrix**, int, matrix**) [19] conv2d(matrix*, matrix**, int, matrix**) [45] malloc_io()
+  [23] io_to_matrix(char const*) [32] matmul(matrix*, matrix*, matrix*) [5] matmul_mt(mt_arg*)
+  [18] transpose_mt(mt_arg*)  [33] biasing(matrix**, int, matrix*, matrix**) [20] transpose(matrix*, matrix*)
+  [40] delta_time_us(timeval, timeval) [34] flatten(matrix**, int, matrix*) [46] stop_mt(mt_arg*) (mt.cpp)
+  [22] malloc_matrix(int, int) [42] free_io(io*)

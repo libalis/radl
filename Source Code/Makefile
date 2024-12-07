@@ -1,8 +1,8 @@
 PROGRAM := tf
 CC := clang
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
-CFLAGS := -Wno-unused-command-line-argument
-LDFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -lm -lstdc++
+CFLAGS := -Wno-unused-command-line-argument -finline-functions -O3
+LDFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -lstdc++ -lm
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
 CU_DIR := ./cu
@@ -11,6 +11,8 @@ HPP_DIR := ./hpp
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
+else
+	CFLAGS += -msse3
 endif
 
 all: CFLAGS += -pthread

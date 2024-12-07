@@ -1,6 +1,5 @@
 #include <limits.h>
 #include <math.h>
-#include <stdlib.h>
 
 #include "../hpp/mt.hpp"
 #include "../hpp/simd.hpp"
@@ -15,23 +14,16 @@ pthread_t tids[(int)(CHAR_BIT * sizeof(void *))];
 
 void add_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->c->x; i += THREADS) {
-        for(int j = 0; j < mt->c->y; j++) {
-            mt->c->m[get_idx(i, j, mt->c->y)] = mt->a->m[get_idx(i, j, mt->a->y)] + mt->b->m[get_idx(i, j, mt->b->y)];
-        }
+        mt->i = i;
+        add_simd(mt);
     }
     wait_mt();
 }
 
 void biasing_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->a_ptr[mt->m]->x; i += THREADS) {
-        #ifndef DEBUG
-            for(int j = 0; j < mt->a_ptr[mt->m]->y; j++) {
-                mt->c_ptr[mt->m]->m[get_idx(i, j, mt->c_ptr[mt->m]->y)] = mt->a_ptr[mt->m]->m[get_idx(i, j, mt->a_ptr[mt->m]->y)] + mt->b->m[get_idx(mt->m, 0, mt->b->y)];
-            }
-        #else
-            mt->i = i;
-            biasing_simd(mt);
-        #endif
+        mt->i = i;
+        biasing_simd(mt);
     }
     wait_mt();
 }
@@ -39,13 +31,9 @@ void biasing_mt(mt_arg *mt) {
 void conv2d_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->a->x - mt->b_ptr[mt->m]->x + 1; i += THREADS) {
         for(int j = 0; j < mt->a->y - mt->b_ptr[mt->m]->y + 1; j++) {
-            float sum = 0.0;
-            for(int k = 0; k < mt->b_ptr[mt->m]->x; k++) {
-                for(int l = 0; l < mt->b_ptr[mt->m]->y; l++) {
-                    sum += mt->a->m[get_idx(i + k, j + l, mt->a->y)] * mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)];
-                }
-            }
-            mt->c_ptr[mt->m]->m[get_idx(i, j, mt->c_ptr[mt->m]->y)] = sum;
+            mt->i = i;
+            mt->j = j;
+            conv2d_simd(mt);
         }
     }
     wait_mt();
@@ -85,9 +73,9 @@ void matmul_mt(mt_arg *mt) {
     for(int i = mt->idx; i < mt->c->x; i += THREADS) {
         for(int j = 0; j < mt->c->y; j++) {
             mt->c->m[get_idx(i, j, mt->c->y)] = 0.0;
-            for(int k = 0; k < mt->a->y; k++) {
-                mt->c->m[get_idx(i, j, mt->c->y)] = mt->c->m[get_idx(i, j, mt->c->y)] + mt->a->m[get_idx(i, k, mt->a->y)] * mt->b->m[get_idx(k, j, mt->b->y)];
-            }
+            mt->i = i;
+            mt->j = j;
+            matmul_simd(mt);
         }
     }
     wait_mt();

@@ -15,8 +15,9 @@
         int len;
         matrix **c_ptr;
         matrix *c;
-        int i;
         int m;
+        int i;
+        int j;
         void (*start_routine)(struct mt_arg *mt);
     } mt_arg;
 
