@@ -1,0 +1,10 @@
+CompileFlags:
+  Add:
+    - "--include-directory=/usr/include/glib-2.0"
+    - "--include-directory=/usr/lib/glib-2.0/include"
+    - "--include-directory=/opt/homebrew/Cellar/glib/2.82.2/include/glib-2.0"
+    - "--include-directory=/opt/homebrew/Cellar/glib/2.82.2/lib/glib-2.0/include"
+    - "--no-cuda-version-check"
+Diagnostics:
+  MissingIncludes: Strict
+  UnusedIncludes: Strict

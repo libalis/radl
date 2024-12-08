@@ -1,8 +1,11 @@
+#include <stdlib.h>
+
 #ifdef OMP
     #include <math.h>
     #include <omp.h>
 #endif
 
+#include "../hpp/matrix.hpp"
 #include "../hpp/mt.hpp"
 #include "../hpp/tf.hpp"
 
@@ -207,7 +210,7 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
                 c->m[get_idx(i, j, c->y)] = 0.0;
                 #pragma omp simd
                 for(int k = 0; k < a->y; k++) {
-                    c->m[get_idx(i, j, c->y)] = c->m[get_idx(i, j, c->y)] + a->m[get_idx(i, k, a->y)] * b->m[get_idx(k, j, b->y)];
+                    c->m[get_idx(i, j, c->y)] += a->m[get_idx(i, k, a->y)] * b->m[get_idx(k, j, b->y)];
                 }
             }
         }

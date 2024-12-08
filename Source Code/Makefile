@@ -4,8 +4,8 @@ CC := clang
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
-CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -O3
-LDFLAGS := $(shell pkg-config --libs glib-2.0) -lstdc++ -lm
+CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result -I/opt/homebrew/opt/libomp/include
+LDFLAGS := $(shell pkg-config --libs glib-2.0) -lstdc++ -lm -L/opt/homebrew/opt/libomp/lib -lomp
 
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
@@ -19,10 +19,9 @@ endif
 
 DEBUG := -g -pg -DDEBUG
 NVIDIA := -DNVIDIA
-OMP := -fopenmp -DOMP
-OMP_DARWIN := -Xclang -I/opt/homebrew/opt/libomp/include $(OMP)
-OMP_INTEL := -qopenmp -DOMP
-PTHREAD := -pthread
+OMP := -Xcompiler -fopenmp -DOMP
+OMP_DARWIN := -Xclang -fopenmp -DOMP
+OMP_INTEL := -Xcompiler -qopenmp -DOMP
 XL := -DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
 	  -DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
 	  -DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
@@ -30,21 +29,21 @@ XL := -DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
 	  -DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
 	  -DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\"
 
-all: CFLAGS += $(PTHREAD)
 all: $(BUILD_DIR)/$(PROGRAM)
 
 clean:
 	rm -rf $(BUILD_DIR)
 
 debug:
-	$(MAKE) CFLAGS="$(CFLAGS) $(PTHREAD) $(DEBUG)"
+	$(MAKE) CFLAGS="$(CFLAGS) $(DEBUG)"
 
 ifneq ($(UNAME_S), Darwin)
 debug_omp:
 	$(MAKE) CFLAGS="$(CFLAGS) $(OMP) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 else
-	$(MAKE) LDFLAGS="$(LDFALGS) \
+debug_omp:
+	$(MAKE) LDFLAGS="$(LDFLAGS) \
 	-L/opt/homebrew/opt/libomp/lib -lomp" \
 	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
@@ -56,7 +55,7 @@ omp:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 else
 omp:
-	$(MAKE) LDFLAGS="$(LDFALGS) \
+	$(MAKE) LDFLAGS="$(LDFLAGS) \
 	-L/opt/homebrew/opt/libomp/lib -lomp" \
 	CFLAGS="$(CFLAGS) $(OMP_DARWIN) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
@@ -68,18 +67,18 @@ omp_xl:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
 else
 omp_xl:
-	$(MAKE) LDFLAGS="$(LDFALGS) \
+	$(MAKE) LDFLAGS="$(LDFLAGS) \
 	-L/opt/homebrew/opt/libomp/lib -lomp" \
 	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
 endif
 
 xl:
-	$(MAKE) CFLAGS="$(CFLAGS) $(PTHREAD) $(XL) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl.csv\\\"\""
 
 intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(PTHREAD) \
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
@@ -91,7 +90,7 @@ omp_xl_intel:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\""
 
 xl_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(PTHREAD) $(XL) \
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\""
 
 nvidia:

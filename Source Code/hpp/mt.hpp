@@ -3,6 +3,7 @@
 
     #include <glib.h>
     #include <pthread.h>
+    #include <bits/pthreadtypes.h>
 
     #include "../hpp/matrix.hpp"
 

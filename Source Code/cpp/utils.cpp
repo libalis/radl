@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../hpp/matrix.hpp"
 #include "../hpp/utils.hpp"
 
 int get_value(const char *a) {

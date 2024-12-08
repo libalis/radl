@@ -1,9 +1,8 @@
 #ifndef TIMER_H
     #define TIMER_H
 
+    #include <bits/types/struct_timeval.h>
     #include <sys/time.h>
-
-    typedef struct timeval timeval;
 
     timeval start_timer();
     timeval stop_timer();

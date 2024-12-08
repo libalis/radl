@@ -1,3 +1,4 @@
+#include "../hpp/mt.hpp"
 #include "../hpp/simd.hpp"
 #include "../hpp/utils.hpp"
 
@@ -14,7 +15,7 @@ void add_simd(mt_arg *mt) {
             _mm_storeu_ps(&mt->c->m[get_idx(mt->i, j, mt->c->y)], _mm_add_ps(a, b));
         #else
             a = vld1q_f32(&mt->a->m[get_idx(mt->i, j, mt->a->y)]);
-            b = vld1q_f32((&mt->b->m[get_idx(mt->i, j, mt->b->y)]);
+            b = vld1q_f32(&mt->b->m[get_idx(mt->i, j, mt->b->y)]);
             vst1q_f32(&mt->c->m[get_idx(mt->i, j, mt->c->y)], vaddq_f32(a, b));
         #endif
     }
@@ -37,7 +38,7 @@ void biasing_simd(mt_arg *mt) {
         #else
             a = vld1q_f32(&mt->a_ptr[mt->m]->m[get_idx(mt->i, j, mt->a_ptr[mt->m]->y)]);
             b = vdupq_n_f32(mt->b->m[get_idx(mt->m, 0, mt->b->y)]);
-            vst1q_f32(&mt->c_ptr[mt->m]->m[get_idx(mt->i, j, mt->c_ptr[mt->m]->y)], avaddq_f32(a, b));
+            vst1q_f32(&mt->c_ptr[mt->m]->m[get_idx(mt->i, j, mt->c_ptr[mt->m]->y)], vaddq_f32(a, b));
         #endif
     }
     for(int j = mt->a_ptr[mt->m]->y - (mt->a_ptr[mt->m]->y % CHUNK_SIZE); j < mt->a_ptr[mt->m]->y; j++) {
@@ -65,14 +66,14 @@ void conv2d_simd(mt_arg *mt) {
                                mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)]);
                 sum += _mm_cvtss_f32(_mm_hadd_ps(_mm_hadd_ps(_mm_mul_ps(a, b), zero), zero));
             #else
-                a = vcombine_f32(vld1_f32(&mt->a->m[get_idx(mt->i + k + 3, mt->j + l, mt->a->y)]),
-                                 vld1_f32(&mt->a->m[get_idx(mt->i + k + 2, mt->j + l, mt->a->y)]),
-                                 vld1_f32(&mt->a->m[get_idx(mt->i + k + 1, mt->j + l, mt->a->y)]),
-                                 vld1_f32(&mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)]));
-                b = vcombine_f32(vld1_f32(&mt->b_ptr[mt->m]->m[get_idx(k + 3, l, mt->b_ptr[mt->m]->y)]),
-                                 vld1_f32(&mt->b_ptr[mt->m]->m[get_idx(k + 2, l, mt->b_ptr[mt->m]->y)]),
-                                 vld1_f32(&mt->b_ptr[mt->m]->m[get_idx(k + 1, l, mt->b_ptr[mt->m]->y)]),
-                                 vld1_f32(&mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)]));
+                a = vsetq_lane_f32(mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)], a, 0);
+                a = vsetq_lane_f32(mt->a->m[get_idx(mt->i + k + 1, mt->j + l, mt->a->y)], a, 1);
+                a = vsetq_lane_f32(mt->a->m[get_idx(mt->i + k + 2, mt->j + l, mt->a->y)], a, 2);
+                a = vsetq_lane_f32(mt->a->m[get_idx(mt->i + k + 3, mt->j + l, mt->a->y)], a, 3);
+                b = vsetq_lane_f32(mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)], b, 0);
+                b = vsetq_lane_f32(mt->b_ptr[mt->m]->m[get_idx(k + 1, l, mt->b_ptr[mt->m]->y)], b, 1);
+                b = vsetq_lane_f32(mt->b_ptr[mt->m]->m[get_idx(k + 2, l, mt->b_ptr[mt->m]->y)], b, 2);
+                b = vsetq_lane_f32(mt->b_ptr[mt->m]->m[get_idx(k + 3, l, mt->b_ptr[mt->m]->y)], b, 3);
                 sum += vaddvq_f32(vmulq_f32(a, b));
             #endif
         }
@@ -99,10 +100,10 @@ void matmul_simd(mt_arg *mt) {
             mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] += _mm_cvtss_f32(_mm_hadd_ps(_mm_hadd_ps(_mm_mul_ps(a, b), zero), zero));
         #else
             a = vld1q_f32(&mt->a->m[get_idx(mt->i, k, mt->a->y)]);
-            b = vcombine_f32(vld1_f32(&mt->b->m[get_idx(k + 3, mt->j, mt->b->y)]),
-                             vld1_f32(&mt->b->m[get_idx(k + 2, mt->j, mt->b->y)]),
-                             vld1_f32(&mt->b->m[get_idx(k + 1, mt->j, mt->b->y)]),
-                             vld1_f32(&mt->b->m[get_idx(k, mt->j, mt->b->y)]));
+            b = vsetq_lane_f32(mt->b->m[get_idx(k, mt->j, mt->b->y)], b, 0);
+            b = vsetq_lane_f32(mt->b->m[get_idx(k + 1, mt->j, mt->b->y)], b, 1);
+            b = vsetq_lane_f32(mt->b->m[get_idx(k + 2, mt->j, mt->b->y)], b, 2);
+            b = vsetq_lane_f32(mt->b->m[get_idx(k + 3, mt->j, mt->b->y)], b, 3);
             mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] += vaddvq_f32(vmulq_f32(a, b));
         #endif
     }
