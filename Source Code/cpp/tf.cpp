@@ -17,10 +17,10 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
         c = malloc_matrix(a->x, a->y);
     }
     #ifdef OMP
-        #pragma omp parallel for collapse(2)
+        #pragma omp parallel for
         for(int i = 0; i < c->x; i++) {
+            #pragma omp parallel for simd
             for(int j = 0; j < c->y; j++) {
-                #pragma omp simd
                 c->m[get_idx(i, j, c->y)] = a->m[get_idx(i, j, a->y)] + b->m[get_idx(i, j, b->y)];
             }
         }
@@ -43,11 +43,11 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
-        #pragma omp parallel for collapse(3)
+        #pragma omp parallel for collapse(2)
         for(int m = 0; m < len; m++) {
             for(int i = 0; i < a[0]->x; i++) {
+                #pragma omp parallel for simd
                 for(int j = 0; j < a[0]->y; j++) {
-                    #pragma omp simd
                     c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(i, j, a[0]->y)] + b->m[get_idx(m, 0, b->y)];
                 }
             }
@@ -80,9 +80,9 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
             for(int i = 0; i < a->x - b[0]->x + 1; i++) {
                 for(int j = 0; j < a->y - b[0]->y + 1; j++) {
                     float sum = 0.0;
+                    #pragma omp simd
                     for(int k = 0; k < b[0]->x; k++) {
                         for(int l = 0; l < b[0]->y; l++) {
-                            #pragma omp simd
                             sum += a->m[get_idx(i + k, j + l, a->y)] * b[m]->m[get_idx(k, l, b[0]->y)];
                         }
                     }
@@ -205,8 +205,8 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = 0.0;
+                #pragma omp simd
                 for(int k = 0; k < a->y; k++) {
-                    #pragma omp simd
                     c->m[get_idx(i, j, c->y)] = c->m[get_idx(i, j, c->y)] + a->m[get_idx(i, k, a->y)] * b->m[get_idx(k, j, b->y)];
                 }
             }

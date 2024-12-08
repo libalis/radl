@@ -1,139 +1,106 @@
 PROGRAM := tf
+
 CC := clang
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
-CFLAGS := -Wno-unused-command-line-argument -finline-functions -O3
-LDFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -lstdc++ -lm
+NVCC := nvcc
+
+CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -O3
+LDFLAGS := $(shell pkg-config --libs glib-2.0) -lstdc++ -lm
+
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
 CU_DIR := ./cu
 HPP_DIR := ./hpp
 
 UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S), Darwin)
-	LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
-else
-	CFLAGS += -msse3
+ifneq ($(UNAME_S), Darwin)
+	CFLAGS += -Xcompiler -msse3
 endif
 
-all: CFLAGS += -pthread
+DEBUG := -g -pg -DDEBUG
+NVIDIA := -DNVIDIA
+OMP := -fopenmp -DOMP
+OMP_DARWIN := -Xclang -I/opt/homebrew/opt/libomp/include $(OMP)
+OMP_INTEL := -qopenmp -DOMP
+PTHREAD := -pthread
+XL := -DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
+	  -DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
+	  -DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
+	  -DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
+	  -DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
+	  -DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\"
+
+all: CFLAGS += $(PTHREAD)
 all: $(BUILD_DIR)/$(PROGRAM)
 
 clean:
 	rm -rf $(BUILD_DIR)
 
 debug:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-pthread \
-	-g -pg -DDEBUG"
+	$(MAKE) CFLAGS="$(CFLAGS) $(PTHREAD) $(DEBUG)"
 
-ifeq ($(UNAME_S), Darwin)
-
-omp:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-Xclang \
-	-fopenmp \
-	-I/opt/homebrew/opt/libomp/include \
-	-DOMP \
+ifneq ($(UNAME_S), Darwin)
+debug_omp:
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
-
-omp_xl:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-Xclang \
-	-fopenmp \
-	-I/opt/homebrew/opt/libomp/include \
-	-DOMP \
-	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
-
 else
-
-omp:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-fopenmp \
-	-DOMP \
+	$(MAKE) LDFLAGS="$(LDFALGS) \
+	-L/opt/homebrew/opt/libomp/lib -lomp" \
+	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
+endif
 
+ifneq ($(UNAME_S), Darwin)
+omp:
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
+else
+omp:
+	$(MAKE) LDFLAGS="$(LDFALGS) \
+	-L/opt/homebrew/opt/libomp/lib -lomp" \
+	CFLAGS="$(CFLAGS) $(OMP_DARWIN) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
+endif
+
+ifneq ($(UNAME_S), Darwin)
 omp_xl:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-fopenmp \
-	-DOMP \
-	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
-
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
+else
+omp_xl:
+	$(MAKE) LDFLAGS="$(LDFALGS) \
+	-L/opt/homebrew/opt/libomp/lib -lomp" \
+	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
 endif
 
 xl:
-	$(MAKE) CFLAGS="$(CFLAGS) \
-	-pthread \
-	-DBENCHMARK=\"\\\"./csv/benchmark_xl.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+	$(MAKE) CFLAGS="$(CFLAGS) $(PTHREAD) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_xl.csv\\\"\""
 
 intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-pthread \
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(PTHREAD) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-qopenmp \
-	-DOMP \
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_intel.csv\\\"\""
 
 omp_xl_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-qopenmp \
-	-DOMP \
-	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\""
 
 xl_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
-	-pthread \
-	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\""
+	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(PTHREAD) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\""
 
 nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-Wno-unused-command-line-argument//g') \
-	-DNVIDIA \
-	-DBENCHMARK=\"\\\"./csv/benchmark_nvidia.csv\\\"\"" \
-	LDFLAGS="$(shell echo $(LDFLAGS) | sed 's/-pthread//g')"
+	$(MAKE) CC="$(NVCC)" CFLAGS="$(CFLAGS) $(NVIDIA) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_nvidia.csv\\\"\""
 
 xl_nvidia:
-	$(MAKE) CC="nvcc" CFLAGS="$(shell echo $(CFLAGS) | sed 's/-Wno-unused-command-line-argument//g') \
-	-DNVIDIA \
-	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\" \
-	-DEXPORT=\"\\\"bash -c \"./py/export_xl.py\"\\\"\" \
-	-DCONV_BIAS=\"\\\"./tmp/conv_bias.txt\\\"\" \
-	-DFC_BIAS=\"\\\"./tmp/fc_bias.txt\\\"\" \
-	-DFC_WEIGHTS=\"\\\"./tmp/fc_weights.txt\\\"\" \
-	-DMASKS_LEN=\"\\\"./tmp/masks_len.txt\\\"\" \
-	-DMASKS=\"\\\"./tmp/masks_%d.txt\\\"\"" \
-	LDFLAGS="$(shell echo $(LDFLAGS) | sed 's/-pthread//g')"
+	$(MAKE) CC="$(NVCC)" CFLAGS="$(CFLAGS) $(NVIDIA) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\""
 
 benchmark:
 	$(MAKE) clean
@@ -185,4 +152,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia benchmark benchmark_intel benchmark_nvidia
+.PHONY: all clean debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia benchmark benchmark_intel benchmark_nvidia
