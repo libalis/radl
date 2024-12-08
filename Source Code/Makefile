@@ -43,9 +43,7 @@ debug_omp:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 else
 debug_omp:
-	$(MAKE) LDFLAGS="$(LDFLAGS) \
-	-L/opt/homebrew/opt/libomp/lib -lomp" \
-	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(DEBUG) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 endif
 
@@ -55,9 +53,7 @@ omp:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 else
 omp:
-	$(MAKE) LDFLAGS="$(LDFLAGS) \
-	-L/opt/homebrew/opt/libomp/lib -lomp" \
-	CFLAGS="$(CFLAGS) $(OMP_DARWIN) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP_DARWIN) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
 endif
 
@@ -67,9 +63,7 @@ omp_xl:
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
 else
 omp_xl:
-	$(MAKE) LDFLAGS="$(LDFLAGS) \
-	-L/opt/homebrew/opt/libomp/lib -lomp" \
-	CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(XL) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl.csv\\\"\""
 endif
 
