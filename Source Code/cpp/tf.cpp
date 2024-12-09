@@ -1,11 +1,8 @@
-#include <stdlib.h>
-
 #ifdef OMP
     #include <math.h>
     #include <omp.h>
 #endif
 
-#include "../hpp/matrix.hpp"
 #include "../hpp/mt.hpp"
 #include "../hpp/tf.hpp"
 

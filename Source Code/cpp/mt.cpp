@@ -1,9 +1,5 @@
-#include <glib.h>
 #include <limits.h>
 #include <math.h>
-#include <pthread.h>
-#include <bits/pthreadtypes.h>
-#include <stdlib.h>
 
 #include "../hpp/mt.hpp"
 #include "../hpp/simd.hpp"

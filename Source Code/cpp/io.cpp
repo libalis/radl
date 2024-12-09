@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "../hpp/io.hpp"
-#include "../hpp/matrix.hpp"
 #include "../hpp/utils.hpp"
 
 matrix *io_to_matrix(const char *a) {

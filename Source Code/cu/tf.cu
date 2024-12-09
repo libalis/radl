@@ -1,11 +1,5 @@
-#include <cstddef>
-#include <cuda_runtime.h>
-#include <cuda_runtime_api.h>
-#include <driver_types.h>
 #include <math.h>
-#include <vector_types.h>
 
-#include "../hpp/matrix.hpp"
 #include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 

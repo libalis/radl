@@ -1,4 +1,3 @@
-#include "../hpp/mt.hpp"
 #include "../hpp/simd.hpp"
 #include "../hpp/utils.hpp"
 
