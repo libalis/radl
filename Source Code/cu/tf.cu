@@ -32,7 +32,8 @@ __global__ void add_kernel(float* matrix, float* bias, int N, int M, int K) {
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (row < N && col < M) {
-        matrix[row * N + col] = matrix[row * N + col] + bias[row * K + col]; // Add bias to each element
+        // Add bias to each element
+        matrix[row * N + col] = matrix[row * N + col] + bias[row * K + col];
     }
 }
 
@@ -75,7 +76,8 @@ __global__ void biasing_kernel(float* matrix, float* result, int N, int M, float
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (row < N && col < M) {
-        result[row * N + col] = matrix[row * N + col] + bias; // Add bias to each element
+        // Add bias to each element
+        result[row * N + col] = matrix[row * N + col] + bias;
     }
 }
 
@@ -99,10 +101,10 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
 
     for(int m = 0; m < len; m++) {
         cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-        //
+
         biasing_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, N, M, b->m[get_idx(m, 0, b->y)]);
         cudaDeviceSynchronize();
-        //
+
         cudaMemcpy(c[m]->m, d_result, bytes_n, cudaMemcpyDeviceToHost);
     }
 
@@ -123,7 +125,7 @@ __global__ void conv2d_kernel(float* matrix, float* result, int N, int M, float*
         for(int l = 0; l < L; l++) {
             // Go over each column
             for(int k = 0; k < K; k++) {
-                    // Range check for rows
+                // Range check for rows
                 if((row + l) < N && (col + k) < M) {
                     temp += matrix[(col + l) * M + (row + k)] * mask[l * K + k];
                 }
@@ -187,9 +189,12 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
 
 __global__ void flatten_kernel(float* matrix, float* result, int a_x, int a_y, int len) {
     // Determine global row, column, and slice index
-    int z = blockIdx.z; // Slices handled using grid z-dimension
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // Row index
-    int col = blockIdx.x * blockDim.x + threadIdx.x; // Column index
+    // Slices handled using grid z-dimension
+    int z = blockIdx.z;
+    // Row index
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    // Column index
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     // Bounds check for valid indices
     if (row < a_y && col < len) {
@@ -202,7 +207,8 @@ __global__ void flatten_kernel(float* matrix, float* result, int a_x, int a_y, i
 
 matrix *flatten(matrix *a, int len, matrix *c) {
     if (c == NULL) {
-        c = malloc_matrix((a->x * a->y), 1); // Allocate output matrix
+        // Allocate output matrix
+        c = malloc_matrix((a->x * a->y), 1);
     }
 
     size_t bytes_a = a->x * a->y * sizeof(float);
@@ -220,7 +226,8 @@ matrix *flatten(matrix *a, int len, matrix *c) {
 
     // Define block and grid dimensions
     dim3 block_dim(THREADS, THREADS);
-    dim3 grid_dim(blocks_x, blocks_y, blocks_z); // Using z-dimension for slices
+    // Using z-dimension for slices
+    dim3 grid_dim(blocks_x, blocks_y, blocks_z);
 
     flatten_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, a->x, a->y, len);
     cudaDeviceSynchronize();
@@ -234,21 +241,26 @@ matrix *flatten(matrix *a, int len, matrix *c) {
     return c;
 }
 
-
 __global__ void flip_kernels_kernel(float* matrix, float* result, int N, int M) {
     // Thread identifiers
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // Row index in the kernel
-    int col = blockIdx.x * blockDim.x + threadIdx.x; // Column index in the kernel
+    // Row index in the kernel
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    // Column index in the kernel
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     // Check bounds
     if (row < N && col < M) {
         // Compute flipped indices
-        int flipped_row = N - 1 - row; // Flip vertically
-        int flipped_col = M - 1 - col; // Flip horizontally
+        // Flip vertically
+        int flipped_row = N - 1 - row;
+        // Flip horizontally
+        int flipped_col = M - 1 - col;
 
         // Compute 1D indices for input and output arrays
-        int input_idx = row * M + col;                     // Original index
-        int output_idx = flipped_row * M + flipped_col;    // Flipped index
+        // Original index
+        int input_idx = row * M + col;
+        // Flipped index
+        int output_idx = flipped_row * M + flipped_col;
 
         // Write flipped value to the result array
         result[output_idx] = matrix[input_idx];
@@ -316,10 +328,10 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
 
     for(int m = 0; m < len; m++) {
         cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-        //
+
         hyperbolic_tangent_kernel<<<grid_dim, block_dim>>>(d_matrix, N, M);
         cudaDeviceSynchronize();
-        //
+
         cudaMemcpy(c[m]->m, d_matrix, bytes_n, cudaMemcpyDeviceToHost);
     }
 
@@ -363,8 +375,10 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
     cudaMemcpy(d_a, a->m, bytes_a, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b->m, bytes_b, cudaMemcpyHostToDevice);
 
-    int BLOCKS_X = (N + THREADS - 1) / THREADS; // N / THREADS;
-    int BLOCKS_Y = (M + THREADS - 1) / THREADS; // M / THREADS;
+    // N / THREADS;
+    int BLOCKS_X = (N + THREADS - 1) / THREADS;
+    // M / THREADS;
+    int BLOCKS_Y = (M + THREADS - 1) / THREADS;
 
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS_X, BLOCKS_Y);
@@ -387,9 +401,8 @@ __global__ void maxpool_kernel(float* matrix, float* result, int N, int M, int L
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
+    // Iterate over all the rows
     if(row < M && col < L) {
-        // Iterate over all the rows
-
         int start_row = row * POOL_LEN;
         int start_col = col * POOL_LEN;
 
@@ -479,10 +492,10 @@ matrix **relu(matrix **a, int len, matrix **c) {
 
     for(int m = 0; m < len; m++) {
         cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-        //
+
         relu_kernel<<<grid_dim, block_dim>>>(d_matrix, N, M);
         cudaDeviceSynchronize();
-        //
+
         cudaMemcpy(c[m]->m, d_matrix, bytes_n, cudaMemcpyDeviceToHost);
     }
 
@@ -502,7 +515,8 @@ __global__ void transpose_kernel(float* matrix, float* result, int N, int M) {
 
 matrix *transpose(matrix *a, matrix *c) {
     if (c == NULL) {
-        c = malloc_matrix(a->y, a->x);  // Allocate transposed matrix
+        // Allocate transposed matrix
+        c = malloc_matrix(a->y, a->x);
     }
 
     int N = a->y;
@@ -518,7 +532,8 @@ matrix *transpose(matrix *a, matrix *c) {
 
     dim3 block_dim(THREADS, THREADS);
 
-    int blocks_x = (M + THREADS - 1) / THREADS; // M NOT N
+    // M NOT N
+    int blocks_x = (M + THREADS - 1) / THREADS;
     int blocks_y = (N + THREADS - 1) / THREADS;
     dim3 grid_dim(blocks_x, blocks_y);
 

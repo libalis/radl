@@ -30,39 +30,11 @@ deactivate
 - - -
 ## Building:
 ```bash
-make clean
-make
-```
-Intel:
-```bash
-make clean
-make intel
-```
-XL:
-```bash
-make clean
-make xl
-```
-XL and Intel:
-```bash
-make clean
-make xl_intel
+make config
 ```
 - - -
 ## Debugging:
 ```bash
-make clean
-make debug
-source ./venv/bin/activate
-gdb -ex "set debuginfod enabled on" -ex run ./build/tf
-valgrind --leak-check=full --show-leak-kinds=all ./build/tf
-gprof ./build/tf gmon.out > gmon.txt
-deactivate
-```
-Intel:
-```bash
-make clean
-make debug_intel
 source ./venv/bin/activate
 gdb -ex "set debuginfod enabled on" -ex run ./build/tf
 valgrind --leak-check=full --show-leak-kinds=all ./build/tf
@@ -71,7 +43,6 @@ deactivate
 ```
 - - -
 ## Running:
-> **! Make sure you are in the Source Code directory !**
 ```bash
 source ./venv/bin/activate
 ./build/tf
@@ -84,9 +55,15 @@ source ./venv/bin/activate
 make benchmark
 deactivate
 ```
-Including Intel:
+Including ICPX:
 ```bash
 source ./venv/bin/activate
 make benchmark_intel
+deactivate
+```
+Including ICPX and CUDA:
+```bash
+source ./venv/bin/activate
+make benchmark_nvidia
 deactivate
 ```

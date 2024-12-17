@@ -155,7 +155,7 @@ uname() {
 }
 
 main
-#clear
+clear
 make clean
 make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 $BUILD_DIR/$PROGRAM
