@@ -1,6 +1,9 @@
 #ifndef UTILS_H
     #define UTILS_H
 
+    #include <stdio.h>
+    #include <stdlib.h>
+
     #include "../hpp/matrix.hpp"
 
     __attribute__((always_inline)) inline int get_decimals(int a) {
@@ -15,6 +18,29 @@
         return i * y + j;
     }
 
-    int get_value(const char *a);
-    int index_of_max_element(matrix *a);
+    __attribute__((always_inline)) inline int get_value(const char *a) {
+        FILE *f = fopen(a, "r");
+        char *line = NULL;
+        size_t len = 0;
+        getline(&line, &len, f);
+        int c = (int)strtof(line, NULL);
+        fclose(f);
+        free(line);
+        line = NULL;
+        len = 0;
+        return c;
+    }
+
+    __attribute__((always_inline)) inline int index_of_max_element(matrix *a) {
+        DATA_TYPE max_val = a->m[get_idx(0, 0, a->y)];
+        int idx = 0;
+        for(int i = 0; i < a->y; i++) {
+            DATA_TYPE curr_val = a->m[get_idx(0, i, a->y)];
+            if(curr_val > max_val) {
+                max_val = curr_val;
+                idx = i;
+            }
+        }
+        return idx;
+    }
 #endif

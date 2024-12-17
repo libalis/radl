@@ -56,6 +56,15 @@ int main(int argc, char *argv[]) {
             #endif
 
             io *io = malloc_io();
+            matrix *transposed_fc_weights = transpose(io->fc_weights, NULL);
+            matrix **transposed_image = malloc_matrix_ptr(io->image_len, io->image[0]->x, io->image[0]->y);
+            for(int i = 0; i < io->image_len; i++) {
+                transposed_image[i] = transpose(io->image[i], transposed_image[i]);
+            }
+            matrix **transposed_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+            for(int i = 0; i < io->masks_len; i++) {
+                transposed_masks[i] = transpose(io->masks[i], transposed_masks[i]);
+            }
             #ifdef DEBUG
                 matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
                 matrix **flipped_c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - flipped_masks[0]->x + 1, io->image[0]->y - flipped_masks[0]->y + 1);
@@ -66,8 +75,8 @@ int main(int argc, char *argv[]) {
                 matrix **hyperbolic_r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
             #endif
             matrix **r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
-            matrix **m = malloc_matrix_ptr(io->masks_len, r[0]->x / POOL_LEN, r[0]->y / POOL_LEN);
-            matrix *f = malloc_matrix(io->masks_len * m[0]->x * m[0]->y, 1);
+            matrix *m = malloc_matrix(io->masks_len * (r[0]->x / POOL_LEN), (r[0]->y / POOL_LEN));
+            matrix *f = malloc_matrix(m->x * m->y, 1);
             matrix *transposed_f = malloc_matrix(f->y, f->x);
             matrix *mm = malloc_matrix(transposed_f->x, io->fc_weights->y);
             matrix *transposed_fc_bias = malloc_matrix(io->fc_bias->y, io->fc_bias->x);
@@ -81,10 +90,10 @@ int main(int argc, char *argv[]) {
 
             for(int j = 0; j < io->image_len; j++) {
                 #ifdef DEBUG
-                    flipped_masks = flip_kernels(io->masks, io->masks_len, flipped_masks);
-                    flipped_c = conv2d(io->image[j], flipped_masks, io->masks_len, flipped_c);
+                    flipped_masks = flip_kernels(transposed_masks, io->masks_len, flipped_masks);
+                    flipped_c = conv2d(transposed_image[j], flipped_masks, io->masks_len, flipped_c);
                 #endif
-                c = conv2d(io->image[j], io->masks, io->masks_len, c);
+                c = conv2d(transposed_image[j], transposed_masks, io->masks_len, c);
                 b = biasing(c, io->masks_len, io->conv_bias, b);
                 #ifdef DEBUG
                     hyperbolic_r = hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
@@ -93,7 +102,11 @@ int main(int argc, char *argv[]) {
                 m = maxpool(r, io->masks_len, m);
                 f = flatten(m, io->masks_len, f);
                 transposed_f = transpose(f, transposed_f);
-                mm = matmul(transposed_f, io->fc_weights, mm);
+                #ifndef NVIDIA
+                    mm = matmul(transposed_f, transposed_fc_weights, mm);
+                #else
+                    mm = matmul(transposed_f, io->fc_weights, mm);
+                #endif
                 transposed_fc_bias = transpose(io->fc_bias, transposed_fc_bias);
                 a = add(mm, transposed_fc_bias, a);
 
@@ -117,7 +130,7 @@ int main(int argc, char *argv[]) {
             free_matrix(mm);
             free_matrix(transposed_f);
             free_matrix(f);
-            free_matrix_ptr(m, io->masks_len);
+            free_matrix(m);
             free_matrix_ptr(r, io->masks_len);
             #ifdef DEBUG
                 free_matrix_ptr(hyperbolic_r, io->masks_len);

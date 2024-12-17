@@ -1,13 +1,26 @@
 # A Hybrid CPU-GPU Framework with Multithreading, SIMD, and Evaluation of Efficiency Metrics
 ## Dependencies:
-- [gcc](https://gcc.gnu.org/)
+- [clang](https://clang.llvm.org/)
+- [cuda](https://developer.nvidia.com/cuda-zone)
+- [dialog](https://invisible-island.net/dialog/)
 - [glib](https://docs.gtk.org/glib/)
 - [intel-oneapi-dpcpp-cpp](https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html)
 - [make](https://www.gnu.org/software/make/)
+- [openmp](https://openmp.llvm.org/)
 - [pkg-config](https://freedesktop.org/wiki/Software/pkg-config/)
 - [python](https://www.python.org/)
 - - -
 ## Prerequisites:
+### Arch Linux:
+```bash
+pacman -S clang cuda dialog glib intel-oneapi-dpcpp-cpp make openmp pkg-config python
+```
+### macOS:
+```bash
+brew install dialog glib libomp pkg-config
+```
+### Generally:
+After installing the relevant dependencies, create a virtual environment and install the required python packages:
 ```bash
 python -m venv ./venv
 source ./venv/bin/activate

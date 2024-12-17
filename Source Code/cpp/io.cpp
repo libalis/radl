@@ -29,9 +29,9 @@ matrix *io_to_matrix(const char *a) {
     matrix *m = malloc_matrix(x, y);
     for(int i = 0; i < m->x; i++) {
         getline(&line, &len, f);
-        m->m[get_idx(i, 0, m->y)] = strtof(strtok(line, " \n"), NULL);
+        m->m[get_idx(i, 0, m->y)] = (DATA_TYPE)strtof(strtok(line, " \n"), NULL);
         for(int j = 1; j < m->y; j++) {
-            m->m[get_idx(i, j, m->y)] = strtof(strtok(NULL, " \n"), NULL);
+            m->m[get_idx(i, j, m->y)] = (DATA_TYPE)strtof(strtok(NULL, " \n"), NULL);
         }
         free(line);
         line = NULL;

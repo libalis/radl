@@ -79,11 +79,10 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
         for(int m = 0; m < len; m++) {
             for(int i = 0; i < a->x - b[0]->x + 1; i++) {
                 for(int j = 0; j < a->y - b[0]->y + 1; j++) {
-                    float sum = 0.0;
-                    #pragma omp simd
+                    DATA_TYPE sum = 0;
                     for(int k = 0; k < b[0]->x; k++) {
                         for(int l = 0; l < b[0]->y; l++) {
-                            sum += a->m[get_idx(i + k, j + l, a->y)] * b[m]->m[get_idx(k, l, b[0]->y)];
+                            sum += a->m[get_idx(j + l, i + k, a->y)] * b[m]->m[get_idx(l, k, b[0]->y)];
                         }
                     }
                     c[m]->m[get_idx(i, j, c[0]->y)] = sum;
@@ -108,24 +107,24 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
     return c;
 }
 
-matrix *flatten(matrix **a, int len, matrix *c) {
+matrix *flatten(matrix *a, int len, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix(len * a[0]->x * a[0]->y, 1);
+        c = malloc_matrix(a->x * a->y, 1);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
-        for(int i = 0; i < a[0]->x; i++) {
-            for(int j = 0; j < a[0]->y; j++) {
+        for(int i = 0; i < a->x / len; i++) {
+            for(int j = 0; j < a->y; j++) {
                 for(int m = 0; m < len; m++) {
-                    int idx = i * a[0]->y * len + j * len + m;
-                    c->m[get_idx(idx, 0, c->y)] = a[m]->m[get_idx(i, j, a[0]->y)];
+                    int idx = i * a->y * len + j * len + m;
+                    c->m[get_idx(idx, 0, c->y)] = a->m[get_idx(i, j, a->y) + m * ((a->x / len) * a->y)];
                 }
             }
         }
     #else
         mt_arg arg[THREADS];
         for(int i = 0; i < THREADS; i++) {
-            arg[i].a_ptr = a;
+            arg[i].a = a;
             arg[i].len = len;
             arg[i].c = c;
             arg[i].start_routine = flatten_mt;
@@ -204,10 +203,10 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
         #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
-                c->m[get_idx(i, j, c->y)] = 0.0;
+                c->m[get_idx(i, j, c->y)] = 0;
                 #pragma omp simd
                 for(int k = 0; k < a->y; k++) {
-                    c->m[get_idx(i, j, c->y)] += a->m[get_idx(i, k, a->y)] * b->m[get_idx(k, j, b->y)];
+                    c->m[get_idx(i, j, c->y)] += a->m[get_idx(i, k, a->y)] * b->m[get_idx(j, k, b->y)];
                 }
             }
         }
@@ -225,25 +224,25 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
     return c;
 }
 
-matrix **maxpool(matrix **a, int len, matrix **c) {
+matrix *maxpool(matrix **a, int len, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x / POOL_LEN, a[0]->y / POOL_LEN);
+        c = malloc_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
             for(int i = 0; i < a[0]->x; i += POOL_LEN) {
                 for(int j = 0; j < a[0]->y; j += POOL_LEN) {
-                    float max_val = a[m]->m[get_idx(i, j, a[0]->y)];
+                    DATA_TYPE max_val = a[m]->m[get_idx(i, j, a[0]->y)];
                     for(int k = 0; k < POOL_LEN; k++) {
                         for(int l = 0; l < POOL_LEN; l++) {
-                            float curr_val = a[m]->m[get_idx(i + k, j + l, a[0]->y)];
+                            DATA_TYPE curr_val = a[m]->m[get_idx(i + k, j + l, a[0]->y)];
                             if(curr_val > max_val) {
                                 max_val = curr_val;
                             }
                         }
                     }
-                    c[m]->m[get_idx(i / POOL_LEN, j / POOL_LEN, c[0]->y)] = max_val;
+                    c->m[get_idx(i / POOL_LEN, j / POOL_LEN, c->y) + m * ((c->x / len) * c->y)] = max_val;
                 }
             }
         }
@@ -253,7 +252,7 @@ matrix **maxpool(matrix **a, int len, matrix **c) {
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a_ptr = a;
                 arg[i].len = len;
-                arg[i].c_ptr = c;
+                arg[i].c = c;
                 arg[i].m = m;
                 arg[i].start_routine = maxpool_mt;
                 push_mt(&arg[i]);
@@ -273,8 +272,8 @@ matrix **relu(matrix **a, int len, matrix **c) {
         for(int m = 0; m < len; m++) {
             for(int i = 0; i < a[0]->x; i++) {
                 for(int j = 0; j < a[0]->y; j++) {
-                    float val = 0.0;
-                    if(a[m]->m[get_idx(i, j, a[0]->y)] > 0.0) {
+                    DATA_TYPE val = 0;
+                    if(a[m]->m[get_idx(i, j, a[0]->y)] > 0) {
                         val = a[m]->m[get_idx(i, j, a[0]->y)];
                     }
                     c[m]->m[get_idx(i, j, c[0]->y)] = val;

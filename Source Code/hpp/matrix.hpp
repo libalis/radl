@@ -1,10 +1,18 @@
 #ifndef MATRIX_H
     #define MATRIX_H
 
+    #ifndef DATA_TYPE
+        #ifdef INT
+            typedef int DATA_TYPE;
+        #else
+            typedef float DATA_TYPE;
+        #endif
+    #endif
+
     typedef struct matrix {
         int x;
         int y;
-        float *m;
+        DATA_TYPE *m;
     } matrix;
 
     void print_matrix(matrix *a);

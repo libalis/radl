@@ -14,7 +14,7 @@ HPP_DIR := ./hpp
 
 UNAME_S := $(shell uname -s)
 ifneq ($(UNAME_S), Darwin)
-	CFLAGS += -Xcompiler -msse3
+	CFLAGS += -Xcompiler -mavx512f
 endif
 
 DEBUG := -g -pg -DDEBUG
@@ -33,6 +33,9 @@ all: $(BUILD_DIR)/$(PROGRAM)
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+config:
+	sh/config.sh
 
 debug:
 	$(MAKE) CFLAGS="$(CFLAGS) $(DEBUG)"
@@ -145,4 +148,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia benchmark benchmark_intel benchmark_nvidia
+.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia benchmark benchmark_intel benchmark_nvidia

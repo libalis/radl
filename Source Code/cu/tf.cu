@@ -114,25 +114,18 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
 
 // 2D Convolution Kernel
 __global__ void conv2d_kernel(float* matrix, float* result, int N, int M, float* mask, int L, int K) {
-    // Calculate the global thread positions
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-    // Starting index for calculation
-    int start_r = row;
-    int start_c = col;
-
-    // Temp value for accumulating the result
     float temp = 0.0;
-
     if(row < (N - L + 1) && col < (M - K + 1)) {
         // Iterate over all the rows
-        for(int i = 0; i < L; i++) {
+        for(int l = 0; l < L; l++) {
             // Go over each column
-            for(int j = 0; j < K; j++) {
+            for(int k = 0; k < K; k++) {
                     // Range check for rows
-                if((start_r + i) >= 0 && (start_r + i) < N && (start_c + j) >= 0 && (start_c + j) < M) {
-                    temp += matrix[(start_r + i) * N + (start_c + j)] * mask[i * L + j];
+                if((row + l) < N && (col + k) < M) {
+                    temp += matrix[(col + l) * M + (row + k)] * mask[l * K + k];
                 }
 
             }
@@ -192,22 +185,55 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
     return c;
 }
 
-matrix *flatten(matrix **a, int len, matrix *c) {
-    if(c == NULL) {
-        c = malloc_matrix(len * a[0]->x * a[0]->y, 1);
+__global__ void flatten_kernel(float* matrix, float* result, int a_x, int a_y, int len) {
+    // Determine global row, column, and slice index
+    int z = blockIdx.z; // Slices handled using grid z-dimension
+    int row = blockIdx.y * blockDim.y + threadIdx.y; // Row index
+    int col = blockIdx.x * blockDim.x + threadIdx.x; // Column index
+
+    // Bounds check for valid indices
+    if (row < a_y && col < len) {
+        int idx = z * a_y * len + row * len + col;
+        int matrix_idx = row + col * (a_x / len) * a_y + z * a_y;
+
+        result[idx] = matrix[matrix_idx];
+    }
+}
+
+matrix *flatten(matrix *a, int len, matrix *c) {
+    if (c == NULL) {
+        c = malloc_matrix((a->x * a->y), 1); // Allocate output matrix
     }
 
-    for(int i = 0; i < a[0]->x; i++) {
-        for(int j = 0; j < a[0]->y; j++) {
-            for(int m = 0; m < len; m++) {
-                int idx = i * a[0]->y * len + j * len + m;
-                c->m[get_idx(idx, 0, c->y)] = a[m]->m[get_idx(i, j, a[m]->y)];
-            }
-        }
-    }
+    size_t bytes_a = a->x * a->y * sizeof(float);
+
+    float *d_matrix, *d_result;
+    cudaMalloc(&d_matrix, bytes_a);
+    cudaMalloc(&d_result, bytes_a);
+
+    cudaMemcpy(d_matrix, a->m, a->x * a->y * sizeof(float), cudaMemcpyHostToDevice);
+
+    // Calculate grid dimensions
+    int blocks_x = (len + THREADS - 1) / THREADS;
+    int blocks_y = (a->y + THREADS - 1) / THREADS;
+    int blocks_z = a->x / len;
+
+    // Define block and grid dimensions
+    dim3 block_dim(THREADS, THREADS);
+    dim3 grid_dim(blocks_x, blocks_y, blocks_z); // Using z-dimension for slices
+
+    flatten_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, a->x, a->y, len);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(c->m, d_result, bytes_a, cudaMemcpyDeviceToHost);
+
+    // Free device memory
+    cudaFree(d_matrix);
+    cudaFree(d_result);
 
     return c;
 }
+
 
 __global__ void flip_kernels_kernel(float* matrix, float* result, int N, int M) {
     // Thread identifiers
@@ -385,9 +411,9 @@ __global__ void maxpool_kernel(float* matrix, float* result, int N, int M, int L
     }
 }
 
-matrix **maxpool(matrix **a, int len, matrix **c) {
+matrix *maxpool(matrix **a, int len, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x / POOL_LEN, a[0]->y / POOL_LEN);
+        c = malloc_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
     }
 
     int N = a[0]->x;
@@ -395,10 +421,9 @@ matrix **maxpool(matrix **a, int len, matrix **c) {
     size_t bytes_n = N * K * sizeof(float);
     float* d_matrix;
     cudaMalloc(&d_matrix, bytes_n);
-    //d_matrix = malloc_cuda(N, N);
 
-    int M = c[0]->x;
-    int L = c[0]->y;
+    int M = c->x / len;
+    int L = c->y;
     size_t bytes_m = M * L * sizeof(float);
     float* d_result;
     cudaMalloc(&d_result, bytes_m);
@@ -411,12 +436,11 @@ matrix **maxpool(matrix **a, int len, matrix **c) {
 
     for (int m = 0; m < len; m++) {
         cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-        //memcpy_cuda(a[m], d_matrix, true);
-        //
+
         maxpool_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, N, M, L);
         cudaDeviceSynchronize();
-        //
-        cudaMemcpy(c[m]->m, d_result, bytes_m, cudaMemcpyDeviceToHost);
+
+        cudaMemcpy(c->m + m * M * L, d_result, bytes_m, cudaMemcpyDeviceToHost);
     }
 
     cudaFree(d_matrix);
