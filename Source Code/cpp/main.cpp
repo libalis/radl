@@ -56,15 +56,8 @@ int main(int argc, char *argv[]) {
             #endif
 
             io *io = malloc_io();
+            matrix *transposed_fc_bias = transpose(io->fc_bias, NULL);
             matrix *transposed_fc_weights = transpose(io->fc_weights, NULL);
-            matrix **transposed_image = malloc_matrix_ptr(io->image_len, io->image[0]->x, io->image[0]->y);
-            for(int i = 0; i < io->image_len; i++) {
-                transposed_image[i] = transpose(io->image[i], transposed_image[i]);
-            }
-            matrix **transposed_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
-            for(int i = 0; i < io->masks_len; i++) {
-                transposed_masks[i] = transpose(io->masks[i], transposed_masks[i]);
-            }
             #ifdef DEBUG
                 matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
                 matrix **flipped_c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - flipped_masks[0]->x + 1, io->image[0]->y - flipped_masks[0]->y + 1);
@@ -79,7 +72,6 @@ int main(int argc, char *argv[]) {
             matrix *f = malloc_matrix(m->x * m->y, 1);
             matrix *transposed_f = malloc_matrix(f->y, f->x);
             matrix *mm = malloc_matrix(transposed_f->x, io->fc_weights->y);
-            matrix *transposed_fc_bias = malloc_matrix(io->fc_bias->y, io->fc_bias->x);
             matrix *a = malloc_matrix(mm->x, mm->y);
             malloc_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
@@ -90,10 +82,10 @@ int main(int argc, char *argv[]) {
 
             for(int j = 0; j < io->image_len; j++) {
                 #ifdef DEBUG
-                    flipped_masks = flip_kernels(transposed_masks, io->masks_len, flipped_masks);
-                    flipped_c = conv2d(transposed_image[j], flipped_masks, io->masks_len, flipped_c);
+                    flipped_masks = flip_kernels(io->masks, io->masks_len, flipped_masks);
+                    flipped_c = conv2d(io->image[j], flipped_masks, io->masks_len, flipped_c);
                 #endif
-                c = conv2d(transposed_image[j], transposed_masks, io->masks_len, c);
+                c = conv2d(io->image[j], io->masks, io->masks_len, c);
                 b = biasing(c, io->masks_len, io->conv_bias, b);
                 #ifdef DEBUG
                     hyperbolic_r = hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
@@ -107,7 +99,6 @@ int main(int argc, char *argv[]) {
                 #else
                     mm = matmul(transposed_f, io->fc_weights, mm);
                 #endif
-                transposed_fc_bias = transpose(io->fc_bias, transposed_fc_bias);
                 a = add(mm, transposed_fc_bias, a);
 
                 int max_val = index_of_max_element(a);
@@ -126,7 +117,6 @@ int main(int argc, char *argv[]) {
             next_time = start_timer();
 
             free_matrix(a);
-            free_matrix(transposed_fc_bias);
             free_matrix(mm);
             free_matrix(transposed_f);
             free_matrix(f);
@@ -141,6 +131,8 @@ int main(int argc, char *argv[]) {
                 free_matrix_ptr(flipped_c, io->masks_len);
                 free_matrix_ptr(flipped_masks, io->masks_len);
             #endif
+            free_matrix(transposed_fc_weights);
+            free_matrix(transposed_fc_bias);
             free_io(io);
             free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();

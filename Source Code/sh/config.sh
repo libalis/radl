@@ -58,10 +58,10 @@ main() {
 }
 
 openmp() {
-    OPENMP=$(dialog --yesno --title "OpenMP" --defaultno \
+    OPENMP=$(dialog --title "OpenMP" --defaultno --yesno \
         "\nEnable OpenMP for parallelization, or use pthreads by default?" \
         10 60 3>&1 1>&2 2>&3)
-    if $OPENMP; then
+    if [[ "$OPENMP" -eq 0 ]]; then
         if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
             CFLAGS="$CFLAGS -Xclang -fopenmp -DOMP"
         elif [[ "$CC" == "$ICPX" ]]; then
@@ -78,7 +78,7 @@ openmp() {
 options() {
     OPTIONS=$(dialog --title "Optional flags" --checklist \
         "\nPlease select your desired options:" 10 60 1 \
-        1 "Debugging" off \
+        1 "Debugging" on \
         3>&1 1>&2 2>&3)
     if [[ $? -ne 0 ]]; then
         exit
@@ -107,7 +107,7 @@ scale_factor() {
 }
 
 summary() {
-    SUMMARY=$(dialog --colors --title "Summary" --msgbox \
+    SUMMARY=$(dialog --title "Summary" --colors --msgbox \
         "\nThe following flags have been selected: \
         \n\nCC=\"\Z1$CC\Zn\" \
         \nCFLAGS=\"\Z2$CFLAGS\Zn\" \

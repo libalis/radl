@@ -18,6 +18,7 @@
         int m;
         int i;
         int j;
+        bool single_core = 0;
         void (*start_routine)(struct mt_arg *mt);
     } mt_arg;
 
