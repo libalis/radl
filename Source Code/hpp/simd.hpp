@@ -1,17 +1,6 @@
 #ifndef SIMD_H
     #define SIMD_H
 
-    #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
-        #define x86
-        #include <immintrin.h>
-    #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
-        #define ARM
-        #include <arm_neon.h>
-        #ifdef AMX
-            #include "../amx/aarch64.h"
-        #endif
-    #endif
-
     #include "../hpp/mt.hpp"
     #include "../hpp/utils.hpp"
 

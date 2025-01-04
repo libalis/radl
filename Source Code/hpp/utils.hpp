@@ -6,6 +6,17 @@
 
     #include "../hpp/matrix.hpp"
 
+    #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
+        #define x86
+        #include <immintrin.h>
+    #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
+        #define ARM
+        #include <arm_neon.h>
+        #ifdef AMX
+            #include "../amx/aarch64.h"
+        #endif
+    #endif
+
     __attribute__((always_inline)) inline int get_decimals(int a) {
         int c = 1;
         for(int i = a; i > 0; i /= 10) {
@@ -44,9 +55,11 @@
         return idx;
     }
 
-    __attribute__((always_inline)) inline bool is_avx512_supported() {
-        int cpu_info[4];
-        __asm__ __volatile__("cpuid": "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3]): "a"(7), "c"(0));
-        return (cpu_info[1] & (1 << 16)) != 0;
-    }
+    #ifdef x86
+        __attribute__((always_inline)) inline bool is_avx512_supported() {
+            int cpu_info[4];
+            __asm__ __volatile__("cpuid": "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3]): "a"(7), "c"(0));
+            return (cpu_info[1] & (1 << 16)) != 0;
+        }
+    #endif
 #endif
