@@ -19,4 +19,12 @@
     matrix *maxpool(matrix **a, int len, matrix *c);
     matrix **relu(matrix **a, int len, matrix **c);
     matrix *transpose(matrix *a, matrix *c);
+
+    #ifdef NVIDIA
+        matrix *malloc_cuda_matrix(int x, int y);
+        matrix **malloc_cuda_matrix_ptr(int len, int x, int y);
+        void free_cuda_matrix(matrix *a);
+        void free_cuda_matrix_ptr(matrix **a, int len);
+        matrix *copy_cuda_matrix(matrix *h_a, matrix *d_a, bool to_device);
+    #endif
 #endif

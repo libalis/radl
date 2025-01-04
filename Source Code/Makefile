@@ -1,11 +1,11 @@
 PROGRAM := tf
 
-CC := clang
+CC := clang++
 ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
-CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result -I/opt/homebrew/opt/libomp/include
-LDFLAGS := $(shell pkg-config --libs glib-2.0) -lstdc++ -lm -L/opt/homebrew/opt/libomp/lib -lomp
+CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
+LDFLAGS := $(shell pkg-config --libs glib-2.0) -lm
 
 BUILD_DIR := ./build
 CPP_DIR := ./cpp
@@ -15,8 +15,12 @@ HPP_DIR := ./hpp
 UNAME_S := $(shell uname -s)
 ifneq ($(UNAME_S), Darwin)
 	CFLAGS += -Xcompiler -mavx512f
+else
+	CFLAGS += -I/opt/homebrew/opt/libomp/include
+	LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
 endif
 
+AMX := -DAMX
 DEBUG := -g -pg -DDEBUG
 NVIDIA := -DNVIDIA
 OMP := -Xcompiler -fopenmp -DOMP
@@ -98,6 +102,14 @@ xl_nvidia:
 	$(MAKE) CC="$(NVCC)" CFLAGS="$(CFLAGS) $(NVIDIA) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\""
 
+amx:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
+
+amx_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx_xl.csv\\\"\""
+
 benchmark:
 	$(MAKE) clean
 	$(MAKE)
@@ -110,6 +122,26 @@ benchmark:
 	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl
+	$(BUILD_DIR)/$(PROGRAM)
+
+benchmark_darwin:
+	$(MAKE) clean
+	$(MAKE)
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) amx
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) omp
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) omp_xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) amx_xl
 	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
@@ -148,4 +180,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia benchmark benchmark_intel benchmark_nvidia
+.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia

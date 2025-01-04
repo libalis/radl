@@ -43,4 +43,10 @@
         }
         return idx;
     }
+
+    __attribute__((always_inline)) inline bool is_avx512_supported() {
+        int cpu_info[4];
+        __asm__ __volatile__("cpuid": "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3]): "a"(7), "c"(0));
+        return (cpu_info[1] & (1 << 16)) != 0;
+    }
 #endif

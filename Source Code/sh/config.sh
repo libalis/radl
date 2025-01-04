@@ -1,8 +1,8 @@
 #!/bin/bash
 PROGRAM="tf"
 ICPX="/opt/intel/oneapi/compiler/latest/bin/icpx"
-CFLAGS="-O3 $(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result"
-LDFLAGS="$(pkg-config --libs glib-2.0) -lstdc++ -lm"
+CFLAGS="$(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result"
+LDFLAGS="$(pkg-config --libs glib-2.0) -lm"
 BUILD_DIR="./build"
 UNAME="$(uname -m)"
 
@@ -24,7 +24,7 @@ compiler() {
     if [[ $? -ne 0 ]]; then
         exit
     elif [[ "$COMPILER" =~ "1" ]]; then
-        CC="clang"
+        CC="clang++"
     elif [[ "$COMPILER" =~ "2" ]]; then
         CC="$ICPX"
     fi
@@ -46,7 +46,7 @@ data_type() {
 }
 
 main() {
-    INTO=$(dialog --title "Optimizing Deep Learning Performance" --msgbox \
+    MAIN=$(dialog --title "Optimizing Deep Learning Performance" --msgbox \
         "\nA Hybrid CPU-GPU Framework with Multithreading, SIMD,\
         \nand Evaluation of Efficiency Metrics\
         \n\nThe following dialogs will guide you through the process of building the perfect executable for your needs" \
@@ -59,7 +59,7 @@ main() {
 
 openmp() {
     OPENMP=$(dialog --title "OpenMP" --defaultno --yesno \
-        "\nEnable OpenMP for parallelization, or use pthreads by default?" \
+        "\nDo you want to enable OpenMP for parallelization, or use pthreads by default?" \
         10 60 3>&1 1>&2 2>&3)
     if [[ "$OPENMP" -eq 0 ]]; then
         if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then

@@ -17,9 +17,8 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
         c = malloc_matrix(a->x, a->y);
     }
     #ifdef OMP
-        #pragma omp parallel for
+        #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
-            #pragma omp parallel for simd
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = a->m[get_idx(i, j, a->y)] + b->m[get_idx(i, j, b->y)];
             }
@@ -52,10 +51,9 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     #ifdef OMP
-        #pragma omp parallel for collapse(2)
+        #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
             for(int i = 0; i < a[0]->x; i++) {
-                #pragma omp parallel for simd
                 for(int j = 0; j < a[0]->y; j++) {
                     c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(i, j, a[0]->y)] + b->m[get_idx(m, 0, b->y)];
                 }
@@ -272,7 +270,6 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = 0;
-                #pragma omp simd
                 for(int k = 0; k < a->y; k++) {
                     c->m[get_idx(i, j, c->y)] += a->m[get_idx(i, k, a->y)] * b->m[get_idx(j, k, b->y)];
                 }

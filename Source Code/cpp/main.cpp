@@ -56,6 +56,21 @@ int main(int argc, char *argv[]) {
             #endif
 
             io *io = malloc_io();
+
+            #ifdef NVIDIA
+                matrix *d_img = malloc_cuda_matrix(io->image[0]->x, io->image[0]->y);
+                #ifdef DEBUG
+                    matrix **d_flipped_masks = malloc_cuda_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+                #endif
+                matrix **d_masks = malloc_cuda_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+                for (int m = 0; m < io->masks_len; m++) {
+                    copy_cuda_matrix(io->masks[m], d_masks[m], true);
+                }
+                matrix *d_fc_weights = malloc_cuda_matrix(io->fc_weights->x, io->fc_weights->y);
+                copy_cuda_matrix(io->fc_weights, d_fc_weights, true);
+                //matrix **c = malloc_cuda_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1); // for next session
+            #endif
+
             matrix *transposed_fc_bias = transpose(io->fc_bias, NULL);
             matrix *transposed_fc_weights = transpose(io->fc_weights, NULL);
             #ifdef DEBUG
@@ -81,29 +96,47 @@ int main(int argc, char *argv[]) {
             #endif
 
             for(int j = 0; j < io->image_len; j++) {
-                #ifdef DEBUG
-                    flipped_masks = flip_kernels(io->masks, io->masks_len, flipped_masks);
-                    flipped_c = conv2d(io->image[j], flipped_masks, io->masks_len, flipped_c);
-                #endif
-                c = conv2d(io->image[j], io->masks, io->masks_len, c);
-                b = biasing(c, io->masks_len, io->conv_bias, b);
-                #ifdef DEBUG
-                    hyperbolic_r = hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
-                #endif
-                r = relu(b, io->masks_len, r);
-                m = maxpool(r, io->masks_len, m);
-                f = flatten(m, io->masks_len, f);
-                transposed_f = transpose(f, transposed_f);
-                #ifndef NVIDIA
-                    mm = matmul(transposed_f, transposed_fc_weights, mm);
+                #ifdef NVIDIA
+                    copy_cuda_matrix(io->image[j], d_img, true);
+                    #ifdef DEBUG
+                        flipped_masks = flip_kernels(d_masks, io->masks_len, flipped_masks);
+                        for(int m = 0; m < io->masks_len; m++) {
+                            copy_cuda_matrix(flipped_masks[m], d_flipped_masks[m], true);
+                        }
+                        flipped_c = conv2d(d_img, d_flipped_masks, io->masks_len, flipped_c);
+                    #endif
+                    c = conv2d(d_img, d_masks, io->masks_len, c);
+                    b = biasing(c, io->masks_len, io->conv_bias, b);
+                    #ifdef DEBUG
+                        hyperbolic_r = hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
+                    #endif
+                    r = relu(b, io->masks_len, r);
+                    m = maxpool(r, io->masks_len, m);
+                    f = flatten(m, io->masks_len, f);
+                    transposed_f = transpose(f, transposed_f);
+                    mm = matmul(transposed_f, d_fc_weights, mm);
+                    a = add(mm, transposed_fc_bias, a);
                 #else
-                    mm = matmul(transposed_f, io->fc_weights, mm);
+                    #ifdef DEBUG
+                        flipped_masks = flip_kernels(io->masks, io->masks_len, flipped_masks);
+                        flipped_c = conv2d(io->image[j], flipped_masks, io->masks_len, flipped_c);
+                    #endif
+                    c = conv2d(io->image[j], io->masks, io->masks_len, c);
+                    b = biasing(c, io->masks_len, io->conv_bias, b);
+                    #ifdef DEBUG
+                        hyperbolic_r = hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
+                    #endif
+                    r = relu(b, io->masks_len, r);
+                    m = maxpool(r, io->masks_len, m);
+                    f = flatten(m, io->masks_len, f);
+                    transposed_f = transpose(f, transposed_f);
+                    mm = matmul(transposed_f, transposed_fc_weights, mm);
+                    a = add(mm, transposed_fc_bias, a);
                 #endif
-                a = add(mm, transposed_fc_bias, a);
 
                 int max_val = index_of_max_element(a);
                 #ifdef DEBUG
-                    printf("Epoch %d done: accuracy %f%%\n", j, (float)(max_val == io->label[j]) / 1 * 100);
+                    printf("Epoch %d done: accuracy %.2f%%\n", j, (max_val == io->label[j]) * 100.0f);
                     if(max_val == io->label[j]) {
                         accurate++;
                     }
@@ -133,6 +166,17 @@ int main(int argc, char *argv[]) {
             #endif
             free_matrix(transposed_fc_weights);
             free_matrix(transposed_fc_bias);
+
+            #ifdef NVIDIA
+                //free_cuda_matrix_ptr(c, io->masks_len);
+                free_cuda_matrix(d_fc_weights);
+                free_cuda_matrix_ptr(d_masks, io->masks_len);
+                #ifdef DEBUG
+                    free_cuda_matrix_ptr(d_flipped_masks, io->masks_len);
+                #endif
+                free_cuda_matrix(d_img);
+            #endif
+
             free_io(io);
             free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
