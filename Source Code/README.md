@@ -13,7 +13,7 @@
 ## Prerequisites:
 ### Arch Linux:
 ```bash
-pacman -S clang cuda dialog glib intel-oneapi-dpcpp-cpp make openmp pkg-config python
+pacman -S clang cuda dialog glib2 intel-oneapi-dpcpp-cpp make openmp pkg-config python
 ```
 ### macOS:
 ```bash
@@ -65,5 +65,11 @@ Including ICPX and CUDA:
 ```bash
 source ./venv/bin/activate
 make benchmark_nvidia
+deactivate
+```
+macOS:
+```bash
+source ./venv/bin/activate
+make benchmark_darwin
 deactivate
 ```

@@ -171,8 +171,8 @@
             #else
                 long CHUNK_SIZE = 16;
                 uint32_t reset_z = 1ull << 27;
+                AMX_SET();
                 for(int k = 0; k < mt->a->y; k += CHUNK_SIZE) {
-                    AMX_SET();
                     for(int o = 0; o < CHUNK_SIZE; o++) {
                         AMX_LDX(&mt->a->m[get_idx(mt->i, k + o, mt->a->y)]);
                         AMX_LDY(&mt->b->m[get_idx(mt->j, k + o, mt->b->y)]);
@@ -183,8 +183,8 @@
                         int z_register = (i * 4ull) << 56;
                         AMX_STZ(z_register | (uint64_t)(mt->c->m + get_idx(mt->i, mt->j, mt->c->y)) + i * 64);
                     }
-                    AMX_CLR();
                 }
+                AMX_CLR();
             #endif
         #endif
     }

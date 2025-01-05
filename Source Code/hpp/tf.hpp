@@ -21,6 +21,7 @@
     matrix *transpose(matrix *a, matrix *c);
 
     #ifdef NVIDIA
+        void cuda_init();
         matrix *malloc_cuda_matrix(int x, int y);
         matrix **malloc_cuda_matrix_ptr(int len, int x, int y);
         void free_cuda_matrix(matrix *a);

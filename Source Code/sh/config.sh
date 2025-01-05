@@ -27,6 +27,7 @@ compiler() {
         CC="clang++"
     elif [[ "$COMPILER" =~ "2" ]]; then
         CC="$ICPX"
+        CFLAGS="-O1 $(CFLAGS)"
     fi
     openmp
 }

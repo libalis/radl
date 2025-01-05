@@ -12,7 +12,7 @@
     #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
         #define ARM
         #include <arm_neon.h>
-        #ifdef AMX
+        #if defined(AMX)
             #include "../amx/aarch64.h"
         #endif
     #endif

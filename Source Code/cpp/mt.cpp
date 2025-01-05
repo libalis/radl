@@ -122,22 +122,16 @@ void hyperbolic_tangent_mt(mt_arg *mt) {
 
 void matmul_mt(mt_arg *mt) {
     if(mt->single_core) {
-        for(int i = 0; i < mt->c->x; i++) {
-            for(int j = 0; j < mt->c->y; j++) {
-                mt->c->m[get_idx(i, j, mt->c->y)] = 0;
-                mt->i = i;
-                mt->j = j;
-                matmul_simd(mt);
-            }
+        for(int j = 0; j < mt->c->y; j++) {
+            mt->c->m[get_idx(mt->i, j, mt->c->y)] = 0;
+            mt->j = j;
+            matmul_simd(mt);
         }
     } else {
-        for(int i = mt->idx; i < mt->c->x; i += THREADS) {
-            for(int j = 0; j < mt->c->y; j++) {
-                mt->c->m[get_idx(i, j, mt->c->y)] = 0;
-                mt->i = i;
-                mt->j = j;
-                matmul_simd(mt);
-            }
+        for(int j = mt->idx; j < mt->c->y; j += THREADS) {
+            mt->c->m[get_idx(mt->i, j, mt->c->y)] = 0;
+            mt->j = j;
+            matmul_simd(mt);
         }
         wait_mt();
     }

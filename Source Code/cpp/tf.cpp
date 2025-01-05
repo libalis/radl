@@ -24,7 +24,7 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS * 10 < c->x) {
+        if(THREADS <= c->x) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;
@@ -60,7 +60,7 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
             }
         }
     #else
-        if(THREADS * 10 < a[0]->x) {
+        if(THREADS <= a[0]->x) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -110,7 +110,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS * 10 < a->x - b[0]->x + 1) {
+        if(THREADS <= a->x - b[0]->x + 1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -155,7 +155,7 @@ matrix *flatten(matrix *a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS * 10 < a->x / len) {
+        if(THREADS <= a->x / len) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;
@@ -191,7 +191,7 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS * 10 < a[0]->x) {
+        if(THREADS <= a[0]->x) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -233,7 +233,7 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS * 10 < a[0]->x) {
+        if(THREADS <= a[0]->x) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -276,23 +276,29 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS * 10 < c->x) {
+        if(THREADS <= c->y) {
             mt_arg arg[THREADS];
-            for(int i = 0; i < THREADS; i++) {
-                arg[i].a = a;
-                arg[i].b = b;
-                arg[i].c = c;
-                arg[i].start_routine = matmul_mt;
-                push_mt(&arg[i]);
+            for(int i = 0; i < c->x; i++) {
+                for(int j = 0; j < THREADS; j++) {
+                    arg[j].a = a;
+                    arg[j].b = b;
+                    arg[j].c = c;
+                    arg[j].i = i;
+                    arg[j].start_routine = matmul_mt;
+                    push_mt(&arg[j]);
+                }
+                wait_mt();
             }
-            wait_mt();
         } else {
             mt_arg arg;
-            arg.a = a;
-            arg.b = b;
-            arg.c = c;
-            arg.single_core = 1;
-            matmul_mt(&arg);
+            for(int i = 0; i < c->x; i++) {
+                arg.a = a;
+                arg.b = b;
+                arg.c = c;
+                arg.i = i;
+                arg.single_core = 1;
+                matmul_mt(&arg);
+            }
         }
     #endif
     return c;
@@ -321,7 +327,7 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS * 10 < a[0]->x) {
+        if(THREADS <= a[0]->x) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -367,7 +373,7 @@ matrix **relu(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS * 10 < a[0]->x) {
+        if(THREADS <= a[0]->x) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -407,7 +413,7 @@ matrix *transpose(matrix *a, matrix *c) {
             }
         }
     #else
-        if(THREADS * 10 < a->x) {
+        if(THREADS <= a->x) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;

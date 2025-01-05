@@ -1,7 +1,7 @@
 PROGRAM := tf
 
 CC := clang++
-ICX := /opt/intel/oneapi/compiler/latest/bin/icpx
+ICPX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
 CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
@@ -79,19 +79,19 @@ xl:
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl.csv\\\"\""
 
 intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(OMP_INTEL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_intel.csv\\\"\""
 
 omp_xl_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) $(XL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(OMP_INTEL) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\""
 
 xl_intel:
-	$(MAKE) CC="$(ICX)" CFLAGS="$(CFLAGS) $(XL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\""
 
 nvidia:
@@ -124,26 +124,6 @@ benchmark:
 	$(MAKE) xl
 	$(BUILD_DIR)/$(PROGRAM)
 
-benchmark_darwin:
-	$(MAKE) clean
-	$(MAKE)
-	$(BUILD_DIR)/$(PROGRAM)
-	$(MAKE) clean
-	$(MAKE) amx
-	$(BUILD_DIR)/$(PROGRAM)
-	$(MAKE) clean
-	$(MAKE) omp
-	$(BUILD_DIR)/$(PROGRAM)
-	$(MAKE) clean
-	$(MAKE) omp_xl
-	$(BUILD_DIR)/$(PROGRAM)
-	$(MAKE) clean
-	$(MAKE) xl
-	$(BUILD_DIR)/$(PROGRAM)
-	$(MAKE) clean
-	$(MAKE) amx_xl
-	$(BUILD_DIR)/$(PROGRAM)
-
 benchmark_intel:
 	$(MAKE) benchmark
 	$(MAKE) clean
@@ -168,6 +148,15 @@ benchmark_nvidia:
 	$(MAKE) xl_nvidia
 	$(BUILD_DIR)/$(PROGRAM)
 
+benchmark_darwin:
+	$(MAKE) benchmark
+	$(MAKE) clean
+	$(MAKE) amx
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) amx_xl
+	$(BUILD_DIR)/$(PROGRAM)
+
 $(BUILD_DIR)/$(PROGRAM): $(patsubst $(CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(wildcard $(CPP_DIR)/*.cpp))
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
@@ -180,4 +169,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia
+.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin

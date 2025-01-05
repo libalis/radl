@@ -5,6 +5,10 @@
 
 long THREADS = 16;
 
+void cuda_init() {
+    cudaFree(0);
+}
+
 matrix *malloc_cuda_matrix(int x, int y) {
     matrix *a = (matrix*)malloc(sizeof(matrix));
     a->x = x;
