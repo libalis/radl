@@ -24,12 +24,14 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS <= c->x) {
+        // if(THREADS <= c->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;
                 arg[i].b = b;
                 arg[i].c = c;
+                arg[i].single_core = 0;
                 arg[i].start_routine = add_mt;
                 push_mt(&arg[i]);
             }
@@ -60,7 +62,8 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
+        // if(THREADS <= a[0]->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -69,6 +72,7 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
                     arg[i].b = b;
                     arg[i].c_ptr = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = biasing_mt;
                     push_mt(&arg[i]);
                 }
@@ -110,7 +114,8 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a->x - b[0]->x + 1) {
+        // if(THREADS <= a->x - b[0]->x + 1) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -119,6 +124,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
                     arg[i].len = len;
                     arg[i].c_ptr = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = conv2d_mt;
                     push_mt(&arg[i]);
                 }
@@ -155,12 +161,14 @@ matrix *flatten(matrix *a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a->x / len) {
+        // if(THREADS <= a->x / len) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;
                 arg[i].len = len;
                 arg[i].c = c;
+                arg[i].single_core = 0;
                 arg[i].start_routine = flatten_mt;
                 push_mt(&arg[i]);
             }
@@ -191,7 +199,8 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
+        // if(THREADS <= a[0]->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -199,6 +208,7 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
                     arg[i].len = len;
                     arg[i].c_ptr = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = flip_kernels_mt;
                     push_mt(&arg[i]);
                 }
@@ -233,7 +243,8 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
+        // if(THREADS <= a[0]->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -241,6 +252,7 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
                     arg[i].len = len;
                     arg[i].c_ptr = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = hyperbolic_tangent_mt;
                     push_mt(&arg[i]);
                 }
@@ -276,7 +288,8 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS <= c->y) {
+        // if(THREADS <= c->y) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int i = 0; i < c->x; i++) {
                 for(int j = 0; j < THREADS; j++) {
@@ -284,6 +297,7 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
                     arg[j].b = b;
                     arg[j].c = c;
                     arg[j].i = i;
+                    arg[j].single_core = 0;
                     arg[j].start_routine = matmul_mt;
                     push_mt(&arg[j]);
                 }
@@ -327,7 +341,8 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
+        // if(THREADS <= a[0]->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -335,6 +350,7 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
                     arg[i].len = len;
                     arg[i].c = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = maxpool_mt;
                     push_mt(&arg[i]);
                 }
@@ -373,7 +389,8 @@ matrix **relu(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
+        // if(THREADS <= a[0]->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int m = 0; m < len; m++) {
                 for(int i = 0; i < THREADS; i++) {
@@ -381,6 +398,7 @@ matrix **relu(matrix **a, int len, matrix **c) {
                     arg[i].len = len;
                     arg[i].c_ptr = c;
                     arg[i].m = m;
+                    arg[i].single_core = 0;
                     arg[i].start_routine = relu_mt;
                     push_mt(&arg[i]);
                 }
@@ -413,11 +431,13 @@ matrix *transpose(matrix *a, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a->x) {
+        // if(THREADS <= a->x) {
+        if(1) {
             mt_arg arg[THREADS];
             for(int i = 0; i < THREADS; i++) {
                 arg[i].a = a;
                 arg[i].c = c;
+                arg[i].single_core = 0;
                 arg[i].start_routine = transpose_mt;
                 push_mt(&arg[i]);
             }

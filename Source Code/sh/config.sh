@@ -62,7 +62,7 @@ openmp() {
     OPENMP=$(dialog --title "OpenMP" --defaultno --yesno \
         "\nDo you want to enable OpenMP for parallelization, or use pthreads by default?" \
         10 60 3>&1 1>&2 2>&3)
-    if [[ "$OPENMP" -eq 0 ]]; then
+    if [[ $? -eq 0 ]]; then
         if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
             CFLAGS="$CFLAGS -Xclang -fopenmp -DOMP"
         elif [[ "$CC" == "$ICPX" ]]; then

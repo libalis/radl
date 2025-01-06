@@ -521,12 +521,12 @@ for f in figures:
             group_gap = 0.15 # Gap between groups
             indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            df_intel.drop(df_intel.index[1], inplace=True)
-            df_intel.reset_index(drop=True, inplace=True)
+            df_intel_nvidia_old.drop(df_intel_nvidia_old.index[1], inplace=True)
+            df_intel_nvidia_old.reset_index(drop=True, inplace=True)
             df_intel_nvidia.drop(df_intel_nvidia.index[1], inplace=True)
             df_intel_nvidia.reset_index(drop=True, inplace=True)
-            df_amd.drop(df_amd.index[1], inplace=True)
-            df_amd.reset_index(drop=True, inplace=True)
+            df_amd_nvidia_old.drop(df_amd_nvidia_old.index[1], inplace=True)
+            df_amd_nvidia_old.reset_index(drop=True, inplace=True)
             df_amd_nvidia.drop(df_amd_nvidia.index[1], inplace=True)
             df_amd_nvidia.reset_index(drop=True, inplace=True)
 
@@ -551,12 +551,12 @@ for f in figures:
             group_gap = 0.15 # Gap between groups
             indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            df_intel_xl.drop(df_intel_xl.index[1], inplace=True)
-            df_intel_xl.reset_index(drop=True, inplace=True)
+            df_intel_xl_nvidia_old.drop(df_intel_xl_nvidia_old.index[1], inplace=True)
+            df_intel_xl_nvidia_old.reset_index(drop=True, inplace=True)
             df_intel_xl_nvidia.drop(df_intel_xl_nvidia.index[1], inplace=True)
             df_intel_xl_nvidia.reset_index(drop=True, inplace=True)
-            df_amd_xl.drop(df_amd_xl.index[1], inplace=True)
-            df_amd_xl.reset_index(drop=True, inplace=True)
+            df_amd_xl_nvidia_old.drop(df_amd_xl_nvidia_old.index[1], inplace=True)
+            df_amd_xl_nvidia_old.reset_index(drop=True, inplace=True)
             df_amd_xl_nvidia.drop(df_amd_xl_nvidia.index[1], inplace=True)
             df_amd_xl_nvidia.reset_index(drop=True, inplace=True)
 
@@ -581,14 +581,10 @@ for f in figures:
             group_gap = 0.15 # Gap between groups
             indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            df_intel_xl.drop(df_intel_xl.index[1], inplace=True)
-            df_intel_xl.reset_index(drop=True, inplace=True)
-            df_intel_xl_nvidia.drop(df_intel_xl_nvidia.index[1], inplace=True)
-            df_intel_xl_nvidia.reset_index(drop=True, inplace=True)
-            df_amd_xl.drop(df_amd_xl.index[1], inplace=True)
-            df_amd_xl.reset_index(drop=True, inplace=True)
-            df_amd_xl_nvidia.drop(df_amd_xl_nvidia.index[1], inplace=True)
-            df_amd_xl_nvidia.reset_index(drop=True, inplace=True)
+            df_intel.drop(df_intel.index[1], inplace=True)
+            df_intel.reset_index(drop=True, inplace=True)
+            df_amd.drop(df_amd.index[1], inplace=True)
+            df_amd.reset_index(drop=True, inplace=True)
 
             ax.bar(indices - 0.5 * bar_width, df_intel['max'], width=bar_width, label=f"{label_intel} Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - 0.5 * bar_width, df_intel['avg'], width=bar_width, label=f"{label_intel} Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
@@ -613,12 +609,8 @@ for f in figures:
 
             df_intel_xl.drop(df_intel_xl.index[1], inplace=True)
             df_intel_xl.reset_index(drop=True, inplace=True)
-            df_intel_xl_nvidia.drop(df_intel_xl_nvidia.index[1], inplace=True)
-            df_intel_xl_nvidia.reset_index(drop=True, inplace=True)
             df_amd_xl.drop(df_amd_xl.index[1], inplace=True)
             df_amd_xl.reset_index(drop=True, inplace=True)
-            df_amd_xl_nvidia.drop(df_amd_xl_nvidia.index[1], inplace=True)
-            df_amd_xl_nvidia.reset_index(drop=True, inplace=True)
 
             ax.bar(indices - 0.5 * bar_width, df_intel_xl['max'], width=bar_width, label=f"{label_intel} XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
             ax.bar(indices - 0.5 * bar_width, df_intel_xl['avg'], width=bar_width, label=f"{label_intel} XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
@@ -658,7 +650,7 @@ for f in figures:
 
     # ensure the directory exists
     try:
-        os.mkdir("../Graphs/omp")
+        os.mkdir("../Graphs/4. Presentation")
     except:
         pass
 

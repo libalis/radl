@@ -218,13 +218,18 @@ static void *start_mt(void *arg) {
     mt_arg *mt = (mt_arg*)arg;
     while(1) {
         mt_arg *head = (mt_arg*)g_async_queue_pop(queue);
+        if(head->start_routine == stop_mt) {
+            break;
+        }
         head->idx = mt->idx;
         head->start_routine(head);
     }
+    free(arg);
+    return NULL;
 }
 
 static void stop_mt(mt_arg *mt) {
-    pthread_exit(EXIT_SUCCESS);
+    return;
 }
 
 void push_mt(mt_arg *mt) {
@@ -234,7 +239,7 @@ void push_mt(mt_arg *mt) {
 void wait_mt() {
     pthread_mutex_lock(&mutex);
     counter++;
-    if (counter == THREADS + 1) {
+    if(counter == THREADS + 1) {
         counter = 0;
         pthread_cond_broadcast(&cond);
     } else {
@@ -250,10 +255,10 @@ void create_mt(long threads) {
     }
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
-    mt_arg *mt = (mt_arg*)malloc(THREADS * sizeof(mt_arg));
     for(long i = 0; i < THREADS; i++) {
-        mt[i].idx = i;
-        pthread_create(&tids[i], NULL, start_mt, &mt[i]);
+        mt_arg *mt = (mt_arg*)malloc(sizeof(mt_arg));
+        mt->idx = i;
+        pthread_create(&tids[i], NULL, start_mt, mt);
     }
 }
 

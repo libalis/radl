@@ -76,14 +76,8 @@ void free_io(io *a) {
     free_matrix(a->conv_bias);
     free_matrix(a->fc_bias);
     free_matrix(a->fc_weights);
-    for(int i = 0; i < a->image_len; i++) {
-        free_matrix(a->image[i]);
-    }
-    free(a->image);
+    free_matrix_ptr(a->image, a->image_len);
     free(a->label);
-    for(int i = 0; i < a->masks_len; i++) {
-        free_matrix(a->masks[i]);
-    }
-    free(a->masks);
+    free_matrix_ptr(a->masks, a->masks_len);
     free(a);
 }

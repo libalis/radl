@@ -33,10 +33,10 @@ int main(int argc, char *argv[]) {
     fclose(file);
 
     int RUNS;
-    #if !defined(DEBUG) && !defined(OMP) && !defined(NVIDIA)
-        RUNS = sizeof(ts) / sizeof(ts[0]);
-    #else
+    #ifdef DEBUG
         RUNS = 1;
+    #else
+        RUNS = sizeof(ts) / sizeof(ts[0]);
     #endif
     for(int t = 0; t < RUNS; t++) {
         for(int i = 0; i < EPOCHS; i++) {
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
                 int max_val = index_of_max_element(a);
                 #ifdef DEBUG
-                    printf("Epoch %d done: accuracy %.2f%%\n", j, (max_val == io->label[j]) * 100.0f);
+                    printf("Epoch %d done: accuracy %f%%\n", j, (float)(max_val == io->label[j]) * 100);
                     if(max_val == io->label[j]) {
                         accurate++;
                     }

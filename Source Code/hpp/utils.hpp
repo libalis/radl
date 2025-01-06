@@ -10,7 +10,6 @@
         #define x86
         #include <immintrin.h>
     #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
-        #define ARM
         #include <arm_neon.h>
         #if defined(AMX)
             #include "../amx/aarch64.h"
