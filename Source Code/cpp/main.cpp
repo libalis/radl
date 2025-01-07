@@ -33,10 +33,10 @@ int main(int argc, char *argv[]) {
     fclose(file);
 
     int RUNS;
-    #ifdef DEBUG
-        RUNS = 1;
-    #else
+    #if !defined(DEBUG) && !defined(OMP) && !defined(NVIDIA)
         RUNS = sizeof(ts) / sizeof(ts[0]);
+    #else
+        RUNS = 1;
     #endif
     for(int t = 0; t < RUNS; t++) {
         for(int i = 0; i < EPOCHS; i++) {
