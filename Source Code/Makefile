@@ -4,7 +4,7 @@ CC := clang++
 ICPX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
-CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
+CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
 LDFLAGS := $(shell pkg-config --libs glib-2.0) -lm
 
 BUILD_DIR := ./build
@@ -103,7 +103,7 @@ xl_nvidia:
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\""
 
 amx:
-	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(DEBUG) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
 
 amx_xl:

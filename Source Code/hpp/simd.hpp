@@ -114,20 +114,47 @@
                 mt->c_ptr[mt->m]->m[get_idx(mt->i, mt->j, mt->c_ptr[mt->m]->y)] = sum;
             }
         #else
-            long CHUNK_SIZE = sizeof(float32x4_t) / sizeof(DATA_TYPE);
-            float32x4_t a, b;
-            DATA_TYPE sum = 0;
-            for(int k = 0; k < mt->b_ptr[mt->m]->x; k++) {
-                for(int l = 0; l + CHUNK_SIZE - 1 < mt->b_ptr[mt->m]->y; l += CHUNK_SIZE) {
-                    a = vld1q_f32(&mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)]);
-                    b = vld1q_f32(&mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)]);
-                    sum += vaddvq_f32(vmulq_f32(a, b));
+            #ifndef AMX
+                long CHUNK_SIZE = sizeof(float32x4_t) / sizeof(DATA_TYPE);
+                float32x4_t a, b;
+                DATA_TYPE sum = 0;
+                for(int k = 0; k < mt->b_ptr[mt->m]->x; k++) {
+                    for(int l = 0; l + CHUNK_SIZE - 1 < mt->b_ptr[mt->m]->y; l += CHUNK_SIZE) {
+                        a = vld1q_f32(&mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)]);
+                        b = vld1q_f32(&mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)]);
+                        sum += vaddvq_f32(vmulq_f32(a, b));
+                    }
+                    for(int l = mt->b_ptr[mt->m]->y - (mt->b_ptr[mt->m]->y % CHUNK_SIZE); l < mt->b_ptr[mt->m]->y; l++) {
+                        sum += mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)] * mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)];
+                    }
                 }
-                for(int l = mt->b_ptr[mt->m]->y - (mt->b_ptr[mt->m]->y % CHUNK_SIZE); l < mt->b_ptr[mt->m]->y; l++) {
-                    sum += mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)] * mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)];
+                mt->c_ptr[mt->m]->m[get_idx(mt->i, mt->j, mt->c_ptr[mt->m]->y)] = sum;
+            #else
+                long CHUNK_SIZE = 16;
+                // length of reg_z = CHUNK_SIZE * CHUNK_SIZE
+                float sum_arr[256] = {0.0};
+                DATA_TYPE sum = 0.0;
+                for(int k = 0; k < mt->b_ptr[mt->m]->x; k++) {
+                    for(int l = 0; l + CHUNK_SIZE - 1 < mt->b_ptr[mt->m]->y; l += CHUNK_SIZE) {
+                        AMX_SET();
+                        for(int o = 0; o < CHUNK_SIZE; o++) {
+                            AMX_LDX(&mt->a->m[get_idx(mt->i + k, mt->j + l + o, mt->a->y)]);
+                            AMX_LDY(&mt->b_ptr[mt->m]->m[get_idx(k, l + o, mt->b_ptr[mt->m]->y)]);
+                            AMX_FMA32(1ull << 27);
+                            AMX_STZ(&sum_arr + o * 64);
+                        }
+                        AMX_CLR();
+                        for(int i = 0; i < 256; i++) {
+                            sum += sum_arr[i];
+                            sum_arr[i] = 0.0;
+                        }
+                    }
+                    for(int l = mt->b_ptr[mt->m]->y - (mt->b_ptr[mt->m]->y % CHUNK_SIZE); l < mt->b_ptr[mt->m]->y; l++) {
+                        sum += mt->a->m[get_idx(mt->i + k, mt->j + l, mt->a->y)] * mt->b_ptr[mt->m]->m[get_idx(k, l, mt->b_ptr[mt->m]->y)];
+                    }
                 }
-            }
-            mt->c_ptr[mt->m]->m[get_idx(mt->i, mt->j, mt->c_ptr[mt->m]->y)] = sum;
+                mt->c_ptr[mt->m]->m[get_idx(mt->i, mt->j, mt->c_ptr[mt->m]->y)] = sum;
+            #endif
         #endif
     }
 
@@ -180,8 +207,8 @@
                         reset_z = 0;
                     }
                     for(int i = 0; i < CHUNK_SIZE; i++) {
-                        int z_register = (i * 4ull) << 56;
-                        AMX_STZ(z_register | (uint64_t)(mt->c->m + get_idx(mt->i, mt->j, mt->c->y)) + i * 64);
+                        // safe 1 float = 4B --> 16 float = 64B
+                        AMX_STZ(&mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] + i * 64);
                     }
                 }
                 AMX_CLR();

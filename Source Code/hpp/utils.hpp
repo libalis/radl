@@ -11,7 +11,7 @@
         #include <immintrin.h>
     #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
         #include <arm_neon.h>
-        #if defined(AMX)
+        #ifdef AMX
             #include "../amx/aarch64.h"
         #endif
     #endif

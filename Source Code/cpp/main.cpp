@@ -149,35 +149,38 @@ int main(int argc, char *argv[]) {
             processing_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
-            free_matrix(a);
-            free_matrix(mm);
-            free_matrix(transposed_f);
-            free_matrix(f);
-            free_matrix(m);
-            free_matrix_ptr(r, io->masks_len);
-            #ifdef DEBUG
-                free_matrix_ptr(hyperbolic_r, io->masks_len);
-            #endif
-            free_matrix_ptr(b, io->masks_len);
-            free_matrix_ptr(c, io->masks_len);
-            #ifdef DEBUG
-                free_matrix_ptr(flipped_c, io->masks_len);
-                free_matrix_ptr(flipped_masks, io->masks_len);
-            #endif
-            free_matrix(transposed_fc_weights);
-            free_matrix(transposed_fc_bias);
-
-            #ifdef NVIDIA
-                //free_cuda_matrix_ptr(c, io->masks_len);
-                free_cuda_matrix(d_fc_weights);
-                free_cuda_matrix_ptr(d_masks, io->masks_len);
+            // FIX: Free matrix throws an error (test with -fsanitize=address
+            #ifndef AMX
+                free_matrix(a);
+                free_matrix(mm);
+                free_matrix(transposed_f);
+                free_matrix(f);
+                free_matrix(m);
+                free_matrix_ptr(r, io->masks_len);
                 #ifdef DEBUG
-                    free_cuda_matrix_ptr(d_flipped_masks, io->masks_len);
+                    free_matrix_ptr(hyperbolic_r, io->masks_len);
                 #endif
-                free_cuda_matrix(d_img);
-            #endif
+                free_matrix_ptr(b, io->masks_len);
+                free_matrix_ptr(c, io->masks_len);
+                #ifdef DEBUG
+                    free_matrix_ptr(flipped_c, io->masks_len);
+                    free_matrix_ptr(flipped_masks, io->masks_len);
+                #endif
+                free_matrix(transposed_fc_weights);
+                free_matrix(transposed_fc_bias);
 
-            free_io(io);
+                #ifdef NVIDIA
+                    //free_cuda_matrix_ptr(c, io->masks_len);
+                    free_cuda_matrix(d_fc_weights);
+                    free_cuda_matrix_ptr(d_masks, io->masks_len);
+                    #ifdef DEBUG
+                        free_cuda_matrix_ptr(d_flipped_masks, io->masks_len);
+                    #endif
+                    free_cuda_matrix(d_img);
+                #endif
+
+                    free_io(io);
+            #endif
             free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
