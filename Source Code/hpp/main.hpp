@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-    #define MAIN_H
+#ifndef MAIN_HPP
+    #define MAIN_HPP
 
     #ifndef BENCHMARK
         #define BENCHMARK ("./csv/benchmark.csv")

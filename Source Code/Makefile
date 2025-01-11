@@ -4,7 +4,7 @@ CC := clang++
 ICPX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
-CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
+CFLAGS := $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
 LDFLAGS := $(shell pkg-config --libs glib-2.0) -lm
 
 BUILD_DIR := ./build
@@ -13,8 +13,14 @@ CU_DIR := ./cu
 HPP_DIR := ./hpp
 
 UNAME_S := $(shell uname -s)
+AVX512 := $(shell grep -m1 -o "avx512" /proc/cpuinfo)
+
 ifneq ($(UNAME_S), Darwin)
-	CFLAGS += -Xcompiler -mavx512f
+	ifneq ($(AVX512),)
+	   CFLAGS += -Xcompiler -mavx512f
+	else
+	   CFLAGS += -Xcompiler -mavx2
+	endif
 else
 	CFLAGS += -I/opt/homebrew/opt/libomp/include
 	LDFLAGS += -L/opt/homebrew/opt/libomp/lib -lomp
@@ -79,19 +85,19 @@ xl:
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl.csv\\\"\""
 
 intel:
-	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="$(CFLAGS) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_intel.csv\\\"\""
 
 omp_intel:
-	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(OMP_INTEL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_intel.csv\\\"\""
 
 omp_xl_intel:
-	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(OMP_INTEL) $(XL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="$(CFLAGS) $(OMP_INTEL) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_omp_xl_intel.csv\\\"\""
 
 xl_intel:
-	$(MAKE) CC="$(ICPX)" CFLAGS="-O1 $(CFLAGS) $(XL) \
+	$(MAKE) CC="$(ICPX)" CFLAGS="$(CFLAGS) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_intel.csv\\\"\""
 
 nvidia:
@@ -103,7 +109,7 @@ xl_nvidia:
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\""
 
 amx:
-	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(DEBUG) \
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
 
 amx_xl:

@@ -27,7 +27,7 @@ compiler() {
         CC="clang++"
     elif [[ "$COMPILER" =~ "2" ]]; then
         CC="$ICPX"
-        CFLAGS="-O1 $(CFLAGS)"
+        CFLAGS="$(CFLAGS)"
     fi
     openmp
 }
@@ -131,14 +131,23 @@ target() {
         uname
     elif [[ "$TARGET" =~ "2" ]]; then
         CC="nvcc"
-        CFLAGS="$CFLAGS -DNVIDIA -Xcompiler -mavx512f"
+        CFLAGS="$CFLAGS -DNVIDIA"
+        if grep -q "avx512" /proc/cpuinfo; then
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+        else
+            CFLAGS="$CFLAGS -Xcompiler -mavx2"
+        fi
         data_type
     fi
 }
 
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
-        CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+        if grep -q "avx512" /proc/cpuinfo; then
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+        else
+            CFLAGS="$CFLAGS -Xcompiler -mavx2"
+        fi
         architecture
         compiler
     elif [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then

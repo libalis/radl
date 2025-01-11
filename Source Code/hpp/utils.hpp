@@ -1,20 +1,8 @@
-#ifndef UTILS_H
-    #define UTILS_H
+#ifndef UTILS_HPP
+    #define UTILS_HPP
 
     #include <stdio.h>
     #include <stdlib.h>
-
-    #include "../hpp/matrix.hpp"
-
-    #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
-        #define x86
-        #include <immintrin.h>
-    #elif defined(__aarch64__) || defined(_M_ARM64) || defined(__arm__) || defined(_M_ARM)
-        #include <arm_neon.h>
-        #ifdef AMX
-            #include "../amx/aarch64.h"
-        #endif
-    #endif
 
     __attribute__((always_inline)) inline int get_decimals(int a) {
         int c = 1;
@@ -40,25 +28,4 @@
         len = 0;
         return c;
     }
-
-    __attribute__((always_inline)) inline int index_of_max_element(matrix *a) {
-        DATA_TYPE max_val = a->m[get_idx(0, 0, a->y)];
-        int idx = 0;
-        for(int i = 0; i < a->y; i++) {
-            DATA_TYPE curr_val = a->m[get_idx(0, i, a->y)];
-            if(curr_val > max_val) {
-                max_val = curr_val;
-                idx = i;
-            }
-        }
-        return idx;
-    }
-
-    #ifdef x86
-        __attribute__((always_inline)) inline bool is_avx512_supported() {
-            int cpu_info[4];
-            __asm__ __volatile__("cpuid": "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]), "=d"(cpu_info[3]): "a"(7), "c"(0));
-            return (cpu_info[1] & (1 << 16)) != 0;
-        }
-    #endif
 #endif

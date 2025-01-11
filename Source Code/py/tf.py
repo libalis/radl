@@ -129,14 +129,16 @@ with open("./data/conv_bias.txt", "w") as f:
     np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
 
 with open("./data/fc_bias.txt", "w") as f:
-    np.savetxt(f, fc_bias.shape, fmt='%f')
+    fc_bias_txt= np.transpose(np.reshape(fc_bias.eval(session=session), (-1, 1)))
+    np.savetxt(f, fc_bias_txt.shape, fmt='%f')
     f.write("\n")
-    np.savetxt(f, fc_bias.eval(session=session), fmt='%f')
+    np.savetxt(f, fc_bias_txt, fmt='%f')
 
 with open("./data/fc_weights.txt", "w") as f:
-    np.savetxt(f, fc_weights.shape, fmt='%f')
+    fc_weights_txt = np.transpose(fc_weights.eval(session=session))
+    np.savetxt(f, fc_weights_txt.shape, fmt='%f')
     f.write("\n")
-    np.savetxt(f, fc_weights.eval(session=session), fmt='%f')
+    np.savetxt(f,fc_weights_txt, fmt='%f')
 
 # save how many masks there are
 with open("./data/masks_len.txt", "w") as f:
