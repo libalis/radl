@@ -130,9 +130,9 @@
                 }
                 mt->c_ptr[mt->m]->m[get_idx(mt->i, mt->j, mt->c_ptr[mt->m]->y)] = sum;
             #else
-                long CHUNK_SIZE = 16;
+                long CHUNK_SIZE = 32;
                 // length of reg_z = CHUNK_SIZE * CHUNK_SIZE
-                float sum_arr[256] = {0.0};
+                float sum_arr[1024] = {0.0};
                 DATA_TYPE sum = 0.0;
                 for(int k = 0; k < mt->b_ptr[mt->m]->x; k++) {
                     for(int l = 0; l + CHUNK_SIZE - 1 < mt->b_ptr[mt->m]->y; l += CHUNK_SIZE) {
@@ -140,11 +140,11 @@
                         for(int o = 0; o < CHUNK_SIZE; o++) {
                             AMX_LDX(&mt->a->m[get_idx(mt->i + k, mt->j + l + o, mt->a->y)]);
                             AMX_LDY(&mt->b_ptr[mt->m]->m[get_idx(k, l + o, mt->b_ptr[mt->m]->y)]);
-                            AMX_FMA32(1ull << 27);
-                            AMX_STZ(&sum_arr + o * 64);
+                            AMX_FMA32(1ull << 62);
+                            AMX_STZ(&sum_arr + o * 128);
                         }
                         AMX_CLR();
-                        for(int i = 0; i < 256; i++) {
+                        for(int i = 0; i < 1024; i++) {
                             sum += sum_arr[i];
                             sum_arr[i] = 0.0;
                         }
@@ -196,8 +196,8 @@
                     mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] += mt->a->m[get_idx(mt->i, k, mt->a->y)] * mt->b->m[get_idx(mt->j, k, mt->b->y)];
                 }
             #else
-                long CHUNK_SIZE = 16;
-                uint32_t reset_z = 1ull << 27;
+                long CHUNK_SIZE = 32;
+                uint64_t reset_z = 1ull << 62;
                 AMX_SET();
                 for(int k = 0; k < mt->a->y; k += CHUNK_SIZE) {
                     for(int o = 0; o < CHUNK_SIZE; o++) {
@@ -205,11 +205,12 @@
                         AMX_LDY(&mt->b->m[get_idx(mt->j, k + o, mt->b->y)]);
                         AMX_FMA32(reset_z);
                         reset_z = 0;
+                        AMX_STZ(&mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] + o * 64);
                     }
-                    for(int i = 0; i < CHUNK_SIZE; i++) {
-                        // safe 1 float = 4B --> 16 float = 64B
-                        AMX_STZ(&mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] + i * 64);
-                    }
+                    // for(int i = 0; i < CHUNK_SIZE; i++) {
+                    //     // safe 1 float = 4B --> 16 float = 64B
+                    //     AMX_STZ(&mt->c->m[get_idx(mt->i, mt->j, mt->c->y)] + i * 64);
+                    // }
                 }
                 AMX_CLR();
             #endif
