@@ -22,25 +22,21 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS <= c->x) {
-            mt_arg arg[THREADS];
-            for(int i = 0; i < THREADS; i++) {
-                arg[i].a = a;
-                arg[i].b = b;
-                arg[i].c = c;
-                arg[i].single_core = 0;
-                arg[i].start_routine = add_mt;
-                push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int i = 0; i < THREADS; i++) {
+            arg[i].a = &a;
+            arg[i].b = &b;
+            arg[i].c = &c;
+            if(THREADS > c->x) {
+                arg[i].single_core = 1;
+                add_mt(&arg[i]);
+                return c;
             }
-            wait_mt();
-        } else {
-            mt_arg arg;
-            arg.a = a;
-            arg.b = b;
-            arg.c = c;
-            arg.single_core = 1;
-            add_mt(&arg);
+            arg[i].single_core = 0;
+            arg[i].start_routine = add_mt;
+            push_mt(&arg[i]);
         }
+        wait_mt();
     #endif
     return c;
 }
@@ -59,31 +55,25 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a_ptr = a;
-                    arg[i].len = len;
-                    arg[i].b = b;
-                    arg[i].c_ptr = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = biasing_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = a;
+                arg[i].b = &b;
+                arg[i].c = c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a[0]->x) {
+                    arg[i].single_core = 1;
+                    biasing_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = biasing_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a_ptr = a;
-            arg.len = len;
-            arg.b = b;
-            arg.c_ptr = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                biasing_mt(&arg);
+            if(THREADS <= a[0]->x) {
+                wait_mt();
             }
         }
     #endif
@@ -110,31 +100,25 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a->x - b[0]->x + 1) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a = a;
-                    arg[i].b_ptr = b;
-                    arg[i].len = len;
-                    arg[i].c_ptr = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = conv2d_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = &a;
+                arg[i].b = b;
+                arg[i].c = c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a->x - b[0]->x + 1) {
+                    arg[i].single_core = 1;
+                    conv2d_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = conv2d_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a = a;
-            arg.b_ptr = b;
-            arg.len = len;
-            arg.c_ptr = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                conv2d_mt(&arg);
+            if(THREADS <= a->x - b[0]->x + 1) {
+                wait_mt();
             }
         }
     #endif
@@ -156,25 +140,21 @@ matrix *flatten(matrix *a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a->x / len) {
-            mt_arg arg[THREADS];
-            for(int i = 0; i < THREADS; i++) {
-                arg[i].a = a;
-                arg[i].len = len;
-                arg[i].c = c;
-                arg[i].single_core = 0;
-                arg[i].start_routine = flatten_mt;
-                push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int i = 0; i < THREADS; i++) {
+            arg[i].a = &a;
+            arg[i].c = &c;
+            arg[i].len = len;
+            if(THREADS > a->x / len) {
+                arg[i].single_core = 1;
+                flatten_mt(&arg[i]);
+                return c;
             }
-            wait_mt();
-        } else {
-            mt_arg arg;
-            arg.a = a;
-            arg.len = len;
-            arg.c = c;
-            arg.single_core = 1;
-            flatten_mt(&arg);
+            arg[i].single_core = 0;
+            arg[i].start_routine = flatten_mt;
+            push_mt(&arg[i]);
         }
+        wait_mt();
     #endif
     return c;
 }
@@ -193,29 +173,24 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a_ptr = a;
-                    arg[i].len = len;
-                    arg[i].c_ptr = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = flip_kernels_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = a;
+                arg[i].c = c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a[0]->x) {
+                    arg[i].single_core = 1;
+                    flip_kernels_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = flip_kernels_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a_ptr = a;
-            arg.len = len;
-            arg.c_ptr = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                flip_kernels_mt(&arg);
+            if(THREADS <= a[0]->x) {
+                wait_mt();
             }
         }
     #endif
@@ -236,29 +211,24 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a_ptr = a;
-                    arg[i].len = len;
-                    arg[i].c_ptr = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = hyperbolic_tangent_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = a;
+                arg[i].c = c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a[0]->x) {
+                    arg[i].single_core = 1;
+                    hyperbolic_tangent_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = hyperbolic_tangent_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a_ptr = a;
-            arg.len = len;
-            arg.c_ptr = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                hyperbolic_tangent_mt(&arg);
+            if(THREADS <= a[0]->x) {
+                wait_mt();
             }
         }
     #endif
@@ -280,29 +250,24 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        if(THREADS <= c->y) {
-            mt_arg arg[THREADS];
-            for(int i = 0; i < c->x; i++) {
-                for(int j = 0; j < THREADS; j++) {
-                    arg[j].a = a;
-                    arg[j].b = b;
-                    arg[j].c = c;
-                    arg[j].i = i;
-                    arg[j].single_core = 0;
-                    arg[j].start_routine = matmul_mt;
-                    push_mt(&arg[j]);
+        mt_arg arg[THREADS];
+        for(int i = 0; i < c->x; i++) {
+            for(int j = 0; j < THREADS; j++) {
+                arg[j].a = &a;
+                arg[j].b = &b;
+                arg[j].c = &c;
+                arg[j].i = i;
+                if(THREADS > c->y) {
+                    arg[j].single_core = 1;
+                    matmul_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[j].single_core = 0;
+                arg[j].start_routine = matmul_mt;
+                push_mt(&arg[j]);
             }
-        } else {
-            mt_arg arg;
-            for(int i = 0; i < c->x; i++) {
-                arg.a = a;
-                arg.b = b;
-                arg.c = c;
-                arg.i = i;
-                arg.single_core = 1;
-                matmul_mt(&arg);
+            if(THREADS <= c->y) {
+                wait_mt();
             }
         }
     #endif
@@ -332,29 +297,24 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a_ptr = a;
-                    arg[i].len = len;
-                    arg[i].c = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = maxpool_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = a;
+                arg[i].c = &c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a[0]->x) {
+                    arg[i].single_core = 1;
+                    maxpool_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = maxpool_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a_ptr = a;
-            arg.len = len;
-            arg.c = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                maxpool_mt(&arg);
+            if(THREADS <= a[0]->x) {
+                wait_mt();
             }
         }
     #endif
@@ -379,29 +339,24 @@ matrix **relu(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        if(THREADS <= a[0]->x) {
-            mt_arg arg[THREADS];
-            for(int m = 0; m < len; m++) {
-                for(int i = 0; i < THREADS; i++) {
-                    arg[i].a_ptr = a;
-                    arg[i].len = len;
-                    arg[i].c_ptr = c;
-                    arg[i].m = m;
-                    arg[i].single_core = 0;
-                    arg[i].start_routine = relu_mt;
-                    push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int m = 0; m < len; m++) {
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].a = a;
+                arg[i].c = c;
+                arg[i].len = len;
+                arg[i].m = m;
+                if(THREADS > a[0]->x) {
+                    arg[i].single_core = 1;
+                    relu_mt(&arg[i]);
+                    break;
                 }
-                wait_mt();
+                arg[i].single_core = 0;
+                arg[i].start_routine = relu_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            mt_arg arg;
-            arg.a_ptr = a;
-            arg.len = len;
-            arg.c_ptr = c;
-            arg.single_core = 1;
-            for(int m = 0; m < len; m++) {
-                arg.m = m;
-                relu_mt(&arg);
+            if(THREADS <= a[0]->x) {
+                wait_mt();
             }
         }
     #endif
@@ -420,23 +375,20 @@ matrix *transpose(matrix *a, matrix *c) {
             }
         }
     #else
-        if(THREADS <= a->x) {
-            mt_arg arg[THREADS];
-            for(int i = 0; i < THREADS; i++) {
-                arg[i].a = a;
-                arg[i].c = c;
-                arg[i].single_core = 0;
-                arg[i].start_routine = transpose_mt;
-                push_mt(&arg[i]);
+        mt_arg arg[THREADS];
+        for(int i = 0; i < THREADS; i++) {
+            arg[i].a = &a;
+            arg[i].c = &c;
+            if(THREADS > a->x) {
+                arg[i].single_core = 1;
+                transpose_mt(&arg[i]);
+                return c;
             }
-            wait_mt();
-        } else {
-            mt_arg arg;
-            arg.a = a;
-            arg.c = c;
-            arg.single_core = 1;
-            transpose_mt(&arg);
+            arg[i].single_core = 0;
+            arg[i].start_routine = transpose_mt;
+            push_mt(&arg[i]);
         }
+        wait_mt();
     #endif
     return c;
 }

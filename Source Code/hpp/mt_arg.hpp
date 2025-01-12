@@ -4,14 +4,11 @@
     #include "matrix.hpp"
 
     typedef struct mt_arg {
-        long idx;
-        matrix **a_ptr;
-        matrix *a;
-        matrix **b_ptr;
-        matrix *b;
+        int idx;
+        matrix **a;
+        matrix **b;
+        matrix **c;
         int len;
-        matrix **c_ptr;
-        matrix *c;
         int m;
         int i;
         int j;

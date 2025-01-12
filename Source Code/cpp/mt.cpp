@@ -2,8 +2,9 @@
 
 #include "../hpp/mt.hpp"
 
-long COUNTER = 0;
-long THREADS = 1;
+int COUNTER = 0;
+int THREADS = 1;
+int MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
 
 GAsyncQueue *queue;
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 PROGRAM="tf"
 ICPX="/opt/intel/oneapi/compiler/latest/bin/icpx"
-CFLAGS="$(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result"
+CFLAGS="-O3 $(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result"
 LDFLAGS="$(pkg-config --libs glib-2.0) -lm"
 BUILD_DIR="./build"
 UNAME="$(uname -m)"
@@ -84,7 +84,7 @@ options() {
     if [[ $? -ne 0 ]]; then
         exit
     elif [[ "$OPTIONS" =~ "1" ]]; then
-        CFLAGS="$CFLAGS -g -pg -DDEBUG"
+        CFLAGS="$CFLAGS -g -pg -fsanitize=address -DDEBUG"
     fi
     summary
 }
