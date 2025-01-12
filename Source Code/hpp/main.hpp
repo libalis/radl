@@ -27,12 +27,12 @@
         timeval start_time;
         timeval next_time;
 
-        long create_mt_time_us;
-        long malloc_time_us;
-        long processing_time_us;
-        long free_time_us;
-        long join_mt_time_us;
-        long total_time_us;
+        long create_mt_time_us = 0;
+        long malloc_time_us = 0;
+        long processing_time_us = 0;
+        long free_time_us = 0;
+        long join_mt_time_us = 0;
+        long total_time_us = 0;
 
         #ifdef DEBUG
             printf("Run %d start\n", i);

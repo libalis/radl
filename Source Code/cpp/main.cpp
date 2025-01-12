@@ -3,16 +3,6 @@
 
 #include "../hpp/main.hpp"
 
-timeval start_time;
-timeval next_time;
-
-long create_mt_time_us = 0;
-long malloc_time_us = 0;
-long processing_time_us = 0;
-long free_time_us = 0;
-long join_mt_time_us = 0;
-long total_time_us = 0;
-
 int main(int argc, char *argv[]) {
     int ts[] = {1, 4, 5, 8, 11, 16};
 
