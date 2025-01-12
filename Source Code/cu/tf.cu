@@ -3,10 +3,21 @@
 #include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 
-long THREADS = 16;
+#define NUM_MASKS (4)
+#define MASK_SIZE (3)
+__constant__ DATA_TYPE c_masks[NUM_MASKS][MASK_SIZE][MASK_SIZE];
 
-void cuda_init() {
-    cudaFree(0);
+void init_const_memory(matrix **masks) {
+    DATA_TYPE h_masks[NUM_MASKS][MASK_SIZE][MASK_SIZE];
+    for (int i = 0; i < NUM_MASKS; i++) {
+        for (int l = 0; l < MASK_SIZE; l++) {
+            for (int k = 0; k < MASK_SIZE; k++) {
+                h_masks[i][l][k] = masks[i]->m[l * MASK_SIZE + k];
+            }
+        }
+    }
+
+    cudaMemcpyToSymbol(c_masks, h_masks, sizeof(h_masks));
 }
 
 matrix *malloc_cuda_matrix(int x, int y) {
@@ -88,46 +99,25 @@ __global__ void add_kernel(DATA_TYPE *matrix, DATA_TYPE *bias, int N, int M, int
 
     if(row < N && col < M) {
         // Add bias to each element
-        matrix[row * N + col] = matrix[row * N + col] + bias[row * K + col];
+        matrix[row * N + col] += bias[row * K + col];
     }
 }
 
 matrix *add(matrix *a, matrix *b, matrix *c) {
-    if(c == NULL) {
-        c = malloc_matrix(a->x, a->y);
-    }
-
     int N = a->x;
     int M = a->y;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    cudaMalloc(&d_matrix, bytes_n);
-    cudaMemcpy(d_matrix, a->m, bytes_n, cudaMemcpyHostToDevice);
 
     int K = b->x;
-    int L = b->y;
-    size_t bytes_b = K * L * sizeof(DATA_TYPE);
-    DATA_TYPE *d_bias;
-    cudaMalloc(&d_bias, bytes_b);
-    cudaMemcpy(d_bias, b->m, bytes_b, cudaMemcpyHostToDevice);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
-    int blocks_x = (N + threads - 1) / threads;
-    int blocks_y = (M + threads - 1) / threads;
-    dim3 block_dim(threads, threads);
+    int blocks_x = (N + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (M + threads_per_block - 1) / threads_per_block;
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
 
-    add_kernel<<<grid_dim, block_dim>>>(d_matrix, d_bias, N, M, K);
+    add_kernel<<<grid_dim, block_dim>>>(a->m, b->m, N, M, K);
     cudaDeviceSynchronize();
-    cudaMemcpy(c->m, d_matrix, bytes_n, cudaMemcpyDeviceToHost);
-
-    cudaFree(d_matrix);
-    cudaFree(d_bias);
 
     return c;
 }
@@ -144,45 +134,28 @@ __global__ void biasing_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int 
 
 matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_cuda_matrix_ptr(len, a[0]->x, a[0]->y);
     }
 
     int N = a[0]->x;
     int M = a[0]->y;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    DATA_TYPE *d_result;
-    cudaMalloc(&d_matrix, bytes_n);
-    cudaMalloc(&d_result, bytes_n);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
-    int blocks_x = (N + threads - 1) / threads;
-    int blocks_y = (M + threads - 1) / threads;
-    dim3 block_dim(threads, threads);
+    int blocks_x = (N + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (M + threads_per_block - 1) / threads_per_block;
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
 
     for(int m = 0; m < len; m++) {
-        cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-
-        biasing_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, N, M, b->m[get_idx(m, 0, b->y)]);
+        biasing_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M, b->m[get_idx(m, 0, b->y)]);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c[m]->m, d_result, bytes_n, cudaMemcpyDeviceToHost);
     }
-
-    cudaFree(d_matrix);
-    cudaFree(d_result);
-
     return c;
 }
 
 // 2D Convolution Kernel
-__global__ void conv2d_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M, DATA_TYPE *mask, int L, int K) {
+__global__ void conv2d_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M, int maskIdx, int L, int K) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -194,7 +167,7 @@ __global__ void conv2d_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M
             for(int k = 0; k < K; k++) {
                 // Range check for rows
                 if((row + l) < N && (col + k) < M) {
-                    temp += matrix[(row + l) * N + (col + k)] * mask[l * L + k];
+                    temp += matrix[(row + l) * N + (col + k)] * c_masks[maskIdx][l][k];
                 }
             }
         }
@@ -207,40 +180,27 @@ __global__ void conv2d_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M
 
 matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a->x - b[0]->x + 1, a->y - b[0]->y + 1);
+        c = malloc_cuda_matrix_ptr(len, a->x - b[0]->x + 1, a->y - b[0]->y + 1);
     }
-
     int N = a->x;
     int M = a->y;
 
     int L = b[0]->x;
     int K = b[0]->y;
-    DATA_TYPE *d_result;
-    size_t bytes_k = (N - L + 1) * (M - K + 1) * sizeof(DATA_TYPE);
-    cudaMalloc(&d_result, bytes_k);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
-
+    long threads_per_block = 32;
     // Calculate grid dimensions
-    int blocks_x = ((N-L + 1) + threads - 1) / threads;
-    int blocks_y = ((M-K + 1) + threads - 1) / threads;
+    int blocks_x = ((N-L + 1) + threads_per_block - 1) / threads_per_block;
+    int blocks_y = ((M-K + 1) + threads_per_block - 1) / threads_per_block;
 
     // Dimension launch arguments
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
 
     for(int m = 0; m < len; m++) {
-
-        conv2d_kernel<<<grid_dim, block_dim>>>(a->m, d_result, N, M, b[m]->m, L, K);
+        conv2d_kernel<<<grid_dim, block_dim>>>(a->m, c[m]->m, N, M, m, L, K);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c[m]->m, d_result, bytes_k, cudaMemcpyDeviceToHost);
     }
-    cudaFree(d_result);
 
     return c;
 }
@@ -265,42 +225,22 @@ __global__ void flatten_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int a_x, in
 
 matrix *flatten(matrix *a, int len, matrix *c) {
     if(c == NULL) {
-        // Allocate output matrix
-        c = malloc_matrix((a->x * a->y), 1);
+        c = malloc_cuda_matrix((a->x * a->y), 1);
     }
-
-    size_t bytes_a = a->x * a->y * sizeof(DATA_TYPE);
-
-    DATA_TYPE *d_matrix, *d_result;
-    cudaMalloc(&d_matrix, bytes_a);
-    cudaMalloc(&d_result, bytes_a);
-
-    cudaMemcpy(d_matrix, a->m, a->x * a->y * sizeof(DATA_TYPE), cudaMemcpyHostToDevice);
-
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
     // Calculate grid dimensions
-    int blocks_x = (len + threads - 1) / threads;
-    int blocks_y = (a->y + threads - 1) / threads;
+    int blocks_x = (len + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (a->y + threads_per_block - 1) / threads_per_block;
     int blocks_z = a->x / len;
 
     // Define block and grid dimensions
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     // Using z-dimension for slices
     dim3 grid_dim(blocks_x, blocks_y, blocks_z);
 
-    flatten_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, a->x, a->y, len);
+    flatten_kernel<<<grid_dim, block_dim>>>(a->m, c->m, a->x, a->y, len);
     cudaDeviceSynchronize();
-
-    cudaMemcpy(c->m, d_result, bytes_a, cudaMemcpyDeviceToHost);
-
-    // Free device memory
-    cudaFree(d_matrix);
-    cudaFree(d_result);
 
     return c;
 }
@@ -333,83 +273,56 @@ __global__ void flip_kernels_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N,
 
 matrix **flip_kernels(matrix **a, int len, matrix **c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_cuda_matrix_ptr(len, a[0]->x, a[0]->y);
     }
 
     int N = a[0]->x;
     int M = a[0]->y;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
 
-    DATA_TYPE *d_result;
-    cudaMalloc(&d_result, bytes_n);
-
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
     // Calculate grid dimensions
-    int blocks_x = (N + threads - 1) / threads;
-    int blocks_y = (M + threads - 1) / threads;
+    int blocks_x = (N + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (M + threads_per_block - 1) / threads_per_block;
 
     // Dimension launch arguments
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
-
     for(int m = 0; m < len; m++) {
-        flip_kernels_kernel<<<grid_dim, block_dim>>>(a[m]->m, d_result, N, M);
+        flip_kernels_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c[m]->m, d_result, bytes_n, cudaMemcpyDeviceToHost);
     }
-
-    cudaFree(d_result);
 
     return c;
 }
 
-__global__ void hyperbolic_tangent_kernel(DATA_TYPE *matrix, int N, int M) {
+__global__ void hyperbolic_tangent_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(row < N && col < M) {
-        matrix[row * N + col] = tanh(matrix[row * N + col]);
+        result[row * N + col] = tanhf(matrix[row * N + col]);
     }
 }
 
 matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_cuda_matrix_ptr(len, a[0]->x, a[0]->y);
     }
     int N = a[0]->x;
     int M = a[0]->y;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    cudaMalloc(&d_matrix, bytes_n);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
-    int blocks_x = (N + threads - 1) / threads;
-    int blocks_y = (M + threads - 1) / threads;
+    int blocks_x = (N + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (M + threads_per_block - 1) / threads_per_block;
 
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
-
     for(int m = 0; m < len; m++) {
-        cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-
-        hyperbolic_tangent_kernel<<<grid_dim, block_dim>>>(d_matrix, N, M);
+        hyperbolic_tangent_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c[m]->m, d_matrix, bytes_n, cudaMemcpyDeviceToHost);
     }
-
-    cudaFree(d_matrix);
 
     return c;
 }
@@ -430,45 +343,25 @@ __global__ void matmul_kernel(const DATA_TYPE *a, const DATA_TYPE *b, DATA_TYPE 
 
 matrix *matmul(matrix *a, matrix *b, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix(a->x, b->y);
+        c = malloc_cuda_matrix(a->x, b->y);
     }
 
     int M = a->x;
     int K = a->y;
     int N = b->y;
 
-    size_t bytes_a = M * K * sizeof(DATA_TYPE);
-    size_t bytes_c = M * N * sizeof(DATA_TYPE);
+    long threads_per_block = 32;
 
-    DATA_TYPE *d_a;
-    DATA_TYPE *d_c;
-    cudaMalloc(&d_a, bytes_a);
-    cudaMalloc(&d_c, bytes_c);
+    // N / threads_per_block;
+    int BLOCKS_X = (N + threads_per_block - 1) / threads_per_block;
+    // M / threads_per_block;
+    int BLOCKS_Y = (M + threads_per_block - 1) / threads_per_block;
 
-    cudaMemcpy(d_a, a->m, bytes_a, cudaMemcpyHostToDevice);
-
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
-
-    // N / threads;
-    int BLOCKS_X = (N + threads - 1) / threads;
-    // M / threads;
-    int BLOCKS_Y = (M + threads - 1) / threads;
-
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(BLOCKS_X, BLOCKS_Y);
 
-    matmul_kernel<<<grid_dim, block_dim>>>(d_a, b->m, d_c, N, M, K);
+    matmul_kernel<<<grid_dim, block_dim>>>(a->m, b->m, c->m, N, M, K);
     cudaDeviceSynchronize();
-
-    cudaMemcpy(c->m, d_c, bytes_c, cudaMemcpyDeviceToHost);
-
-    cudaFree(d_a);
-    //cudaFree(d_b);
-    cudaFree(d_c);
 
     return c;
 }
@@ -503,44 +396,25 @@ __global__ void maxpool_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int 
 
 matrix *maxpool(matrix **a, int len, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
+        c = malloc_cuda_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
     }
 
     int N = a[0]->x;
-    int K = a[0]->y;
-    size_t bytes_n = N * K * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    cudaMalloc(&d_matrix, bytes_n);
 
     int M = c->x / len;
     int L = c->y;
-    size_t bytes_m = M * L * sizeof(DATA_TYPE);
-    DATA_TYPE *d_result;
-    cudaMalloc(&d_result, bytes_m);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
-    int blocks_x = (M + threads - 1) / threads;
-    int blocks_y = (L + threads - 1) / threads;
+    int blocks_x = (M + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (L + threads_per_block - 1) / threads_per_block;
 
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
-
     for(int m = 0; m < len; m++) {
-        cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-
-        maxpool_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, N, M, L);
+        maxpool_kernel<<<grid_dim, block_dim>>>(a[m]->m, c->m + m * M * L, N, M, L);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c->m + m * M * L, d_result, bytes_m, cudaMemcpyDeviceToHost);
     }
-
-    cudaFree(d_matrix);
-    cudaFree(d_result);
 
     return c;
 }
@@ -557,40 +431,22 @@ __global__ void relu_kernel(DATA_TYPE *matrix, int N, int M) {
 }
 
 matrix **relu(matrix **a, int len, matrix **c) {
-    if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
-    }
-
     int N = a[0]->x;
     int M = a[0]->y;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    cudaMalloc(&d_matrix, bytes_n);
 
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
+    long threads_per_block = 32;
 
-    int blocks_x = (N + threads - 1) / threads;
-    int blocks_y = (M + threads - 1) / threads;
+    int blocks_x = (N + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (M + threads_per_block - 1) / threads_per_block;
 
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(blocks_x, blocks_y);
-
     for(int m = 0; m < len; m++) {
-        cudaMemcpy(d_matrix, a[m]->m, bytes_n, cudaMemcpyHostToDevice);
-
-        relu_kernel<<<grid_dim, block_dim>>>(d_matrix, N, M);
+        relu_kernel<<<grid_dim, block_dim>>>(a[m]->m, N, M);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(c[m]->m, d_matrix, bytes_n, cudaMemcpyDeviceToHost);
     }
 
-    cudaFree(d_matrix);
-
-    return c;
+    return a;
 }
 
 __global__ void transpose_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, int M) {
@@ -598,48 +454,29 @@ __global__ void transpose_kernel(DATA_TYPE *matrix, DATA_TYPE *result, int N, in
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(row < N && col < M) {
-        result[col * N + row] = matrix[row * M + col];
+        result[row * M + col] = matrix[col * N + row];
     }
 }
 
 matrix *transpose(matrix *a, matrix *c) {
     if(c == NULL) {
-        // Allocate transposed matrix
-        c = malloc_matrix(a->y, a->x);
+        c = malloc_cuda_matrix(a->y, a->x);
     }
 
     int N = a->y;
     int M = a->x;
-    size_t bytes_n = N * M * sizeof(DATA_TYPE);
-    DATA_TYPE *d_matrix;
-    DATA_TYPE *d_result;
 
-    cudaMalloc(&d_matrix, bytes_n);
-    cudaMalloc(&d_result, bytes_n);
+    long threads_per_block = 32;
 
-    cudaMemcpy(d_matrix, a->m, bytes_n, cudaMemcpyHostToDevice);
-
-    #ifndef XL
-        long threads = 32;
-    #else
-        long threads = 1024;
-    #endif
-
-    dim3 block_dim(threads, threads);
+    dim3 block_dim(threads_per_block, threads_per_block);
 
     // M NOT N
-    int blocks_x = (M + threads - 1) / threads;
-    int blocks_y = (N + threads - 1) / threads;
+    int blocks_x = (M + threads_per_block - 1) / threads_per_block;
+    int blocks_y = (N + threads_per_block - 1) / threads_per_block;
     dim3 grid_dim(blocks_x, blocks_y);
 
-    transpose_kernel<<<grid_dim, block_dim>>>(d_matrix, d_result, N, M);
+    transpose_kernel<<<grid_dim, block_dim>>>(a->m, c->m, N, M);
     cudaDeviceSynchronize();
-
-    cudaMemcpy(c->m, d_result, bytes_n, cudaMemcpyDeviceToHost);
-
-    // Free device memory
-    cudaFree(d_matrix);
-    cudaFree(d_result);
 
     return c;
 }

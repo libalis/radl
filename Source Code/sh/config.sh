@@ -84,7 +84,11 @@ options() {
     if [[ $? -ne 0 ]]; then
         exit
     elif [[ "$OPTIONS" =~ "1" ]]; then
-        CFLAGS="$CFLAGS -g -pg -fsanitize=address -DDEBUG"
+        CFLAGS="$CFLAGS -g -pg"
+        if [[ "$CC" != "nvcc" ]]; then
+            CFLAGS="$CFLAGS -fsanitize=address"
+        fi
+        CFLAGS="$CFLAGS -DDEBUG"
     fi
     summary
 }
@@ -133,7 +137,7 @@ target() {
         CC="nvcc"
         CFLAGS="$CFLAGS -DNVIDIA"
         if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw"
         else
             CFLAGS="$CFLAGS -Xcompiler -mavx2"
         fi
@@ -144,7 +148,7 @@ target() {
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
         if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw"
         else
             CFLAGS="$CFLAGS -Xcompiler -mavx2"
         fi

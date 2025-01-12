@@ -54,37 +54,50 @@
         io *io = malloc_io();
 
         #ifdef NVIDIA
+            matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
             matrix *d_img = malloc_cuda_matrix(io->image[0]->x, io->image[0]->y);
             #ifdef DEBUG
+                matrix **d_masks = malloc_cuda_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+                for (int m = 0; m < io->masks_len; m++) {
+                    copy_cuda_matrix(io->masks[m], d_masks[m], true);
+                }
                 matrix **d_flipped_masks = malloc_cuda_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+                matrix **d_flipped_c = malloc_cuda_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1);
             #endif
-            matrix **d_masks = malloc_cuda_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
-            for (int m = 0; m < io->masks_len; m++) {
-                copy_cuda_matrix(io->masks[m], d_masks[m], true);
-            }
-
-            matrix *transposed_fc_bias = transpose(io->fc_bias, NULL);
-            matrix *transposed_fc_weights = transpose(io->fc_weights, NULL);
-
-            matrix *d_fc_weights = malloc_cuda_matrix(transposed_fc_weights->x, transposed_fc_weights->y);
-            copy_cuda_matrix(transposed_fc_weights, d_fc_weights, true);
+            init_const_memory(io->masks);
+            matrix *d_fc_weights = malloc_cuda_matrix(io->fc_weights->x, io->fc_weights->y);
+            copy_cuda_matrix(io->fc_weights, d_fc_weights, true);
+            matrix *d_transposed_fc_weights = malloc_cuda_matrix(d_fc_weights->y, d_fc_weights->x);
+            transpose(d_fc_weights, d_transposed_fc_weights);
+            matrix **d_c = malloc_cuda_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1);
+            matrix **d_calc = malloc_cuda_matrix_ptr(io->masks_len, d_c[0]->x, d_c[0]->y);
+            #ifdef DEBUG
+                matrix **d_hyperbolic_r = malloc_cuda_matrix_ptr(io->masks_len, d_calc[0]->x, d_calc[0]->y);
+            #endif
+            matrix *d_m = malloc_cuda_matrix(io->masks_len * (d_calc[0]->x / POOL_LEN), (d_calc[0]->y / POOL_LEN));
+            matrix *d_f = malloc_cuda_matrix(d_m->x * d_m->y, 1);
+            matrix* d_transposed_f = malloc_cuda_matrix(d_f->y, d_f->x);
+            matrix* d_end = malloc_cuda_matrix(d_transposed_f->x, d_fc_weights->x);
+            matrix* d_fc_bias = malloc_cuda_matrix(io->fc_bias->x, io->fc_bias->y);
+            copy_cuda_matrix(io->fc_bias, d_fc_bias, true);
+            matrix *a = malloc_matrix(d_end->x, d_end->y);
+        #else
+            #ifdef DEBUG
+                matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
+                matrix **flipped_c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - flipped_masks[0]->x + 1, io->image[0]->y - flipped_masks[0]->y + 1);
+            #endif
+            matrix **c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1);
+            matrix **b = malloc_matrix_ptr(io->masks_len, c[0]->x, c[0]->y);
+            #ifdef DEBUG
+                matrix **hyperbolic_r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
+            #endif
+            matrix **r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
+            matrix *m = malloc_matrix(io->masks_len * (r[0]->x / POOL_LEN), (r[0]->y / POOL_LEN));
+            matrix *f = malloc_matrix(m->x * m->y, 1);
+            matrix *transposed_f = malloc_matrix(f->y, f->x);
+            matrix *mm = malloc_matrix(transposed_f->x, io->fc_weights->x);
+            matrix *a = malloc_matrix(mm->x, mm->y);
         #endif
-
-        #ifdef DEBUG
-            matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
-            matrix **flipped_c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - flipped_masks[0]->x + 1, io->image[0]->y - flipped_masks[0]->y + 1);
-        #endif
-        matrix **c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1);
-        matrix **b = malloc_matrix_ptr(io->masks_len, c[0]->x, c[0]->y);
-        #ifdef DEBUG
-            matrix **hyperbolic_r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
-        #endif
-        matrix **r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
-        matrix *m = malloc_matrix(io->masks_len * (r[0]->x / POOL_LEN), (r[0]->y / POOL_LEN));
-        matrix *f = malloc_matrix(m->x * m->y, 1);
-        matrix *transposed_f = malloc_matrix(f->y, f->x);
-        matrix *mm = malloc_matrix(transposed_f->x, io->fc_weights->x);
-        matrix *a = malloc_matrix(mm->x, mm->y);
 
         int max_val = 0;
 
@@ -99,23 +112,26 @@
             #ifdef NVIDIA
                 copy_cuda_matrix(io->image[j], d_img, true);
                 #ifdef DEBUG
-                    flip_kernels(d_masks, io->masks_len, flipped_masks);
+                    flip_kernels(d_masks, io->masks_len, d_flipped_masks);
                     for(int m = 0; m < io->masks_len; m++) {
-                        copy_cuda_matrix(flipped_masks[m], d_flipped_masks[m], true);
+                        copy_cuda_matrix(flipped_masks[m], d_flipped_masks[m], false);
                     }
-                    conv2d(d_img, d_flipped_masks, io->masks_len, flipped_c);
+                    init_const_memory(flipped_masks);
+                    conv2d(d_img, d_flipped_masks, io->masks_len, d_flipped_c);
+                    init_const_memory(io->masks);
                 #endif
-                conv2d(d_img, d_masks, io->masks_len, c);
-                biasing(c, io->masks_len, io->conv_bias, b);
+                conv2d(d_img, io->masks, io->masks_len, d_c);
+                biasing(d_c, io->masks_len, io->conv_bias, d_calc);
                 #ifdef DEBUG
-                    hyperbolic_tangent(b, io->masks_len, hyperbolic_r);
+                    hyperbolic_tangent(d_calc, io->masks_len, d_hyperbolic_r);
                 #endif
-                relu(b, io->masks_len, r);
-                maxpool(r, io->masks_len, m);
-                flatten(m, io->masks_len, f);
-                transpose(f, transposed_f);
-                matmul(transposed_f, d_fc_weights, mm);
-                add(mm, transposed_fc_bias, a);
+                relu(d_calc, io->masks_len, NULL);
+                maxpool(d_calc, io->masks_len, d_m);
+                flatten(d_m, io->masks_len, d_f);
+                transpose(d_f, d_transposed_f);
+                matmul(d_transposed_f, d_transposed_fc_weights, d_end);
+                add(d_end, d_fc_bias, NULL);
+                copy_cuda_matrix(a, d_end, false);
                 max_val = index_of_max_element(a);
             #else
                 #ifdef DEBUG
@@ -153,33 +169,43 @@
         processing_time_us = delta_time_us(next_time, stop_timer());
         next_time = start_timer();
 
-        free_matrix(a);
-        free_matrix(mm);
-        free_matrix(transposed_f);
-        free_matrix(f);
-        free_matrix(m);
-        free_matrix_ptr(r, io->masks_len);
-        #ifdef DEBUG
-            free_matrix_ptr(hyperbolic_r, io->masks_len);
-        #endif
-        free_matrix_ptr(b, io->masks_len);
-        free_matrix_ptr(c, io->masks_len);
-        #ifdef DEBUG
-            free_matrix_ptr(flipped_c, io->masks_len);
-            free_matrix_ptr(flipped_masks, io->masks_len);
-        #endif
-
         #ifdef NVIDIA
-            free_cuda_matrix(d_fc_weights);
-
-            free_matrix(transposed_fc_weights);
-            free_matrix(transposed_fc_bias);
-
-            free_cuda_matrix_ptr(d_masks, io->masks_len);
+            free_matrix(a);
+            free_cuda_matrix(d_fc_bias);
+            free_cuda_matrix(d_end);
+            free_cuda_matrix(d_transposed_f);
+            free_cuda_matrix(d_f);
+            free_cuda_matrix(d_m);
             #ifdef DEBUG
+                free_cuda_matrix_ptr(d_hyperbolic_r, io->masks_len);
+            #endif
+            free_cuda_matrix_ptr(d_calc, io->masks_len);
+            free_cuda_matrix_ptr(d_c, io->masks_len);
+            free_cuda_matrix(d_transposed_fc_weights);
+            free_cuda_matrix(d_fc_weights);
+            #ifdef DEBUG
+                free_cuda_matrix_ptr(d_flipped_c, io->masks_len);
                 free_cuda_matrix_ptr(d_flipped_masks, io->masks_len);
+                free_cuda_matrix_ptr(d_masks, io->masks_len);
             #endif
             free_cuda_matrix(d_img);
+            free_matrix_ptr(flipped_masks, io->masks_len);
+        #else
+            free_matrix(a);
+            free_matrix(mm);
+            free_matrix(transposed_f);
+            free_matrix(f);
+            free_matrix(m);
+            free_matrix_ptr(r, io->masks_len);
+            #ifdef DEBUG
+                free_matrix_ptr(hyperbolic_r, io->masks_len);
+            #endif
+            free_matrix_ptr(b, io->masks_len);
+            free_matrix_ptr(c, io->masks_len);
+            #ifdef DEBUG
+                free_matrix_ptr(flipped_c, io->masks_len);
+                free_matrix_ptr(flipped_masks, io->masks_len);
+            #endif
         #endif
 
         free_io(io);

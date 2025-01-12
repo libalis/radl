@@ -8,7 +8,7 @@
     #endif
 
     #ifdef NVIDIA
-        void cuda_init();
+        void init_const_memory(matrix** masks);
         matrix *malloc_cuda_matrix(int x, int y);
         matrix **malloc_cuda_matrix_ptr(int len, int x, int y);
         void free_cuda_matrix(matrix *a);

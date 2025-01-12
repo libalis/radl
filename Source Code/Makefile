@@ -17,7 +17,7 @@ AVX512 := $(shell grep -m1 -o "avx512" /proc/cpuinfo)
 
 ifneq ($(UNAME_S), Darwin)
 	ifneq ($(AVX512),)
-	   CFLAGS += -Xcompiler -mavx512f
+	   CFLAGS += -Xcompiler -mavx512f -Xcompiler -mavx512bw
 	else
 	   CFLAGS += -Xcompiler -mavx2
 	endif
@@ -49,16 +49,6 @@ config:
 
 debug:
 	$(MAKE) CFLAGS="$(CFLAGS) $(DEBUG)"
-
-ifneq ($(UNAME_S), Darwin)
-debug_omp:
-	$(MAKE) CFLAGS="$(CFLAGS) $(OMP) $(DEBUG) \
-	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
-else
-debug_omp:
-	$(MAKE) CFLAGS="$(CFLAGS) $(OMP_DARWIN) $(DEBUG) \
-	-DBENCHMARK=\"\\\"./csv/benchmark_omp.csv\\\"\""
-endif
 
 ifneq ($(UNAME_S), Darwin)
 omp:
@@ -175,4 +165,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean config debug debug_omp omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin
+.PHONY: all clean config debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin
