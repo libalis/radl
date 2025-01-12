@@ -37,13 +37,15 @@ with open("./tmp/conv_bias.txt", "w") as f:
     np.savetxt(f, xl, fmt='%f')
 
 with open("./tmp/fc_bias.txt", "w") as f:
-    xl = np.random.uniform(-1, 1, 10)
+    fc_bias_txt = np.random.uniform(-1, 1, 10)
+    xl = np.transpose(fc_bias_txt)
     np.savetxt(f, xl.shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, xl, fmt='%f')
 
 with open("./tmp/fc_weights.txt", "w") as f:
-    xl = np.random.uniform(-1, 1, (30 * scale_factor * 30 * scale_factor, 10))
+    fc_weights_txt = np.random.uniform(-1, 1, (30 * scale_factor * 30 * scale_factor, 10))
+    xl = np.transpose(fc_weights_txt)
     np.savetxt(f, xl.shape, fmt='%f')
     f.write("\n")
     np.savetxt(f, xl, fmt='%f')
