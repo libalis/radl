@@ -102,6 +102,9 @@ amx:
 	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
 
+debug_amx:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(DEBUG)"
+
 amx_xl:
 	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx_xl.csv\\\"\""

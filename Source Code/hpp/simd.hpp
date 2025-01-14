@@ -189,23 +189,33 @@
             #else
                 #ifdef INT
                 #else
-                    const long CHUNK_SIZE = 32;
-                    DATA_TYPE sum_arr[CHUNK_SIZE * CHUNK_SIZE] = {0};
-                    DATA_TYPE sum = 0.0;
+                    const long LANE_SIZE = 16; // only 16 values can be performed at once
+                    const long CHUNK_SIZE = 4 * LANE_SIZE;
+                    DATA_TYPE z_reg[LANE_SIZE];
+                    DATA_TYPE sum = 0;
+                    uint64_t stz = (uint64_t)&z_reg;
                     for(int k = 0; k < mt->b[mt->m]->x; k++) {
                         for(int l = 0; l + CHUNK_SIZE - 1 < mt->b[mt->m]->y; l += CHUNK_SIZE) {
+                            uint64_t ldx = (uint64_t)&(*mt->a)->m[get_idx(mt->i + k, mt->j + l, (*mt->a)->y)];
+                            ldx = ldx | 1ull << 60; // four registers
+                            ldx = ldx | 1ull << 62; // multiple registers
+                            uint64_t ldy = (uint64_t)&mt->b[mt->m]->m[get_idx(k, l, mt->b[mt->m]->y)];
+                            ldy = ldy | 1ull << 60; // four registers
+                            ldy = ldy | 1ull << 62; // multiple registers
                             AMX_SET();
-                            for(int o = 0; o < CHUNK_SIZE; o++) {
-                                AMX_LDX(&(*mt->a)->m[get_idx(mt->i + k, mt->j + l + o, (*mt->a)->y)]);
-                                AMX_LDY(&mt->b[mt->m]->m[get_idx(k, l + o, mt->b[mt->m]->y)]);
-                                AMX_FMA32(1ull << 62);
-                                AMX_STZ(&sum_arr + o * 128);
+                            AMX_LDX(ldx);
+                            AMX_LDY(ldy);
+                            uint64_t fma32 = 1ull << 63; // vector mode
+                            for(int i = 0; i < CHUNK_SIZE / LANE_SIZE; i++) {
+                                size_t i_offset = LANE_SIZE * i * sizeof(DATA_TYPE);
+                                AMX_FMA32(fma32 + i_offset + (i_offset << 10)); // x and y offset
                             }
+                            AMX_STZ(stz);
                             AMX_CLR();
-                            for(int i = 0; i < 1024; i++) {
-                                sum += sum_arr[i];
-                                sum_arr[i] = 0.0;
+                            for(int i = 0; i < LANE_SIZE; i++) {
+                                sum += z_reg[i];
                             }
+                            mt->c[mt->m]->m[get_idx(mt->i, mt->j, mt->c[mt->m]->y)] = sum;
                         }
                         for(int l = mt->b[mt->m]->y - (mt->b[mt->m]->y % CHUNK_SIZE); l < mt->b[mt->m]->y; l++) {
                             sum += (*mt->a)->m[get_idx(mt->i + k, mt->j + l, (*mt->a)->y)] * mt->b[mt->m]->m[get_idx(k, l, mt->b[mt->m]->y)];
@@ -266,19 +276,37 @@
             #else
                 #ifdef INT
                 #else
-                    long CHUNK_SIZE = 32;
-                    uint64_t reset_z = 1ull << 62;
+                    const long LANE_SIZE = 16; // only 16 values can be performed at once
+                    const long CHUNK_SIZE = 4 * LANE_SIZE;
+                    DATA_TYPE z_reg[LANE_SIZE];
+                    DATA_TYPE sum = 0;
+                    uint64_t ldx = (uint64_t)&(*mt->a)->m[get_idx(mt->i, 0, (*mt->a)->y)];
+                    ldx = ldx | 1ull << 60; // four registers
+                    ldx = ldx | 1ull << 62; // multiple registers
+                    uint64_t ldy = (uint64_t)&(*mt->b)->m[get_idx(mt->j, 0, (*mt->b)->y)];
+                    ldy = ldy | 1ull << 60; // four registers
+                    ldy = ldy | 1ull << 62; // multiple registers
+                    uint64_t fma32 = 1ull << 63; // vector mode
+                    uint64_t stz = (uint64_t)&z_reg;
                     AMX_SET();
-                    for(int k = 0; k < (*mt->a)->y; k += CHUNK_SIZE) {
-                        for(int o = 0; o < CHUNK_SIZE; o++) {
-                            AMX_LDX(&(*mt->a)->m[get_idx(mt->i, k + o, (*mt->a)->y)]);
-                            AMX_LDY(&(*mt->b)->m[get_idx(mt->j, k + o, (*mt->b)->y)]);
-                            AMX_FMA32(reset_z);
-                            reset_z = 0;
-                            AMX_STZ(&(*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] + o * 64);
+                    for(int k = 0; k + CHUNK_SIZE - 1 < (*mt->a)->y; k += CHUNK_SIZE) {
+                        size_t k_offset = k * sizeof(DATA_TYPE);
+                        AMX_LDX(ldx + k_offset);
+                        AMX_LDY(ldy + k_offset);
+                        for(int i = 0; i < CHUNK_SIZE / LANE_SIZE; i++) {
+                            size_t i_offset = LANE_SIZE * i * sizeof(DATA_TYPE);
+                            AMX_FMA32(fma32 + i_offset + (i_offset << 10)); // x and y offset
                         }
                     }
+                    AMX_STZ(stz);
                     AMX_CLR();
+                    for(int i = 0; i < LANE_SIZE; i++) {
+                        sum += z_reg[i];
+                    }
+                    (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] = sum;
+                    for(int k = (*mt->a)->y - ((*mt->a)->y % CHUNK_SIZE); k < (*mt->a)->y; k++) {
+                        (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] += (*mt->a)->m[get_idx(mt->i, k, (*mt->a)->y)] * (*mt->b)->m[get_idx(mt->j, k, (*mt->b)->y)];
+                    }
                 #endif
             #endif
         #endif
