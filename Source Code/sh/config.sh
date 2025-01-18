@@ -137,7 +137,7 @@ target() {
         CC="nvcc"
         CFLAGS="$CFLAGS -DNVIDIA"
         if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw"
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
         else
             CFLAGS="$CFLAGS -Xcompiler -mavx2"
         fi
@@ -148,7 +148,7 @@ target() {
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
         if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw"
+            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
         else
             CFLAGS="$CFLAGS -Xcompiler -mavx2"
         fi

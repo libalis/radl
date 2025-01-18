@@ -17,7 +17,7 @@ AVX512 := $(shell grep -m1 -o "avx512" /proc/cpuinfo)
 
 ifneq ($(UNAME_S), Darwin)
 	ifneq ($(AVX512),)
-	   CFLAGS += -Xcompiler -mavx512f -Xcompiler -mavx512bw
+	   CFLAGS += -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl
 	else
 	   CFLAGS += -Xcompiler -mavx2
 	endif
@@ -28,6 +28,7 @@ endif
 
 AMX := -DAMX
 DEBUG := -g -pg -fsanitize=address -DDEBUG
+INT := -DINT
 NVIDIA := -DNVIDIA
 OMP := -Xcompiler -fopenmp -DOMP
 OMP_DARWIN := -Xclang -fopenmp -DOMP
@@ -98,16 +99,25 @@ xl_nvidia:
 	$(MAKE) CC="$(NVCC)" CFLAGS="$(CFLAGS) $(NVIDIA) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_xl_nvidia.csv\\\"\""
 
+debug_amx:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(DEBUG) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
+
 amx:
 	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx.csv\\\"\""
 
-debug_amx:
-	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(DEBUG)"
-
 amx_xl:
 	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx_xl.csv\\\"\""
+
+int:
+	$(MAKE) CFLAGS="$(CFLAGS) $(INT) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_int.csv\\\"\""
+
+int_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) $(INT) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_int_xl.csv\\\"\""
 
 benchmark:
 	$(MAKE) clean
@@ -121,6 +131,12 @@ benchmark:
 	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) int
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) int_xl
 	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
@@ -168,4 +184,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean config debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia amx amx_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin
+.PHONY: all clean config debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia debug_amx amx amx_xl int int_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin
