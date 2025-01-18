@@ -62,9 +62,9 @@ df_apple_omp_xl_raw = pd.read_csv("./csv/4. Presentation/apple/benchmark_omp_xl.
 df_apple_xl_raw = pd.read_csv("./csv/4. Presentation/apple/benchmark_xl.csv")
 df_apple_xl_old_raw = pd.read_csv("./csv/3. Presentation/apple/benchmark_xl.csv")
 df_apple_amx = pd.read_csv("./csv/5. Presentation/apple/benchmark_amx.csv")
-df_apple_amx_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark_amx.csv")
+df_apple_amx_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark_amx_xl.csv")
 df_apple_neon = pd.read_csv("./csv/5. Presentation/apple/benchmark.csv")
-df_apple_neon_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark.csv")
+df_apple_neon_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark_xl.csv")
 
 tt_apple = df_apple_raw['total_time_us'].values
 tt_apple_old = df_apple_old_raw['total_time_us'].values
@@ -73,9 +73,9 @@ tt_apple_omp_xl = df_apple_omp_xl_raw['total_time_us'].values
 tt_apple_xl = df_apple_xl_raw['total_time_us'].values
 tt_apple_xl_old = df_apple_xl_old_raw['total_time_us'].values
 tt_apple_amx = df_apple_amx['total_time_us'].values
-tt_apple_amx_xl = df_apple_amx['total_time_us'].values
+tt_apple_amx_xl = df_apple_amx_xl['total_time_us'].values
 tt_apple_neon = df_apple_neon['total_time_us'].values
-tt_apple_neon_xl = df_apple_neon['total_time_us'].values
+tt_apple_neon_xl = df_apple_neon_xl['total_time_us'].values
 
 # intel
 df_intel_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark.csv")
@@ -221,6 +221,19 @@ for i in range(len(threads)):
         df_amd_xl_nvidia_old.loc[threads_omp.index(threads[i]), 'max'] = np.max(tt_amd_xl_nvidia_old[0:10])
 
     # apple
+    if threads[i] == 1:
+        df_apple_amx.loc[threads.index(threads[i]), 'min'] = np.min(tt_apple_amx[10*i:10*(i+1)])
+        df_apple_amx.loc[threads.index(threads[i]), 'avg'] = np.average(tt_apple_amx[10*i:10*(i+1)])
+        df_apple_amx.loc[threads.index(threads[i]), 'max'] = np.max(tt_apple_amx[10*i:10*(i+1)])
+        df_apple_amx_xl.loc[threads.index(threads[i]), 'min'] = np.min(tt_apple_amx_xl[10*i:10*(i+1)])
+        df_apple_amx_xl.loc[threads.index(threads[i]), 'avg'] = np.average(tt_apple_amx_xl[10*i:10*(i+1)])
+        df_apple_amx_xl.loc[threads.index(threads[i]), 'max'] = np.max(tt_apple_amx_xl[10*i:10*(i+1)])
+        df_apple_neon.loc[threads.index(threads[i]), 'min'] = np.min(tt_apple_neon[10*i:10*(i+1)])
+        df_apple_neon.loc[threads.index(threads[i]), 'avg'] = np.average(tt_apple_neon[10*i:10*(i+1)])
+        df_apple_neon.loc[threads.index(threads[i]), 'max'] = np.max(tt_apple_neon[10*i:10*(i+1)])
+        df_apple_neon_xl.loc[threads.index(threads[i]), 'min'] = np.min(tt_apple_neon_xl[10*i:10*(i+1)])
+        df_apple_neon_xl.loc[threads.index(threads[i]), 'avg'] = np.average(tt_apple_neon_xl[10*i:10*(i+1)])
+
     if threads[i] == 11:
         df_apple.loc[threads_omp.index(threads[i]), 'min'] = np.min(tt_apple[10*i:10*(i+1)])
         df_apple.loc[threads_omp.index(threads[i]), 'avg'] = np.average(tt_apple[10*i:10*(i+1)])
@@ -307,7 +320,7 @@ for i in range(len(threads)):
 """
 CREATE FIGURES
 """
-figures = ["simd", "simd_xl", "omp", "omp_xl", "simd_intel", "simd_xl_intel", "omp_intel", "omp_xl_intel", "cuda", "cuda_xl", "cpu_gpu", "cpu_gpu_xl", "amx"]
+figures = ["simd", "simd_xl", "omp", "omp_xl", "simd_intel", "simd_xl_intel", "omp_intel", "omp_xl_intel", "cuda", "cuda_xl", "cpu_gpu", "cpu_gpu_xl", "amx", "amx_xl"]
 for f in figures:
     bar_width = 0.15
 
@@ -657,31 +670,51 @@ for f in figures:
             group_gap = 0.15 # Gap between groups
             indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            df_apple_amx.drop(df_apple_amx.index[0], inplace=True)
-            df_apple_amx.drop(df_apple_amx.index[1], inplace=True)
+            df_apple_amx.drop(df_apple_amx.index[2], inplace=True)
             df_apple_amx.reset_index(drop=True, inplace=True)
-            df_apple_amx_xl.drop(df_apple_amx_xl.index[0], inplace=True)
-            df_apple_amx_xl.drop(df_apple_amx_xl.index[1], inplace=True)
-            df_apple_amx_xl.reset_index(drop=True, inplace=True)
-            df_apple_neon.drop(df_apple_neon.index[0], inplace=True)
-            df_apple_neon.drop(df_apple_neon.index[1], inplace=True)
+            df_apple_neon.drop(df_apple_neon.index[2], inplace=True)
             df_apple_neon.reset_index(drop=True, inplace=True)
-            df_apple_neon_xl.drop(df_apple_neon_xl.index[0], inplace=True)
-            df_apple_neon_xl.drop(df_apple_neon_xl.index[1], inplace=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['max'], width=bar_width, label=f"{label_apple} AMX Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['avg'], width=bar_width, label=f"{label_apple} AMX Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['min'], width=bar_width, label=f"{label_apple} AMX Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['max'], width=bar_width, label=f"{label_apple} Neon Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['avg'], width=bar_width, label=f"{label_apple} Neon Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['min'], width=bar_width, label=f"{label_apple} Neon Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['max'], width=bar_width, label=f"{label_apple} AMX Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['avg'], width=bar_width, label=f"{label_apple} AMX Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx['min'], width=bar_width, label=f"{label_apple} AMX Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['max'], width=bar_width, label=f"{label_apple} Neon Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['avg'], width=bar_width, label=f"{label_apple} Neon Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon['min'], width=bar_width, label=f"{label_apple} Neon Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("AMX vs. Neon", fontsize=12, color=foreground_color, loc='center')
+        case "amx_xl":
+            bar_width = 0.075
+
+            group_width = bar_width * 2 # Space occupied by one group of bars
+            group_gap = 0.15 # Gap between groups
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
+
+            df_apple_amx_xl.drop(df_apple_amx_xl.index[2], inplace=True)
+            df_apple_amx_xl.reset_index(drop=True, inplace=True)
+            df_apple_neon_xl.drop(df_apple_neon_xl.index[2], inplace=True)
             df_apple_neon_xl.reset_index(drop=True, inplace=True)
 
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx['max'], width=bar_width, label=f"{label_apple} AMX Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx['avg'], width=bar_width, label=f"{label_apple} AMX Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx['min'], width=bar_width, label=f"{label_apple} AMX Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon['max'], width=bar_width, label=f"{label_apple} Neon Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon['avg'], width=bar_width, label=f"{label_apple} Neon Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon['min'], width=bar_width, label=f"{label_apple} Neon Min", color='#26a269', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['max'], width=bar_width, label=f"{label_apple} AMX XL Max", color='#f66151', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['avg'], width=bar_width, label=f"{label_apple} AMX XL Avg", color='#e01b24', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['min'], width=bar_width, label=f"{label_apple} AMX XL Min", color='#a51d2d', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['max'], width=bar_width, label=f"{label_apple} Neon XL Max", color='#dc8add', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['avg'], width=bar_width, label=f"{label_apple} Neon XL Avg", color='#9141ac', edgecolor=foreground_color, linewidth=0.74)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['min'], width=bar_width, label=f"{label_apple} Neon XL Min", color='#613583', edgecolor=foreground_color, linewidth=0.74)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['max'], width=bar_width, label=f"{label_apple} AMX XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['avg'], width=bar_width, label=f"{label_apple} AMX XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['min'], width=bar_width, label=f"{label_apple} AMX XL Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['max'], width=bar_width, label=f"{label_apple} Neon XL Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['avg'], width=bar_width, label=f"{label_apple} Neon XL Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['min'], width=bar_width, label=f"{label_apple} Neon XL Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['max'], width=bar_width, label=f"{label_apple} AMX XL Max", color='#99c1f1', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['avg'], width=bar_width, label=f"{label_apple} AMX XL Avg", color='#3584e4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl['min'], width=bar_width, label=f"{label_apple} AMX XL Min", color='#1a5fb4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['max'], width=bar_width, label=f"{label_apple} Neon XL Max", color='#8ff0a4', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['avg'], width=bar_width, label=f"{label_apple} Neon XL Avg", color='#33d17a', edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl['min'], width=bar_width, label=f"{label_apple} Neon XL Min", color='#26a269', edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("AMX vs. Neon XL", fontsize=12, color=foreground_color, loc='center')
 
     ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
     if("cuda" in f):
@@ -692,7 +725,8 @@ for f in figures:
     if("cuda" in f):
         ax.set_xticklabels(["Laptop", "Desktop"], color=foreground_color)
     if("amx" in f):
-        ax.set_xticklabels(["11", "11"], color=foreground_color)
+        ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
+        ax.set_xticklabels(["1", "11"], color=foreground_color)
     ax.tick_params(axis='x', colors=foreground_color)  # X-axis tick marks and labels
     ax.tick_params(axis='y', colors=foreground_color)  # Y-axis tick marks and labels
     ax.legend(loc="upper left", bbox_to_anchor=(1, 1), facecolor=background_color, edgecolor=foreground_color, labelcolor=foreground_color)
@@ -739,7 +773,9 @@ for f in figures:
             plt.savefig("../Graphs/4. Presentation/CPU vs GPU XL.png")
         case "amx":
             plt.savefig("../Graphs/5. Presentation/AMX vs Neon.png")
+        case "amx_xl":
+            plt.savefig("../Graphs/5. Presentation/AMX vs Neon XL.png")
 
     # Show the plot
-    # plt.show()
+    plt.show()
     plt.close(fig)
