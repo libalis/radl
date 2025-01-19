@@ -6,12 +6,46 @@ LDFLAGS="$(pkg-config --libs glib-2.0) -lm"
 BUILD_DIR="./build"
 UNAME="$(uname -m)"
 
+amx() {
+    AMX=$(dialog --title "AMX" --defaultno --yesno \
+        "\nDo you want to enable AMX, or use Neon by default?" \
+        10 60 3>&1 1>&2 2>&3)
+    if [[ $? -eq 0 ]]; then
+        CFLAGS="$CFLAGS -DAMX"
+    fi
+    openmp
+}
+
 architecture() {
     ARCHITECTURE=$(dialog --title "Architecture" --msgbox \
         "\nDetected CPU architecture: $UNAME" \
         10 60 3>&1 1>&2 2>&3)
     if [[ $? -ne 0 ]]; then
         exit
+    fi
+    if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
+        avx
+    fi
+}
+
+avx() {
+    if grep -q "avx512" /proc/cpuinfo; then
+        AVX=$(dialog --title "AVX-512" --msgbox \
+            "\nAVX-512 support detected" \
+            10 60 3>&1 1>&2 2>&3)
+        if [[ $? -ne 0 ]]; then
+            exit
+        fi
+        CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
+    else
+        AVX=$(dialog --title "AVX-512" --msgbox \
+            "\nNo AVX-512 support detected\
+            \nFalling back to AVX-2" \
+            10 60 3>&1 1>&2 2>&3)
+        if [[ $? -ne 0 ]]; then
+            exit
+        fi
+        CFLAGS="$CFLAGS -Xcompiler -mavx2"
     fi
 }
 
@@ -60,7 +94,7 @@ main() {
 
 openmp() {
     OPENMP=$(dialog --title "OpenMP" --defaultno --yesno \
-        "\nDo you want to enable OpenMP for parallelization, or use pthreads by default?" \
+        "\nDo you want to enable OpenMP, or use pthreads by default?" \
         10 60 3>&1 1>&2 2>&3)
     if [[ $? -eq 0 ]]; then
         if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
@@ -136,22 +170,13 @@ target() {
     elif [[ "$TARGET" =~ "2" ]]; then
         CC="nvcc"
         CFLAGS="$CFLAGS -DNVIDIA"
-        if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
-        else
-            CFLAGS="$CFLAGS -Xcompiler -mavx2"
-        fi
+        architecture
         data_type
     fi
 }
 
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
-        if grep -q "avx512" /proc/cpuinfo; then
-            CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
-        else
-            CFLAGS="$CFLAGS -Xcompiler -mavx2"
-        fi
         architecture
         compiler
     elif [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
@@ -159,7 +184,7 @@ uname() {
         LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/libomp/lib -lomp"
         architecture
         CC="clang"
-        openmp
+        amx
     else
         ARCHITECTURE=$(dialog --title "Architecture" --msgbox \
             "\nUnknown CPU architecture: $UNAME" \
