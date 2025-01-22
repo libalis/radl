@@ -803,12 +803,12 @@ for f in figures:
             ax.set_title("AMX vs. Neon XL", fontsize=12, color=foreground_color, loc='center')
 
     ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
-    if("cuda" in f):
+    if("cuda" in f or "cpu" in f):
         ax.set_xlabel("Device", fontsize=12, color=foreground_color)
     ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
     ax.set_xticks(indices)
     ax.set_xticklabels(threads_omp, color=foreground_color)
-    if("cuda" in f):
+    if("cuda" in f or "cpu" in f):
         ax.set_xticklabels(["Laptop", "Desktop"], color=foreground_color)
     if("amx" in f):
         ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
