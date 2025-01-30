@@ -17,7 +17,7 @@ AVX512 := $(shell grep -m1 -o "avx512" /proc/cpuinfo)
 
 ifneq ($(UNAME_S), Darwin)
 	ifneq ($(AVX512),)
-	   CFLAGS += -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl
+	   CFLAGS += -Xcompiler -mavx512f
 	else
 	   CFLAGS += -Xcompiler -mavx2
 	endif

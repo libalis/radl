@@ -71,28 +71,6 @@ matrix *copy_cuda_matrix(matrix *h_a, matrix *d_a, bool to_device) {
     }
 }
 
-DATA_TYPE *malloc_cuda(int N, int M) {
-    size_t bytes = N * M * sizeof(DATA_TYPE);
-
-    DATA_TYPE *d_matrix;
-    cudaMalloc(&d_matrix, bytes);
-
-    return d_matrix;
-}
-
-void memcpy_cuda(matrix *a, DATA_TYPE *d_matrix, bool to_device) {
-    size_t bytes = a->x * a->y * sizeof(DATA_TYPE);
-    if(to_device == true) {
-        cudaMemcpy(d_matrix, a->m, bytes, cudaMemcpyHostToDevice);
-    } else {
-        cudaMemcpy(a->m, d_matrix, bytes, cudaMemcpyDeviceToHost);
-    }
-}
-
-void free_cuda(DATA_TYPE *d_matrix) {
-    cudaFree(d_matrix);
-}
-
 __global__ void add_kernel(DATA_TYPE *matrix, DATA_TYPE *bias, int N, int M, int K) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -328,6 +306,40 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
 }
 
 
+#define BLOCK_SIZE (32) // Optimal for many GPUs; you can experiment with different values.
+
+__global__ void matmul_tiled(const DATA_TYPE *A, const DATA_TYPE *B, DATA_TYPE *C, int N, int M, int K) {
+    __shared__ DATA_TYPE Asub[BLOCK_SIZE][BLOCK_SIZE];
+    __shared__ DATA_TYPE Bsub[BLOCK_SIZE][BLOCK_SIZE];
+
+    int row = blockIdx.y * BLOCK_SIZE + threadIdx.y;
+    int col = blockIdx.x * BLOCK_SIZE + threadIdx.x;
+
+    DATA_TYPE Cvalue = 0.0;
+    for (int t = 0; t < (K + BLOCK_SIZE - 1) / BLOCK_SIZE; t++) {
+        // Load tiles into shared memory
+        if (row < M && t * BLOCK_SIZE + threadIdx.x < K)
+            Asub[threadIdx.y][threadIdx.x] = A[row * M + (t * BLOCK_SIZE + threadIdx.x)];
+        else
+            Asub[threadIdx.y][threadIdx.x] = 0.0;
+
+        if (col < N && t * BLOCK_SIZE + threadIdx.y < K)
+            Bsub[threadIdx.y][threadIdx.x] = B[col * K + (t * BLOCK_SIZE + threadIdx.y)];
+        else
+            Bsub[threadIdx.y][threadIdx.x] = 0.0;
+
+        __syncthreads();
+        // Compute the partial sum
+        for (int k = 0; k < BLOCK_SIZE; k++) {
+            Cvalue += Asub[threadIdx.y][k] * Bsub[k][threadIdx.x]; // Adjusted access for transposed B
+        }
+        __syncthreads();
+    }
+    if (row < M && col < N) {
+        C[row * N + col] = Cvalue;
+    }
+}
+
 __global__ void matmul_kernel(const DATA_TYPE *a, const DATA_TYPE *b, DATA_TYPE *c, int N, int M, int K) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -335,7 +347,7 @@ __global__ void matmul_kernel(const DATA_TYPE *a, const DATA_TYPE *b, DATA_TYPE 
     if(row < M && col < N) {
         DATA_TYPE cValue = 0.0;
         for(int k = 0; k < K; k++) {
-            cValue += a[row * N + k] * b[k * N + col];
+            cValue += a[row * M + k] * b[col * K + k];
         }
         c[row * N + col] = cValue;
     }
@@ -359,8 +371,11 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
 
     dim3 block_dim(threads_per_block, threads_per_block);
     dim3 grid_dim(BLOCKS_X, BLOCKS_Y);
-
-    matmul_kernel<<<grid_dim, block_dim>>>(a->m, b->m, c->m, N, M, K);
+    #ifdef XL
+        matmul_tiled<<<grid_dim, block_dim>>>(a->m, b->m, c->m, N, M, K);
+    #else
+        matmul_kernel<<<grid_dim, block_dim>>>(a->m, b->m, c->m, N, M, K);
+    #endif
     cudaDeviceSynchronize();
 
     return c;

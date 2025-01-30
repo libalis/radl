@@ -88,7 +88,7 @@
                 for(int j = 0; j < (*mt->a)->y; j++) {
                     for(int m = 0; m < mt->len; m++) {
                         int idx = i * (*mt->a)->y * mt->len + j * mt->len + m;
-                        (*mt->c)->m[get_idx(idx, 0, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
+                        (*mt->c)->m[get_idx(0, idx, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
                     }
                 }
             }
@@ -97,7 +97,7 @@
                 for(int j = 0; j < (*mt->a)->y; j++) {
                     for(int m = 0; m < mt->len; m++) {
                         int idx = i * (*mt->a)->y * mt->len + j * mt->len + m;
-                        (*mt->c)->m[get_idx(idx, 0, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
+                        (*mt->c)->m[get_idx(0, idx, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
                     }
                 }
             }

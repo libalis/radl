@@ -127,7 +127,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
 
 matrix *flatten(matrix *a, int len, matrix *c) {
     if(c == NULL) {
-        c = malloc_matrix(a->x * a->y, 1);
+        c = malloc_matrix(1, a->x * a->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
@@ -135,7 +135,7 @@ matrix *flatten(matrix *a, int len, matrix *c) {
             for(int j = 0; j < a->y; j++) {
                 for(int m = 0; m < len; m++) {
                     int idx = i * a->y * len + j * len + m;
-                    c->m[get_idx(idx, 0, c->y)] = a->m[get_idx(i, j, a->y) + m * ((a->x / len) * a->y)];
+                    c->m[get_idx(0, idx, c->y)] = a->m[get_idx(i, j, a->y) + m * ((a->x / len) * a->y)];
                 }
             }
         }

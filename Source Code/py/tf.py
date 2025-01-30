@@ -12,8 +12,8 @@ tf.disable_eager_execution()
 
 # download dataset and store reference in variable
 (train_ds, test_ds), ds_info = tfds.load(
-    'mnist',
-    split=['train', 'test'],
+    "mnist",
+    split=["train", "test"],
     shuffle_files=True,
     as_supervised=True,
     with_info=True,
@@ -24,14 +24,14 @@ def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255.0, label
 
-# tfds provide images of type 'tf.uint8', while the model expects 'tf.float32', therefore, you need to normalize images
+# tfds provide images of type "tf.uint8", while the model expects "tf.float32", therefore, you need to normalize images
 train_ds = train_ds.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
 # reshape datasets to 28 x 28 x 1 pixels (height x width x color channels)
 train_ds = train_ds.map(lambda image, label: (tf.reshape(image, [28, 28, 1]), label))
 
 # pad images with 1 row/column of pixels on each side for 3 x 3 filter (border handling)
-train_ds = train_ds.map(lambda image, label: (tf.pad(image, [[1, 1], [1, 1], [0, 0]], 'CONSTANT'), label))
+train_ds = train_ds.map(lambda image, label: (tf.pad(image, [[1, 1], [1, 1], [0, 0]], "CONSTANT"), label))
 
 # cache the modified data in memory
 train_ds = train_ds.cache()
@@ -55,22 +55,22 @@ mu = 0
 sigma = 0.1
 
 # build graph with one convolutional layer (with 4 masks) and one fully connected layer
-images = tf.placeholder(tf.float32, shape=(None, 30, 30, 1), name='images')
+images = tf.placeholder(tf.float32, shape=(None, 30, 30, 1), name="images")
 masks = tf.Variable(tf.random.truncated_normal(shape=(3, 3, 1, 4), mean=mu, stddev=sigma))
 fc_weights = tf.Variable(tf.random.truncated_normal(shape=(14 * 14 * 4, 10), mean=mu, stddev=sigma))
 conv_bias = tf.Variable(tf.zeros(4), name="conv_bias")
-fc_bias = tf.Variable(tf.zeros(10), name='fc_bias')
+fc_bias = tf.Variable(tf.zeros(10), name="fc_bias")
 
 input_layer = images
-convolution = tf.nn.conv2d(input_layer, masks, strides=[1, 1, 1, 1], padding='VALID', name='conv2D')
-convolution = tf.add(convolution, conv_bias, name='biasing')
-convolution = tf.nn.relu(convolution, name='ReLU')
-pooling = tf.nn.max_pool2d(convolution, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+convolution = tf.nn.conv2d(input_layer, masks, strides=[1, 1, 1, 1], padding="VALID", name="conv2D")
+convolution = tf.add(convolution, conv_bias, name="biasing")
+convolution = tf.nn.relu(convolution, name="ReLU")
+pooling = tf.nn.max_pool2d(convolution, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="VALID")
 hidden_layer = tf.keras.layers.Flatten()(pooling)
-output_layer = tf.add(tf.matmul(hidden_layer, fc_weights, name='matmul'), fc_bias, name='add')
+output_layer = tf.add(tf.matmul(hidden_layer, fc_weights, name="matmul"), fc_bias, name="add")
 
 # feed the correct labels into the net
-labels = tf.placeholder(tf.int32, (None), name='labels')
+labels = tf.placeholder(tf.int32, (None), name="labels")
 
 # highest value is the guess of the network
 network_prediction = tf.argmax(output_layer, axis=1, output_type=tf.int32)
@@ -96,7 +96,7 @@ learning_rate = 0.01
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 train_op = optimizer.minimize(loss_op)
 
-epochs = 100
+epochs = 10
 
 # train the weights by looping repeatedly over all the data (and shuffling in between)
 for i in range(epochs):
@@ -115,6 +115,12 @@ for i in range(epochs):
             break
     print(f"Epoch {i} done: accuracy {accuracy * 100:.2f}%, loss {loss * 100:.2f}%")
 
+# post-training quantization
+quantization_factor = 2**(8-1)-1
+quantized_conv_bias = tf.cast(conv_bias * quantization_factor, tf.int8)
+quantized_fc_bias = tf.cast(fc_bias * quantization_factor, tf.int8)
+quantized_fc_weights = tf.cast(fc_weights * quantization_factor, tf.int8)
+
 # ensure the directory exists
 try:
     os.mkdir("./data")
@@ -124,28 +130,39 @@ except:
 # save output
 with open("./data/conv_bias.txt", "w") as f:
     # first two lines are the shape
-    np.savetxt(f, conv_bias.shape, fmt='%f')
+    np.savetxt(f, quantized_conv_bias.shape, fmt="%d")
     f.write("\n")
-    np.savetxt(f, conv_bias.eval(session=session), fmt='%f')
+    np.savetxt(f, quantized_conv_bias.eval(session=session), fmt="%d")
 
 with open("./data/fc_bias.txt", "w") as f:
-    fc_bias_txt= np.transpose(np.reshape(fc_bias.eval(session=session), (-1, 1)))
-    np.savetxt(f, fc_bias_txt.shape, fmt='%f')
+    np.savetxt(f, quantized_fc_bias.shape, fmt="%d")
     f.write("\n")
-    np.savetxt(f, fc_bias_txt, fmt='%f')
+    np.savetxt(f, quantized_fc_bias.eval(session=session), fmt="%d")
+
+with open("./data/fc_bias_transposed.txt", "w") as f:
+    fc_bias_txt = np.transpose(np.reshape(quantized_fc_bias.eval(session=session), (-1, 1)))
+    np.savetxt(f, fc_bias_txt.shape, fmt="%d")
+    f.write("\n")
+    np.savetxt(f, fc_bias_txt, fmt="%d")
 
 with open("./data/fc_weights.txt", "w") as f:
-    fc_weights_txt = np.transpose(fc_weights.eval(session=session))
-    np.savetxt(f, fc_weights_txt.shape, fmt='%f')
+    np.savetxt(f, quantized_fc_weights.shape, fmt="%d")
     f.write("\n")
-    np.savetxt(f,fc_weights_txt, fmt='%f')
+    np.savetxt(f, quantized_fc_weights.eval(session=session), fmt="%d")
+
+with open("./data/fc_weights_transposed.txt", "w") as f:
+    fc_weights_txt = np.transpose(quantized_fc_weights.eval(session=session))
+    np.savetxt(f, fc_weights_txt.shape, fmt="%d")
+    f.write("\n")
+    np.savetxt(f, fc_weights_txt, fmt="%d")
 
 # save how many masks there are
 with open("./data/masks_len.txt", "w") as f:
     f.write(f"{masks.shape[3]}\n")
 
 for i in range(masks.shape[3]):
-        with open(f"./data/masks_{i}.txt", "w") as f:
-            np.savetxt(f, masks[:, :, 0, i].shape, fmt='%f')
-            f.write("\n")
-            np.savetxt(f, masks[:, :, 0, i].eval(session=session), fmt='%f')
+    with open(f"./data/masks_{i}.txt", "w") as f:
+        quantized_masks = tf.cast(masks[:, :, 0, i] * quantization_factor, tf.int8)
+        np.savetxt(f, quantized_masks.shape, fmt="%d")
+        f.write("\n")
+        np.savetxt(f, quantized_masks.eval(session=session), fmt="%d")

@@ -9,10 +9,10 @@
         #define CONV_BIAS ("./data/conv_bias.txt")
     #endif
     #ifndef FC_BIAS
-        #define FC_BIAS ("./data/fc_bias.txt")
+        #define FC_BIAS ("./data/fc_bias_transposed.txt")
     #endif
     #ifndef FC_WEIGHTS
-        #define FC_WEIGHTS ("./data/fc_weights.txt")
+        #define FC_WEIGHTS ("./data/fc_weights_transposed.txt")
     #endif
     #ifndef IMAGE_LEN
         #define IMAGE_LEN ("./tmp/image_len.txt")

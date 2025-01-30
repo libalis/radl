@@ -13,7 +13,6 @@ amx() {
     if [[ $? -eq 0 ]]; then
         CFLAGS="$CFLAGS -DAMX"
     fi
-    openmp
 }
 
 architecture() {
@@ -22,9 +21,6 @@ architecture() {
         10 60 3>&1 1>&2 2>&3)
     if [[ $? -ne 0 ]]; then
         exit
-    fi
-    if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
-        avx
     fi
 }
 
@@ -36,7 +32,7 @@ avx() {
         if [[ $? -ne 0 ]]; then
             exit
         fi
-        CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
+        CFLAGS="$CFLAGS -Xcompiler -mavx512f"
     else
         AVX=$(dialog --title "AVX-512" --msgbox \
             "\nNo AVX-512 support detected\
@@ -106,6 +102,9 @@ openmp() {
         fi
     else
         CFLAGS="$CFLAGS -Xcompiler -pthread"
+        if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
+            amx
+        fi
     fi
     data_type
 }
@@ -178,13 +177,14 @@ target() {
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
         architecture
+        avx
         compiler
     elif [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
         CFLAGS="$CFLAGS -I/opt/homebrew/opt/libomp/include"
         LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/libomp/lib -lomp"
         architecture
         CC="clang"
-        amx
+        openmp
     else
         ARCHITECTURE=$(dialog --title "Architecture" --msgbox \
             "\nUnknown CPU architecture: $UNAME" \

@@ -5,7 +5,7 @@
 
     #ifndef DATA_TYPE
         #ifdef INT
-            typedef int8_t DATA_TYPE;
+            typedef int DATA_TYPE;
         #else
             typedef float DATA_TYPE;
         #endif
