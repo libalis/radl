@@ -3,6 +3,10 @@
 #include "../hpp/tf.hpp"
 #include "../hpp/utils.hpp"
 
+#ifndef POOL_LEN
+    #define POOL_LEN (2)
+#endif
+
 #define NUM_MASKS (4)
 #define MASK_SIZE (3)
 __constant__ DATA_TYPE c_masks[NUM_MASKS][MASK_SIZE][MASK_SIZE];
@@ -95,7 +99,7 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
     dim3 grid_dim(blocks_x, blocks_y);
 
     add_kernel<<<grid_dim, block_dim>>>(a->m, b->m, N, M, K);
-    cudaDeviceSynchronize();
+    // cudaDeviceSynchronize();
 
     return c;
 }
@@ -127,7 +131,7 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
 
     for(int m = 0; m < len; m++) {
         biasing_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M, b->m[get_idx(m, 0, b->y)]);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
     return c;
 }
@@ -177,7 +181,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
 
     for(int m = 0; m < len; m++) {
         conv2d_kernel<<<grid_dim, block_dim>>>(a->m, c[m]->m, N, M, m, L, K);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
 
     return c;
@@ -218,7 +222,7 @@ matrix *flatten(matrix *a, int len, matrix *c) {
     dim3 grid_dim(blocks_x, blocks_y, blocks_z);
 
     flatten_kernel<<<grid_dim, block_dim>>>(a->m, c->m, a->x, a->y, len);
-    cudaDeviceSynchronize();
+    // cudaDeviceSynchronize();
 
     return c;
 }
@@ -268,7 +272,7 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
     dim3 grid_dim(blocks_x, blocks_y);
     for(int m = 0; m < len; m++) {
         flip_kernels_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
 
     return c;
@@ -299,7 +303,7 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
     dim3 grid_dim(blocks_x, blocks_y);
     for(int m = 0; m < len; m++) {
         hyperbolic_tangent_kernel<<<grid_dim, block_dim>>>(a[m]->m, c[m]->m, N, M);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
 
     return c;
@@ -376,7 +380,7 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
     #else
         matmul_kernel<<<grid_dim, block_dim>>>(a->m, b->m, c->m, N, M, K);
     #endif
-    cudaDeviceSynchronize();
+    // cudaDeviceSynchronize();
 
     return c;
 }
@@ -428,7 +432,7 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
     dim3 grid_dim(blocks_x, blocks_y);
     for(int m = 0; m < len; m++) {
         maxpool_kernel<<<grid_dim, block_dim>>>(a[m]->m, c->m + m * M * L, N, M, L);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
 
     return c;
@@ -458,7 +462,7 @@ matrix **relu(matrix **a, int len, matrix **c) {
     dim3 grid_dim(blocks_x, blocks_y);
     for(int m = 0; m < len; m++) {
         relu_kernel<<<grid_dim, block_dim>>>(a[m]->m, N, M);
-        cudaDeviceSynchronize();
+        // cudaDeviceSynchronize();
     }
 
     return a;
@@ -491,7 +495,7 @@ matrix *transpose(matrix *a, matrix *c) {
     dim3 grid_dim(blocks_x, blocks_y);
 
     transpose_kernel<<<grid_dim, block_dim>>>(a->m, c->m, N, M);
-    cudaDeviceSynchronize();
+    // cudaDeviceSynchronize();
 
     return c;
 }

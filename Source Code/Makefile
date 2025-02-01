@@ -4,7 +4,7 @@ CC := clang++
 ICPX := /opt/intel/oneapi/compiler/latest/bin/icpx
 NVCC := nvcc
 
-CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result
+CFLAGS := -O3 $(shell pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -pthread -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result -std=c++11
 LDFLAGS := $(shell pkg-config --libs glib-2.0) -lm
 
 BUILD_DIR := ./build

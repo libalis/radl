@@ -1,282 +1,354 @@
 #ifndef MT_HPP
     #define MT_HPP
 
+    #ifndef POOL_LEN
+        #define POOL_LEN (2)
+    #endif
+
     #include <glib.h>
+    #include <limits.h>
     #include <math.h>
     #include <pthread.h>
+    #include <unistd.h>
 
     #include "mt_arg.hpp"
     #include "simd.hpp"
-    #include "tf.hpp"
 
-    extern int COUNTER;
-    extern int THREADS;
-    extern int MAX_THREADS;
+    typedef struct mt_struct {
+        void *instance;
+        int idx;
+    } mt_struct;
 
-    extern GAsyncQueue *queue;
+    class mt {
+    public:
+        #ifdef DEBUG
+            int accurate;
+        #endif
 
-    extern pthread_cond_t cond;
-    extern pthread_mutex_t mutex;
-    extern pthread_t tids[];
+        int COUNTER;
+        int THREADS;
 
-    __attribute__((always_inline)) inline void wait_mt() {
-        pthread_mutex_lock(&mutex);
-        COUNTER++;
-        if(COUNTER == THREADS + 1) {
+        GAsyncQueue *queue;
+
+        pthread_cond_t cond;
+        pthread_mutex_t mutex;
+        pthread_t tids[(int)(CHAR_BIT * sizeof(void*))];
+
+        mt() : mt(1) {}
+
+        mt(int threads) {
+            #ifdef DEBUG
+                accurate = 0;
+            #endif
             COUNTER = 0;
-            pthread_cond_broadcast(&cond);
-        } else {
-            pthread_cond_wait(&cond, &mutex);
-        }
-        pthread_mutex_unlock(&mutex);
-    }
-
-    __attribute__((always_inline)) inline void add_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < (*mt->c)->x; i++) {
-                mt->i = i;
-                add_simd(mt);
-            }
-        } else {
-            for(int i = mt->idx * ((*mt->c)->x / THREADS); i < ((mt->idx + 1) * ((*mt->c)->x / THREADS)) + (mt->idx == THREADS - 1 ? (*mt->c)->x % THREADS : 0); i++) {
-                mt->i = i;
-                add_simd(mt);
+            THREADS = threads;
+            queue = g_async_queue_new();
+            pthread_mutex_init(&mutex, NULL);
+            pthread_cond_init(&cond, NULL);
+            mt_struct arg[THREADS];
+            for(int i = 0; i < THREADS; i++) {
+                arg[i].instance = this;
+                arg[i].idx = i;
+                pthread_create(&tids[i], NULL, start_mt, &arg[i]);
             }
             wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline void biasing_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < mt->a[mt->m]->x; i++) {
-                mt->i = i;
-                biasing_simd(mt);
+        ~mt() {
+            mt_arg arg[THREADS];
+            for(long i = 0; i < THREADS; i++) {
+                arg[i].start_routine = stop_mt;
+                push_mt(&arg[i]);
             }
-        } else {
-            for(int i = mt->idx * (mt->a[mt->m]->x / THREADS); i < ((mt->idx + 1) * (mt->a[mt->m]->x / THREADS)) + (mt->idx == THREADS - 1 ? mt->a[mt->m]->x % THREADS : 0); i++) {
-                mt->i = i;
-                biasing_simd(mt);
+            for(long i = 0; i < THREADS; i++) {
+                pthread_join(tids[i], NULL);
             }
-            wait_mt();
+            pthread_cond_destroy(&cond);
+            pthread_mutex_destroy(&mutex);
+            g_async_queue_unref(queue);
         }
-    }
 
-    __attribute__((always_inline)) inline void conv2d_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < (*mt->a)->x - mt->b[mt->m]->x + 1; i++) {
-                for(int j = 0; j < (*mt->a)->y - mt->b[mt->m]->y + 1; j++) {
-                    mt->i = i;
-                    mt->j = j;
-                    conv2d_simd(mt);
+        #ifdef DEBUG
+            __attribute__((always_inline)) inline void add_to_accuracy(int number) {
+                pthread_mutex_lock(&mutex);
+                accurate += number;
+                pthread_mutex_unlock(&mutex);
+            }
+        #endif
+
+        __attribute__((always_inline)) inline void wait_mt() {
+            pthread_mutex_lock(&mutex);
+            COUNTER++;
+            if(COUNTER == THREADS + 1) {
+                COUNTER = 0;
+                pthread_cond_broadcast(&cond);
+            } else {
+                pthread_cond_wait(&cond, &mutex);
+            }
+            pthread_mutex_unlock(&mutex);
+        }
+
+        __attribute__((always_inline)) inline void add_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < (*arg->c)->x; i++) {
+                    arg->i = i;
+                    add_simd(arg);
                 }
-            }
-        } else {
-            for(int i = mt->idx * (((*mt->a)->x - mt->b[mt->m]->x + 1) / THREADS); i < ((mt->idx + 1) * (((*mt->a)->x - mt->b[mt->m]->x + 1) / THREADS)) + (mt->idx == THREADS - 1 ? ((*mt->a)->x - mt->b[mt->m]->x + 1) % THREADS : 0); i++) {
-                for(int j = 0; j < (*mt->a)->y - mt->b[mt->m]->y + 1; j++) {
-                    mt->i = i;
-                    mt->j = j;
-                    conv2d_simd(mt);
+            } else {
+                for(int i = arg->idx * ((*arg->c)->x / THREADS); i < ((arg->idx + 1) * ((*arg->c)->x / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->c)->x % THREADS : 0); i++) {
+                    arg->i = i;
+                    add_simd(arg);
                 }
+                wait_mt();
             }
-            wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline void flatten_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < (*mt->a)->x / mt->len; i++) {
-                for(int j = 0; j < (*mt->a)->y; j++) {
-                    for(int m = 0; m < mt->len; m++) {
-                        int idx = i * (*mt->a)->y * mt->len + j * mt->len + m;
-                        (*mt->c)->m[get_idx(0, idx, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
+        __attribute__((always_inline)) inline static void add_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->add_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void biasing_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < arg->a[arg->m]->x; i++) {
+                    arg->i = i;
+                    biasing_simd(arg);
+                }
+            } else {
+                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
+                    arg->i = i;
+                    biasing_simd(arg);
+                }
+                wait_mt();
+            }
+        }
+
+        __attribute__((always_inline)) inline static void biasing_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->biasing_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void conv2d_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < (*arg->a)->x - arg->b[arg->m]->x + 1; i++) {
+                    for(int j = 0; j < (*arg->a)->y - arg->b[arg->m]->y + 1; j++) {
+                        arg->i = i;
+                        arg->j = j;
+                        conv2d_simd(arg);
                     }
                 }
-            }
-        } else {
-            for(int i = mt->idx * ((*mt->a)->x / mt->len / THREADS); i < ((mt->idx + 1) * ((*mt->a)->x / mt->len / THREADS)) + (mt->idx == THREADS - 1 ? (*mt->a)->x / mt->len % THREADS : 0); i++) {
-                for(int j = 0; j < (*mt->a)->y; j++) {
-                    for(int m = 0; m < mt->len; m++) {
-                        int idx = i * (*mt->a)->y * mt->len + j * mt->len + m;
-                        (*mt->c)->m[get_idx(0, idx, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y) + m * (((*mt->a)->x / mt->len) * (*mt->a)->y)];
+            } else {
+                for(int i = arg->idx * (((*arg->a)->x - arg->b[arg->m]->x + 1) / THREADS); i < ((arg->idx + 1) * (((*arg->a)->x - arg->b[arg->m]->x + 1) / THREADS)) + (arg->idx == THREADS - 1 ? ((*arg->a)->x - arg->b[arg->m]->x + 1) % THREADS : 0); i++) {
+                    for(int j = 0; j < (*arg->a)->y - arg->b[arg->m]->y + 1; j++) {
+                        arg->i = i;
+                        arg->j = j;
+                        conv2d_simd(arg);
                     }
                 }
+                wait_mt();
             }
-            wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline void flip_kernels_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < mt->a[mt->m]->x; i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = mt->a[mt->m]->m[get_idx(mt->a[mt->m]->x - i - 1, mt->a[mt->m]->y - j - 1, mt->a[mt->m]->y)];
-                }
-            }
-        } else {
-            for(int i = mt->idx * (mt->a[mt->m]->x / THREADS); i < ((mt->idx + 1) * (mt->a[mt->m]->x / THREADS)) + (mt->idx == THREADS - 1 ? mt->a[mt->m]->x % THREADS : 0); i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = mt->a[mt->m]->m[get_idx(mt->a[mt->m]->x - i - 1, mt->a[mt->m]->y - j - 1, mt->a[mt->m]->y)];
-                }
-            }
-            wait_mt();
+        __attribute__((always_inline)) inline static void conv2d_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->conv2d_mt(arg);
         }
-    }
 
-    __attribute__((always_inline)) inline void hyperbolic_tangent_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < mt->a[mt->m]->x; i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = tanh(mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)]);
-                }
-            }
-        } else {
-            for(int i = mt->idx * (mt->a[mt->m]->x / THREADS); i < ((mt->idx + 1) * (mt->a[mt->m]->x / THREADS)) + (mt->idx == THREADS - 1 ? mt->a[mt->m]->x % THREADS : 0); i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = tanh(mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)]);
-                }
-            }
-            wait_mt();
-        }
-    }
-
-    __attribute__((always_inline)) inline void matmul_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int j = 0; j < (*mt->c)->y; j++) {
-                (*mt->c)->m[get_idx(mt->i, j, (*mt->c)->y)] = 0;
-                mt->j = j;
-                matmul_simd(mt);
-            }
-        } else {
-            for(int j = mt->idx * ((*mt->c)->y / THREADS); j < ((mt->idx + 1) * ((*mt->c)->y / THREADS)) + (mt->idx == THREADS - 1 ? (*mt->c)->y % THREADS : 0); j++) {
-                (*mt->c)->m[get_idx(mt->i, j, (*mt->c)->y)] = 0;
-                mt->j = j;
-                matmul_simd(mt);
-            }
-            wait_mt();
-        }
-    }
-
-    __attribute__((always_inline)) inline void maxpool_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < mt->a[mt->m]->x; i += POOL_LEN) {
-                for(int j = 0; j < mt->a[mt->m]->y; j += POOL_LEN) {
-                    DATA_TYPE max_val = mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)];
-                    for(int k = 0; k < POOL_LEN; k++) {
-                        for(int l = 0; l < POOL_LEN; l++) {
-                            DATA_TYPE curr_val = mt->a[mt->m]->m[get_idx(i + k, j + l, mt->a[mt->m]->y)];
-                            if(curr_val > max_val) {
-                                max_val = curr_val;
-                            }
+        __attribute__((always_inline)) inline void flatten_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < (*arg->a)->x / arg->len; i++) {
+                    for(int j = 0; j < (*arg->a)->y; j++) {
+                        for(int m = 0; m < arg->len; m++) {
+                            int idx = i * (*arg->a)->y * arg->len + j * arg->len + m;
+                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y) + m * (((*arg->a)->x / arg->len) * (*arg->a)->y)];
                         }
                     }
-                    (*mt->c)->m[get_idx(i / POOL_LEN, j / POOL_LEN, (*mt->c)->y) + mt->m * (((*mt->c)->x / mt->len) * (*mt->c)->y)] = max_val;
                 }
-            }
-        } else {
-            for(int m = mt->idx * ((mt->a[mt->m]->x / POOL_LEN) / THREADS); m < ((mt->idx + 1) * ((mt->a[mt->m]->x / POOL_LEN) / THREADS)) + (mt->idx == THREADS - 1 ? (mt->a[mt->m]->x / POOL_LEN) % THREADS : 0); m++) {
-                int i = m * POOL_LEN;
-                for(int j = 0; j < mt->a[mt->m]->y; j += POOL_LEN) {
-                    DATA_TYPE max_val = mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)];
-                    for(int k = 0; k < POOL_LEN; k++) {
-                        for(int l = 0; l < POOL_LEN; l++) {
-                            DATA_TYPE curr_val = mt->a[mt->m]->m[get_idx(i + k, j + l, mt->a[mt->m]->y)];
-                            if(curr_val > max_val) {
-                                max_val = curr_val;
-                            }
+            } else {
+                for(int i = arg->idx * ((*arg->a)->x / arg->len / THREADS); i < ((arg->idx + 1) * ((*arg->a)->x / arg->len / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->a)->x / arg->len % THREADS : 0); i++) {
+                    for(int j = 0; j < (*arg->a)->y; j++) {
+                        for(int m = 0; m < arg->len; m++) {
+                            int idx = i * (*arg->a)->y * arg->len + j * arg->len + m;
+                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y) + m * (((*arg->a)->x / arg->len) * (*arg->a)->y)];
                         }
                     }
-                    (*mt->c)->m[get_idx(i / POOL_LEN, j / POOL_LEN, (*mt->c)->y) + mt->m * (((*mt->c)->x / mt->len) * (*mt->c)->y)] = max_val;
                 }
+                wait_mt();
             }
-            wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline void relu_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < mt->a[mt->m]->x; i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    DATA_TYPE val = 0;
-                    if(mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)] > 0) {
-                        val = mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)];
+        __attribute__((always_inline)) inline static void flatten_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->flatten_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void flip_kernels_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < arg->a[arg->m]->x; i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = arg->a[arg->m]->m[get_idx(arg->a[arg->m]->x - i - 1, arg->a[arg->m]->y - j - 1, arg->a[arg->m]->y)];
                     }
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = val;
                 }
-            }
-        } else {
-            for(int i = mt->idx * (mt->a[mt->m]->x / THREADS); i < ((mt->idx + 1) * (mt->a[mt->m]->x / THREADS)) + (mt->idx == THREADS - 1 ? mt->a[mt->m]->x % THREADS : 0); i++) {
-                for(int j = 0; j < mt->a[mt->m]->y; j++) {
-                    DATA_TYPE val = 0;
-                    if(mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)] > 0) {
-                        val = mt->a[mt->m]->m[get_idx(i, j, mt->a[mt->m]->y)];
+            } else {
+                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = arg->a[arg->m]->m[get_idx(arg->a[arg->m]->x - i - 1, arg->a[arg->m]->y - j - 1, arg->a[arg->m]->y)];
                     }
-                    mt->c[mt->m]->m[get_idx(i, j, mt->c[mt->m]->y)] = val;
                 }
+                wait_mt();
             }
-            wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline void transpose_mt(mt_arg *mt) {
-        if(mt->single_core) {
-            for(int i = 0; i < (*mt->a)->x; i++) {
-                for(int j = 0; j < (*mt->a)->y; j++) {
-                    (*mt->c)->m[get_idx(j, i, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y)];
+        __attribute__((always_inline)) inline static void flip_kernels_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->flip_kernels_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void hyperbolic_tangent_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < arg->a[arg->m]->x; i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)]);
+                    }
                 }
-            }
-        } else {
-            for(int i = mt->idx * ((*mt->a)->x / THREADS); i < ((mt->idx + 1) * ((*mt->a)->x / THREADS)) + (mt->idx == THREADS - 1 ? (*mt->a)->x % THREADS : 0); i++) {
-                for(int j = 0; j < (*mt->a)->y; j++) {
-                    (*mt->c)->m[get_idx(j, i, (*mt->c)->y)] = (*mt->a)->m[get_idx(i, j, (*mt->a)->y)];
+            } else {
+                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)]);
+                    }
                 }
+                wait_mt();
             }
-            wait_mt();
         }
-    }
 
-    __attribute__((always_inline)) inline static void *start_mt(void *arg) {
-        int idx = *(int*)arg;
-        wait_mt();
-        while(1) {
-            mt_arg *head = (mt_arg*)g_async_queue_pop(queue);
-            head->idx = idx;
-            head->start_routine(head);
+        __attribute__((always_inline)) inline static void hyperbolic_tangent_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->hyperbolic_tangent_mt(arg);
         }
-        return NULL;
-    }
 
-    __attribute__((always_inline)) inline static void stop_mt(mt_arg *mt) {
-        pthread_exit(EXIT_SUCCESS);
-    }
-
-    __attribute__((always_inline)) inline void push_mt(mt_arg *mt) {
-        g_async_queue_push(queue, mt);
-    }
-
-    __attribute__((always_inline)) inline void create_mt(int threads) {
-        THREADS = threads;
-        queue = g_async_queue_new();
-        pthread_mutex_init(&mutex, NULL);
-        pthread_cond_init(&cond, NULL);
-        int idx[THREADS];
-        for(int i = 0; i < THREADS; i++) {
-            idx[i] = i;
-            pthread_create(&tids[i], NULL, start_mt, &idx[i]);
+        __attribute__((always_inline)) inline void matmul_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int j = 0; j < (*arg->c)->y; j++) {
+                    (*arg->c)->m[get_idx(arg->i, j, (*arg->c)->y)] = 0;
+                    arg->j = j;
+                    matmul_simd(arg);
+                }
+            } else {
+                for(int j = arg->idx * ((*arg->c)->y / THREADS); j < ((arg->idx + 1) * ((*arg->c)->y / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->c)->y % THREADS : 0); j++) {
+                    (*arg->c)->m[get_idx(arg->i, j, (*arg->c)->y)] = 0;
+                    arg->j = j;
+                    matmul_simd(arg);
+                }
+                wait_mt();
+            }
         }
-        wait_mt();
-    }
 
-    __attribute__((always_inline)) inline void join_mt() {
-        mt_arg arg[THREADS];
-        for(long i = 0; i < THREADS; i++) {
-            arg[i].start_routine = stop_mt;
-            push_mt(&arg[i]);
+        __attribute__((always_inline)) inline static void matmul_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->matmul_mt(arg);
         }
-        for(long i = 0; i < THREADS; i++) {
-            pthread_join(tids[i], NULL);
+
+        __attribute__((always_inline)) inline void maxpool_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < arg->a[arg->m]->x; i += POOL_LEN) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j += POOL_LEN) {
+                        DATA_TYPE max_val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        for(int k = 0; k < POOL_LEN; k++) {
+                            for(int l = 0; l < POOL_LEN; l++) {
+                                DATA_TYPE curr_val = arg->a[arg->m]->m[get_idx(i + k, j + l, arg->a[arg->m]->y)];
+                                if(curr_val > max_val) {
+                                    max_val = curr_val;
+                                }
+                            }
+                        }
+                        (*arg->c)->m[get_idx(i / POOL_LEN, j / POOL_LEN, (*arg->c)->y) + arg->m * (((*arg->c)->x / arg->len) * (*arg->c)->y)] = max_val;
+                    }
+                }
+            } else {
+                for(int m = arg->idx * ((arg->a[arg->m]->x / POOL_LEN) / THREADS); m < ((arg->idx + 1) * ((arg->a[arg->m]->x / POOL_LEN) / THREADS)) + (arg->idx == THREADS - 1 ? (arg->a[arg->m]->x / POOL_LEN) % THREADS : 0); m++) {
+                    int i = m * POOL_LEN;
+                    for(int j = 0; j < arg->a[arg->m]->y; j += POOL_LEN) {
+                        DATA_TYPE max_val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        for(int k = 0; k < POOL_LEN; k++) {
+                            for(int l = 0; l < POOL_LEN; l++) {
+                                DATA_TYPE curr_val = arg->a[arg->m]->m[get_idx(i + k, j + l, arg->a[arg->m]->y)];
+                                if(curr_val > max_val) {
+                                    max_val = curr_val;
+                                }
+                            }
+                        }
+                        (*arg->c)->m[get_idx(i / POOL_LEN, j / POOL_LEN, (*arg->c)->y) + arg->m * (((*arg->c)->x / arg->len) * (*arg->c)->y)] = max_val;
+                    }
+                }
+                wait_mt();
+            }
         }
-        pthread_cond_destroy(&cond);
-        pthread_mutex_destroy(&mutex);
-        g_async_queue_unref(queue);
-    }
+
+        __attribute__((always_inline)) inline static void maxpool_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->maxpool_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void relu_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < arg->a[arg->m]->x; i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        DATA_TYPE val = 0;
+                        if(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)] > 0) {
+                            val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        }
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = val;
+                    }
+                }
+            } else {
+                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
+                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                        DATA_TYPE val = 0;
+                        if(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)] > 0) {
+                            val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        }
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = val;
+                    }
+                }
+                wait_mt();
+            }
+        }
+
+        __attribute__((always_inline)) inline static void relu_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->relu_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline void transpose_mt(mt_arg *arg) {
+            if(arg->single_core) {
+                for(int i = 0; i < (*arg->a)->x; i++) {
+                    for(int j = 0; j < (*arg->a)->y; j++) {
+                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y)];
+                    }
+                }
+            } else {
+                for(int i = arg->idx * ((*arg->a)->x / THREADS); i < ((arg->idx + 1) * ((*arg->a)->x / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->a)->x % THREADS : 0); i++) {
+                    for(int j = 0; j < (*arg->a)->y; j++) {
+                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y)];
+                    }
+                }
+                wait_mt();
+            }
+        }
+
+        __attribute__((always_inline)) inline static void transpose_mt_wrapper(void *instance, mt_arg *arg) {
+            ((mt*)instance)->transpose_mt(arg);
+        }
+
+        __attribute__((always_inline)) inline static void *start_mt(void *arg) {
+            mt *instance = (mt*)(((mt_struct*)arg)->instance);
+            int idx = ((mt_struct*)arg)->idx;
+            instance->wait_mt();
+            while(1) {
+                mt_arg *head = (mt_arg*)g_async_queue_pop(instance->queue);
+                head->idx = idx;
+                head->start_routine(instance, head);
+            }
+            return NULL;
+        }
+
+        __attribute__((always_inline)) inline static void stop_mt(void *instance, mt_arg *arg) {
+            pthread_exit(EXIT_SUCCESS);
+        }
+
+        __attribute__((always_inline)) inline void push_mt(mt_arg *arg) {
+            g_async_queue_push(queue, arg);
+        }
+    };
 #endif

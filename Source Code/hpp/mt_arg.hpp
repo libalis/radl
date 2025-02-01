@@ -1,6 +1,7 @@
 #ifndef MT_ARG_HPP
     #define MT_ARG_HPP
 
+    #include "io.hpp"
     #include "matrix.hpp"
 
     typedef struct mt_arg {
@@ -13,6 +14,7 @@
         int i;
         int j;
         bool single_core;
-        void (*start_routine)(struct mt_arg *mt);
+        struct io *io;
+        void (*start_routine)(void *instance, struct mt_arg *arg);
     } mt_arg;
 #endif

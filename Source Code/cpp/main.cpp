@@ -22,7 +22,13 @@ int main(int argc, char *argv[]) {
 
     for(int t = 0; t < RUNS; t++) {
         for(int i = -2; i < EPOCHS; i++) {
-            run(ts[t], i);
+            #ifdef NVIDIA
+                run_nvidia(i);
+            #elif defined(OMP)
+                run_omp(i);
+            #else
+                run(ts[t], i);
+            #endif
         }
     }
 

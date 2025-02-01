@@ -1,7 +1,7 @@
 #!/bin/bash
 PROGRAM="tf"
 ICPX="/opt/intel/oneapi/compiler/latest/bin/icpx"
-CFLAGS="-O3 $(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result"
+CFLAGS="-O3 $(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result -std=c++11"
 LDFLAGS="$(pkg-config --libs glib-2.0) -lm"
 BUILD_DIR="./build"
 UNAME="$(uname -m)"
@@ -183,7 +183,7 @@ uname() {
         CFLAGS="$CFLAGS -I/opt/homebrew/opt/libomp/include"
         LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/libomp/lib -lomp"
         architecture
-        CC="clang"
+        CC="clang++"
         openmp
     else
         ARCHITECTURE=$(dialog --title "Architecture" --msgbox \

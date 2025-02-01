@@ -10,7 +10,7 @@
     #include "../hpp/utils.hpp"
 #endif
 
-matrix *add(matrix *a, matrix *b, matrix *c) {
+matrix *add(matrix *a, matrix *b, matrix *c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix(a->x, a->y);
     }
@@ -22,26 +22,26 @@ matrix *add(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
-        for(int i = 0; i < THREADS; i++) {
+        mt_arg arg[instance->THREADS];
+        for(int i = 0; i < instance->THREADS; i++) {
             arg[i].a = &a;
             arg[i].b = &b;
             arg[i].c = &c;
-            if(THREADS > c->x) {
+            if(instance->THREADS < c->x) {
                 arg[i].single_core = 1;
-                add_mt(&arg[i]);
+                instance->add_mt(&arg[i]);
                 return c;
             }
             arg[i].single_core = 0;
-            arg[i].start_routine = add_mt;
-            push_mt(&arg[i]);
+            arg[i].start_routine = instance->add_mt_wrapper;
+            instance->push_mt(&arg[i]);
         }
-        wait_mt();
+        instance->wait_mt();
     #endif
     return c;
 }
 
-matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
+matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
@@ -55,32 +55,32 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = a;
                 arg[i].b = &b;
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a[0]->x) {
+                if(instance->THREADS < a[0]->x) {
                     arg[i].single_core = 1;
-                    biasing_mt(&arg[i]);
+                    instance->biasing_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = biasing_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->biasing_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a[0]->x) {
-                wait_mt();
+            if(instance->THREADS >= a[0]->x) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
+matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix_ptr(len, a->x - b[0]->x + 1, a->y - b[0]->y + 1);
     }
@@ -100,32 +100,32 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = &a;
                 arg[i].b = b;
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a->x - b[0]->x + 1) {
+                if(instance->THREADS < a->x - b[0]->x + 1) {
                     arg[i].single_core = 1;
-                    conv2d_mt(&arg[i]);
+                    instance->conv2d_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = conv2d_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->conv2d_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a->x - b[0]->x + 1) {
-                wait_mt();
+            if(instance->THREADS >= a->x - b[0]->x + 1) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix *flatten(matrix *a, int len, matrix *c) {
+matrix *flatten(matrix *a, int len, matrix *c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix(1, a->x * a->y);
     }
@@ -140,26 +140,26 @@ matrix *flatten(matrix *a, int len, matrix *c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
-        for(int i = 0; i < THREADS; i++) {
+        mt_arg arg[instance->THREADS];
+        for(int i = 0; i < instance->THREADS; i++) {
             arg[i].a = &a;
             arg[i].c = &c;
             arg[i].len = len;
-            if(THREADS > a->x / len) {
+            if(instance->THREADS < a->x / len) {
                 arg[i].single_core = 1;
-                flatten_mt(&arg[i]);
+                instance->flatten_mt(&arg[i]);
                 return c;
             }
             arg[i].single_core = 0;
-            arg[i].start_routine = flatten_mt;
-            push_mt(&arg[i]);
+            arg[i].start_routine = instance->flatten_mt_wrapper;
+            instance->push_mt(&arg[i]);
         }
-        wait_mt();
+        instance->wait_mt();
     #endif
     return c;
 }
 
-matrix **flip_kernels(matrix **a, int len, matrix **c) {
+matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
@@ -173,31 +173,31 @@ matrix **flip_kernels(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = a;
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a[0]->x) {
+                if(instance->THREADS < a[0]->x) {
                     arg[i].single_core = 1;
-                    flip_kernels_mt(&arg[i]);
+                    instance->flip_kernels_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = flip_kernels_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->flip_kernels_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a[0]->x) {
-                wait_mt();
+            if(instance->THREADS >= a[0]->x) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
+matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
@@ -211,31 +211,31 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = a;
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a[0]->x) {
+                if(instance->THREADS < a[0]->x) {
                     arg[i].single_core = 1;
-                    hyperbolic_tangent_mt(&arg[i]);
+                    instance->hyperbolic_tangent_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = hyperbolic_tangent_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->hyperbolic_tangent_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a[0]->x) {
-                wait_mt();
+            if(instance->THREADS >= a[0]->x) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix *matmul(matrix *a, matrix *b, matrix *c) {
+matrix *matmul(matrix *a, matrix *b, matrix *c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix(a->x, b->x);
     }
@@ -250,31 +250,31 @@ matrix *matmul(matrix *a, matrix *b, matrix *c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int i = 0; i < c->x; i++) {
-            for(int j = 0; j < THREADS; j++) {
+            for(int j = 0; j < instance->THREADS; j++) {
                 arg[j].a = &a;
                 arg[j].b = &b;
                 arg[j].c = &c;
                 arg[j].i = i;
-                if(THREADS > c->y) {
+                if(instance->THREADS < c->y) {
                     arg[j].single_core = 1;
-                    matmul_mt(&arg[i]);
+                    instance->matmul_mt(&arg[i]);
                     break;
                 }
                 arg[j].single_core = 0;
-                arg[j].start_routine = matmul_mt;
-                push_mt(&arg[j]);
+                arg[j].start_routine = instance->matmul_mt_wrapper;
+                instance->push_mt(&arg[j]);
             }
-            if(THREADS <= c->y) {
-                wait_mt();
+            if(instance->THREADS >= c->y) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix *maxpool(matrix **a, int len, matrix *c) {
+matrix *maxpool(matrix **a, int len, matrix *c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
     }
@@ -297,31 +297,31 @@ matrix *maxpool(matrix **a, int len, matrix *c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = a;
                 arg[i].c = &c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a[0]->x) {
+                if(instance->THREADS < a[0]->x) {
                     arg[i].single_core = 1;
-                    maxpool_mt(&arg[i]);
+                    instance->maxpool_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = maxpool_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->maxpool_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a[0]->x) {
-                wait_mt();
+            if(instance->THREADS >= a[0]->x) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix **relu(matrix **a, int len, matrix **c) {
+matrix **relu(matrix **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
     }
@@ -339,31 +339,31 @@ matrix **relu(matrix **a, int len, matrix **c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
+        mt_arg arg[instance->THREADS];
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < THREADS; i++) {
+            for(int i = 0; i < instance->THREADS; i++) {
                 arg[i].a = a;
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(THREADS > a[0]->x) {
+                if(instance->THREADS < a[0]->x) {
                     arg[i].single_core = 1;
-                    relu_mt(&arg[i]);
+                    instance->relu_mt(&arg[i]);
                     break;
                 }
                 arg[i].single_core = 0;
-                arg[i].start_routine = relu_mt;
-                push_mt(&arg[i]);
+                arg[i].start_routine = instance->relu_mt_wrapper;
+                instance->push_mt(&arg[i]);
             }
-            if(THREADS <= a[0]->x) {
-                wait_mt();
+            if(instance->THREADS >= a[0]->x) {
+                instance->wait_mt();
             }
         }
     #endif
     return c;
 }
 
-matrix *transpose(matrix *a, matrix *c) {
+matrix *transpose(matrix *a, matrix *c, mt *instance) {
     if(c == NULL) {
         c = malloc_matrix(a->y, a->x);
     }
@@ -375,20 +375,20 @@ matrix *transpose(matrix *a, matrix *c) {
             }
         }
     #else
-        mt_arg arg[THREADS];
-        for(int i = 0; i < THREADS; i++) {
+        mt_arg arg[instance->THREADS];
+        for(int i = 0; i < instance->THREADS; i++) {
             arg[i].a = &a;
             arg[i].c = &c;
-            if(THREADS > a->x) {
+            if(instance->THREADS < a->x) {
                 arg[i].single_core = 1;
-                transpose_mt(&arg[i]);
+                instance->transpose_mt(&arg[i]);
                 return c;
             }
             arg[i].single_core = 0;
-            arg[i].start_routine = transpose_mt;
-            push_mt(&arg[i]);
+            arg[i].start_routine = instance->transpose_mt_wrapper;
+            instance->push_mt(&arg[i]);
         }
-        wait_mt();
+        instance->wait_mt();
     #endif
     return c;
 }
