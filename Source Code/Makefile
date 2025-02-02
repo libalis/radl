@@ -111,6 +111,22 @@ amx_xl:
 	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_amx_xl.csv\\\"\""
 
+amx_int:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(INT) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx_int.csv\\\"\""
+
+amx_int_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(INT) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx_int_xl.csv\\\"\""
+
+amx_comp:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_amx_comp_xl.csv\\\"\""
+
+neon_comp:
+	$(MAKE) CFLAGS="$(CFLAGS) $(AMX) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_neon_comp_xl.csv\\\"\""
+
 int:
 	$(MAKE) CFLAGS="$(CFLAGS) $(INT) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_int.csv\\\"\""
@@ -170,6 +186,12 @@ benchmark_darwin:
 	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) amx_xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) amx_int
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) amx_int_xl
 	$(BUILD_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/$(PROGRAM): $(patsubst $(CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(wildcard $(CPP_DIR)/*.cpp))
