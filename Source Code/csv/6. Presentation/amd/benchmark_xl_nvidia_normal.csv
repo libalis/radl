@@ -1,0 +1,5 @@
+create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads
+0,12147676,506,2832,0,12151014,16
+0,12151022,502,3453,0,12154977,16
+0,12173047,522,3368,0,12176937,16
+0,12260116,526,3165,0,12263807,16
