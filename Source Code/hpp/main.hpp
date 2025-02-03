@@ -178,7 +178,6 @@
             start_time = next_time = start_timer();
 
             int THREADS = sysconf(_SC_NPROCESSORS_ONLN);
-            std::cout << THREADS << std::endl;
 
             io *io = malloc_io();
 

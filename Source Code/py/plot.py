@@ -20,24 +20,24 @@ threads_omp = [8, 11, 16]
 READ BENCHMARKS
 """
 # amd
-df_amd_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark.csv")
-df_amd_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark.csv")
-df_amd_int_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_int.csv")
-df_amd_int_xl_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_int_xl.csv")
-df_amd_intel_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_intel.csv")
-df_amd_intel_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark_intel.csv")
-df_amd_nvidia_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_nvidia.csv")
-df_amd_nvidia_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark_nvidia.csv")
-df_amd_omp_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_omp.csv")
-df_amd_omp_intel_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_omp_intel.csv")
-df_amd_omp_xl_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_omp_xl.csv")
-df_amd_omp_xl_intel_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_omp_xl_intel.csv")
-df_amd_xl_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl.csv")
-df_amd_xl_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark_xl.csv")
-df_amd_xl_intel_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl_intel.csv")
-df_amd_xl_intel_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark_xl_intel.csv")
-df_amd_xl_nvidia_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl_nvidia.csv")
-df_amd_xl_nvidia_old_raw = pd.read_csv("./csv/4. Presentation/amd/benchmark_xl_nvidia.csv")
+df_amd_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark.csv")
+df_amd_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark.csv")
+df_amd_int_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_int.csv")
+df_amd_int_xl_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_int_xl.csv")
+df_amd_intel_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_intel.csv")
+df_amd_intel_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_intel.csv")
+df_amd_nvidia_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_nvidia.csv")
+df_amd_nvidia_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_nvidia.csv")
+df_amd_omp_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_omp.csv")
+df_amd_omp_intel_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_omp_intel.csv")
+df_amd_omp_xl_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_omp_xl.csv")
+df_amd_omp_xl_intel_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_omp_xl_intel.csv")
+df_amd_xl_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_xl.csv")
+df_amd_xl_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl.csv")
+df_amd_xl_intel_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_xl_intel.csv")
+df_amd_xl_intel_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl_intel.csv")
+df_amd_xl_nvidia_raw = pd.read_csv("./csv/6. Presentation/amd/benchmark_xl_nvidia.csv")
+df_amd_xl_nvidia_old_raw = pd.read_csv("./csv/5. Presentation/amd/benchmark_xl_nvidia.csv")
 
 tt_amd = df_amd_raw["total_time_us"].values
 tt_amd_old = df_amd_old_raw["total_time_us"].values
@@ -59,18 +59,18 @@ tt_amd_xl_nvidia = df_amd_xl_nvidia_raw["total_time_us"].values
 tt_amd_xl_nvidia_old = df_amd_xl_nvidia_old_raw["total_time_us"].values
 
 # apple
-df_apple_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark.csv")
-df_apple_old_raw = pd.read_csv("./csv/4. Presentation/apple/benchmark.csv")
-df_apple_int_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_int.csv")
-df_apple_int_xl_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_int_xl.csv")
-df_apple_omp_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_omp.csv")
-df_apple_omp_xl_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_omp_xl.csv")
-df_apple_xl_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_xl.csv")
-df_apple_xl_old_raw = pd.read_csv("./csv/4. Presentation/apple/benchmark_xl.csv")
-df_apple_amx = pd.read_csv("./csv/5. Presentation/apple/benchmark_amx.csv")
-df_apple_amx_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark_amx_xl.csv")
-df_apple_neon = pd.read_csv("./csv/5. Presentation/apple/benchmark.csv")
-df_apple_neon_xl = pd.read_csv("./csv/5. Presentation/apple/benchmark_xl.csv")
+df_apple_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark.csv")
+df_apple_old_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark.csv")
+df_apple_int_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark_int.csv")
+df_apple_int_xl_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark_int_xl.csv")
+df_apple_omp_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark_omp.csv")
+df_apple_omp_xl_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark_omp_xl.csv")
+df_apple_xl_raw = pd.read_csv("./csv/6. Presentation/apple/benchmark_xl.csv")
+df_apple_xl_old_raw = pd.read_csv("./csv/5. Presentation/apple/benchmark_xl.csv")
+df_apple_amx = pd.read_csv("./csv/6. Presentation/apple/benchmark_amx.csv")
+df_apple_amx_xxl = pd.read_csv("./csv/6. Presentation/apple/benchmark_amx_xxl.csv")
+df_apple_neon = pd.read_csv("./csv/6. Presentation/apple/benchmark.csv")
+df_apple_neon_xxl = pd.read_csv("./csv/6. Presentation/apple/benchmark_neon_xxl.csv")
 
 tt_apple = df_apple_raw["total_time_us"].values
 tt_apple_old = df_apple_old_raw["total_time_us"].values
@@ -81,29 +81,29 @@ tt_apple_omp_xl = df_apple_omp_xl_raw["total_time_us"].values
 tt_apple_xl = df_apple_xl_raw["total_time_us"].values
 tt_apple_xl_old = df_apple_xl_old_raw["total_time_us"].values
 tt_apple_amx = df_apple_amx["total_time_us"].values
-tt_apple_amx_xl = df_apple_amx_xl["total_time_us"].values
+tt_apple_amx_xxl = df_apple_amx_xxl["total_time_us"].values
 tt_apple_neon = df_apple_neon["total_time_us"].values
-tt_apple_neon_xl = df_apple_neon_xl["total_time_us"].values
+tt_apple_neon_xxl = df_apple_neon_xxl["total_time_us"].values
 
 # intel
-df_intel_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark.csv")
-df_intel_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark.csv")
-df_intel_int_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_int.csv")
-df_intel_int_xl_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_int_xl.csv")
-df_intel_intel_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_intel.csv")
-df_intel_intel_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark_intel.csv")
-df_intel_nvidia_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_nvidia.csv")
-df_intel_nvidia_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark_nvidia.csv")
-df_intel_omp_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_omp.csv")
-df_intel_omp_intel_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_omp_intel.csv")
-df_intel_omp_xl_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_omp_xl.csv")
-df_intel_omp_xl_intel_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_omp_xl_intel.csv")
-df_intel_xl_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl.csv")
-df_intel_xl_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark_xl.csv")
-df_intel_xl_intel_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl_intel.csv")
-df_intel_xl_intel_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark_xl_intel.csv")
-df_intel_xl_nvidia_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl_nvidia.csv")
-df_intel_xl_nvidia_old_raw = pd.read_csv("./csv/4. Presentation/intel/benchmark_xl_nvidia.csv")
+df_intel_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark.csv")
+df_intel_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark.csv")
+df_intel_int_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_int.csv")
+df_intel_int_xl_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_int_xl.csv")
+df_intel_intel_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_intel.csv")
+df_intel_intel_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_intel.csv")
+df_intel_nvidia_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_nvidia.csv")
+df_intel_nvidia_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_nvidia.csv")
+df_intel_omp_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_omp.csv")
+df_intel_omp_intel_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_omp_intel.csv")
+df_intel_omp_xl_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_omp_xl.csv")
+df_intel_omp_xl_intel_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_omp_xl_intel.csv")
+df_intel_xl_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_xl.csv")
+df_intel_xl_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl.csv")
+df_intel_xl_intel_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_xl_intel.csv")
+df_intel_xl_intel_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl_intel.csv")
+df_intel_xl_nvidia_raw = pd.read_csv("./csv/6. Presentation/intel/benchmark_xl_nvidia.csv")
+df_intel_xl_nvidia_old_raw = pd.read_csv("./csv/5. Presentation/intel/benchmark_xl_nvidia.csv")
 
 tt_intel = df_intel_raw["total_time_us"].values
 tt_intel_old = df_intel_old_raw["total_time_us"].values
@@ -161,9 +161,9 @@ df_apple_omp_xl = df_apple.copy(deep=True)
 df_apple_xl = df_amd.copy(deep=True)
 df_apple_xl_old = df_amd.copy(deep=True)
 df_apple_amx = df_amd.copy(deep=True)
-df_apple_amx_xl = df_amd.copy(deep=True)
+df_apple_amx_xxl = df_amd.copy(deep=True)
 df_apple_neon = df_amd.copy(deep=True)
-df_apple_neon_xl = df_amd.copy(deep=True)
+df_apple_neon_xxl = df_amd.copy(deep=True)
 
 # intel
 df_intel = df_amd.copy(deep=True)
@@ -249,14 +249,15 @@ for i in range(len(threads)):
         df_apple_amx.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_amx[10*i:10*(i+1)])
         df_apple_amx.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_amx[10*i:10*(i+1)])
         df_apple_amx.loc[threads.index(threads[i]), "max"] = np.max(tt_apple_amx[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_amx_xl[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_amx_xl[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads.index(threads[i]), "max"] = np.max(tt_apple_amx_xl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_amx_xxl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_amx_xxl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads.index(threads[i]), "max"] = np.max(tt_apple_amx_xxl[10*i:10*(i+1)])
         df_apple_neon.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_neon[10*i:10*(i+1)])
         df_apple_neon.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_neon[10*i:10*(i+1)])
         df_apple_neon.loc[threads.index(threads[i]), "max"] = np.max(tt_apple_neon[10*i:10*(i+1)])
-        df_apple_neon_xl.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_neon_xl[10*i:10*(i+1)])
-        df_apple_neon_xl.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_neon_xl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads.index(threads[i]), "min"] = np.min(tt_apple_neon_xxl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads.index(threads[i]), "avg"] = np.average(tt_apple_neon_xxl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads.index(threads[i]), "max"] = np.max(tt_apple_neon_xxl[10*i:10*(i+1)])
 
     if threads[i] == 11:
         df_apple.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple[10*i:10*(i+1)])
@@ -286,15 +287,15 @@ for i in range(len(threads)):
         df_apple_amx.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_amx[10*i:10*(i+1)])
         df_apple_amx.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_amx[10*i:10*(i+1)])
         df_apple_amx.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_amx[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_amx_xl[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_amx_xl[10*i:10*(i+1)])
-        df_apple_amx_xl.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_amx_xl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_amx_xxl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_amx_xxl[10*i:10*(i+1)])
+        df_apple_amx_xxl.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_amx_xxl[10*i:10*(i+1)])
         df_apple_neon.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_neon[10*i:10*(i+1)])
         df_apple_neon.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_neon[10*i:10*(i+1)])
         df_apple_neon.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_neon[10*i:10*(i+1)])
-        df_apple_neon_xl.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_neon_xl[10*i:10*(i+1)])
-        df_apple_neon_xl.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_neon_xl[10*i:10*(i+1)])
-        df_apple_neon_xl.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_neon_xl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_apple_neon_xxl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_apple_neon_xxl[10*i:10*(i+1)])
+        df_apple_neon_xxl.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_apple_neon_xxl[10*i:10*(i+1)])
 
     # intel
     if threads[i] == 8:
@@ -356,7 +357,7 @@ for i in range(len(threads)):
 """
 CREATE FIGURES
 """
-figures = ["int", "int_xl", "simd", "simd_xl", "omp", "omp_xl", "simd_intel", "simd_xl_intel", "omp_intel", "omp_xl_intel", "cuda", "cuda_xl", "cpu_gpu", "cpu_gpu_xl", "amx", "amx_xl"]
+figures = ["int", "int_xl", "simd", "simd_xl", "omp", "omp_xl", "simd_intel", "simd_xl_intel", "omp_intel", "omp_xl_intel", "cuda", "cuda_xl", "cpu_gpu", "cpu_gpu_xl", "amx", "amx_xxl"]
 for f in figures:
     bar_width = 0.15
 
@@ -775,32 +776,32 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_apple_neon["min"], width=bar_width, label=f"{label_apple} Neon Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("AMX vs. Neon", fontsize=12, color=foreground_color, loc="center")
-        case "amx_xl":
+        case "amx_xxl":
             bar_width = 0.075
 
             group_width = bar_width * 2 # Space occupied by one group of bars
             group_gap = 0.15 # Gap between groups
             indices = np.arange(len(threads_omp)) * (group_width + group_gap) # Indices for each group
 
-            df_apple_amx_xl.drop(df_apple_amx_xl.index[2], inplace=True)
-            df_apple_amx_xl.reset_index(drop=True, inplace=True)
-            df_apple_neon_xl.drop(df_apple_neon_xl.index[2], inplace=True)
-            df_apple_neon_xl.reset_index(drop=True, inplace=True)
+            df_apple_amx_xxl.drop(df_apple_amx_xxl.index[2], inplace=True)
+            df_apple_amx_xxl.reset_index(drop=True, inplace=True)
+            df_apple_neon_xxl.drop(df_apple_neon_xxl.index[2], inplace=True)
+            df_apple_neon_xxl.reset_index(drop=True, inplace=True)
 
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["max"], width=bar_width, label=f"{label_apple} AMX XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["avg"], width=bar_width, label=f"{label_apple} AMX XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["min"], width=bar_width, label=f"{label_apple} AMX XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["max"], width=bar_width, label=f"{label_apple} Neon XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["avg"], width=bar_width, label=f"{label_apple} Neon XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["min"], width=bar_width, label=f"{label_apple} Neon XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["max"], width=bar_width, label=f"{label_apple} AMX XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["avg"], width=bar_width, label=f"{label_apple} AMX XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xl["min"], width=bar_width, label=f"{label_apple} AMX XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["max"], width=bar_width, label=f"{label_apple} Neon XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["avg"], width=bar_width, label=f"{label_apple} Neon XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl["min"], width=bar_width, label=f"{label_apple} Neon XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["max"], width=bar_width, label=f"{label_apple} AMX XXL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["avg"], width=bar_width, label=f"{label_apple} AMX XXL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["min"], width=bar_width, label=f"{label_apple} AMX XXL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["max"], width=bar_width, label=f"{label_apple} Neon XXL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["avg"], width=bar_width, label=f"{label_apple} Neon XXL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["min"], width=bar_width, label=f"{label_apple} Neon XXL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["max"], width=bar_width, label=f"{label_apple} AMX XXL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["avg"], width=bar_width, label=f"{label_apple} AMX XXL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_amx_xxl["min"], width=bar_width, label=f"{label_apple} AMX XXL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["max"], width=bar_width, label=f"{label_apple} Neon XXL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["avg"], width=bar_width, label=f"{label_apple} Neon XXL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xxl["min"], width=bar_width, label=f"{label_apple} Neon XXL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
-            ax.set_title("AMX vs. Neon XL", fontsize=12, color=foreground_color, loc="center")
+            ax.set_title("AMX vs. Neon XXL", fontsize=12, color=foreground_color, loc="center")
 
     ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
     if("cuda" in f or "cpu" in f):
@@ -828,43 +829,43 @@ for f in figures:
 
     # ensure the directory exists
     try:
-        os.mkdir("../Graphs/5. Presentation")
+        os.mkdir("../Graphs/6. Presentation")
     except:
         pass
 
     match f:
         case "int":
-            plt.savefig("../Graphs/5. Presentation/Quantization.png")
+            plt.savefig("../Graphs/6. Presentation/Quantization.png")
         case "int_xl":
-            plt.savefig("../Graphs/5. Presentation/Quantization XL.png")
+            plt.savefig("../Graphs/6. Presentation/Quantization XL.png")
         case "simd":
-            plt.savefig("../Graphs/5. Presentation/SIMD.png")
+            plt.savefig("../Graphs/6. Presentation/SIMD.png")
         case "simd_xl":
-            plt.savefig("../Graphs/5. Presentation/SIMD XL.png")
+            plt.savefig("../Graphs/6. Presentation/SIMD XL.png")
         case "omp":
-            plt.savefig("../Graphs/5. Presentation/OpenMP.png")
+            plt.savefig("../Graphs/6. Presentation/OpenMP.png")
         case "omp_xl":
-            plt.savefig("../Graphs/5. Presentation/OpenMP XL.png")
+            plt.savefig("../Graphs/6. Presentation/OpenMP XL.png")
         case "simd_intel":
-            plt.savefig("../Graphs/5. Presentation/ICPX SIMD.png")
+            plt.savefig("../Graphs/6. Presentation/ICPX SIMD.png")
         case "simd_xl_intel":
-            plt.savefig("../Graphs/5. Presentation/ICPX SIMD XL.png")
+            plt.savefig("../Graphs/6. Presentation/ICPX SIMD XL.png")
         case "omp_intel":
-            plt.savefig("../Graphs/5. Presentation/ICPX OpenMP.png")
+            plt.savefig("../Graphs/6. Presentation/ICPX OpenMP.png")
         case "omp_xl_intel":
-            plt.savefig("../Graphs/5. Presentation/ICPX OpenMP XL.png")
+            plt.savefig("../Graphs/6. Presentation/ICPX OpenMP XL.png")
         case "cuda":
-            plt.savefig("../Graphs/5. Presentation/CUDA.png")
+            plt.savefig("../Graphs/6. Presentation/CUDA.png")
         case "cuda_xl":
-            plt.savefig("../Graphs/5. Presentation/CUDA XL.png")
+            plt.savefig("../Graphs/6. Presentation/CUDA XL.png")
         case "cpu_gpu":
-            plt.savefig("../Graphs/5. Presentation/CPU vs GPU.png")
+            plt.savefig("../Graphs/6. Presentation/CPU vs GPU.png")
         case "cpu_gpu_xl":
-            plt.savefig("../Graphs/5. Presentation/CPU vs GPU XL.png")
+            plt.savefig("../Graphs/6. Presentation/CPU vs GPU XL.png")
         case "amx":
-            plt.savefig("../Graphs/5. Presentation/AMX vs Neon.png")
-        case "amx_xl":
-            plt.savefig("../Graphs/5. Presentation/AMX vs Neon XL.png")
+            plt.savefig("../Graphs/6. Presentation/AMX vs Neon.png")
+        case "amx_xxl":
+            plt.savefig("../Graphs/6. Presentation/AMX vs Neon XXL.png")
 
     # Show the plot
     # plt.show()
