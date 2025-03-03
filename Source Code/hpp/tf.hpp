@@ -24,16 +24,16 @@
         matrix **relu(matrix **a, int len, matrix **c);
         matrix *transpose(matrix *a, matrix *c);
     #else
-        matrix *add(matrix *a, matrix *b, matrix *c, mt *instance);
-        matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance);
-        matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance);
-        matrix *flatten(matrix *a, int len, matrix *c, mt *instance);
-        matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance);
-        matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance);
-        matrix *matmul(matrix *a, matrix *b, matrix *c, mt *instance);
-        matrix *maxpool(matrix **a, int len, matrix *c, mt *instance);
-        matrix **relu(matrix **a, int len, matrix **c, mt *instance);
-        matrix *transpose(matrix *a, matrix *c, mt *instance);
+        matrix *add(void *a, void *b, matrix *c, mt *instance);
+        matrix **biasing(void **a, int len, void *b, matrix **c, mt *instance);
+        matrix **conv2d(void *a, void **b, int len, matrix **c, mt *instance);
+        matrix *flatten(void *a, int len, matrix *c, mt *instance);
+        matrix **flip_kernels(void **a, int len, matrix **c, mt *instance);
+        matrix **hyperbolic_tangent(void **a, int len, matrix **c, mt *instance);
+        matrix *matmul(void *a, void *b, matrix *c, mt *instance);
+        matrix *maxpool(void **a, int len, matrix *c, mt *instance);
+        matrix **relu(void **a, int len, matrix **c, mt *instance);
+        matrix *transpose(void *a, matrix *c, mt *instance);
     #endif
 
     __attribute__((always_inline)) inline int index_of_max_element(matrix *a) {

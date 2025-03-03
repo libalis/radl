@@ -7,18 +7,25 @@
 #include "../hpp/tf.hpp"
 
 #ifdef OMP
+    #ifdef INT
+        #include "../hpp/matrix_int8.hpp"
+    #endif
     #include "../hpp/utils.hpp"
 #endif
 
-matrix *add(matrix *a, matrix *b, matrix *c, mt *instance) {
+matrix *add(void *a, void *b, matrix *c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix(a->x, a->y);
+        c = malloc_matrix(((matrix*)a)->x, ((matrix*)a)->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
-                c->m[get_idx(i, j, c->y)] = a->m[get_idx(i, j, a->y)] + b->m[get_idx(i, j, b->y)];
+                #ifdef INT
+                    c->m[get_idx(i, j, c->y)] = ((matrix*)a)->m[get_idx(i, j, ((matrix*)a)->y)] + ((matrix_int8*)b)->m[get_idx(i, j, ((matrix*)b)->y)];
+                #else
+                    c->m[get_idx(i, j, c->y)] = ((matrix*)a)->m[get_idx(i, j, ((matrix*)a)->y)] + ((matrix*)b)->m[get_idx(i, j, ((matrix*)b)->y)];
+                #endif
             }
         }
     #else
@@ -41,16 +48,20 @@ matrix *add(matrix *a, matrix *b, matrix *c, mt *instance) {
     return c;
 }
 
-matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance) {
+matrix **biasing(void **a, int len, void *b, matrix **c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_matrix_ptr(len, ((matrix*)a[0])->x, ((matrix*)a[0])->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[0]->x; i++) {
-                for(int j = 0; j < a[0]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(i, j, a[0]->y)] + b->m[get_idx(m, 0, b->y)];
+            for(int i = 0; i < ((matrix*)a[0])->x; i++) {
+                for(int j = 0; j < ((matrix*)a[0])->y; j++) {
+                    #ifdef INT
+                        c[m]->m[get_idx(i, j, c[0]->y)] = ((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)] + ((matrix_int8*)b)->m[get_idx(m, 0, ((matrix*)b)->y)];
+                    #else
+                        c[m]->m[get_idx(i, j, c[0]->y)] = ((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)] + ((matrix*)b)->m[get_idx(m, 0, ((matrix*)b)->y)];
+                    #endif
                 }
             }
         }
@@ -63,7 +74,7 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance) {
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a[0]->x) {
+                if(instance->THREADS < ((matrix*)a[0])->x) {
                     arg[i].single_core = 1;
                     instance->biasing_mt(&arg[i]);
                     break;
@@ -72,7 +83,7 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance) {
                 arg[i].start_routine = instance->biasing_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a[0]->x) {
+            if(instance->THREADS >= ((matrix*)a[0])->x) {
                 instance->wait_mt();
             }
         }
@@ -80,19 +91,23 @@ matrix **biasing(matrix **a, int len, matrix *b, matrix **c, mt *instance) {
     return c;
 }
 
-matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance) {
+matrix **conv2d(void *a, void **b, int len, matrix **c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a->x - b[0]->x + 1, a->y - b[0]->y + 1);
+        c = malloc_matrix_ptr(len, ((matrix*)a)->x - ((matrix*)b[0])->x + 1, ((matrix*)a)->y - ((matrix*)b[0])->y + 1);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a->x - b[0]->x + 1; i++) {
-                for(int j = 0; j < a->y - b[0]->y + 1; j++) {
+            for(int i = 0; i < ((matrix*)a)->x - ((matrix*)b[0])->x + 1; i++) {
+                for(int j = 0; j < ((matrix*)a)->y - ((matrix*)b[0])->y + 1; j++) {
                     DATA_TYPE sum = 0;
-                    for(int k = 0; k < b[0]->x; k++) {
-                        for(int l = 0; l < b[0]->y; l++) {
-                            sum += a->m[get_idx(i + k, j + l, a->y)] * b[m]->m[get_idx(k, l, b[0]->y)];
+                    for(int k = 0; k < ((matrix*)b[0])->x; k++) {
+                        for(int l = 0; l < ((matrix*)b[0])->y; l++) {
+                            #ifdef INT
+                                sum += ((matrix_int8*)a)->m[get_idx(i + k, j + l, ((matrix*)a)->y)] * ((matrix_int8*)b[m])->m[get_idx(k, l, ((matrix*)b[0])->y)];
+                            #else
+                                sum += ((matrix*)a)->m[get_idx(i + k, j + l, ((matrix*)a)->y)] * ((matrix*)b[m])->m[get_idx(k, l, ((matrix*)b[0])->y)];
+                            #endif
                         }
                     }
                     c[m]->m[get_idx(i, j, c[0]->y)] = sum;
@@ -108,7 +123,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance) {
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a->x - b[0]->x + 1) {
+                if(instance->THREADS < ((matrix*)a)->x - ((matrix*)b[0])->x + 1) {
                     arg[i].single_core = 1;
                     instance->conv2d_mt(&arg[i]);
                     break;
@@ -117,7 +132,7 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance) {
                 arg[i].start_routine = instance->conv2d_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a->x - b[0]->x + 1) {
+            if(instance->THREADS >= ((matrix*)a)->x - ((matrix*)b[0])->x + 1) {
                 instance->wait_mt();
             }
         }
@@ -125,17 +140,17 @@ matrix **conv2d(matrix *a, matrix **b, int len, matrix **c, mt *instance) {
     return c;
 }
 
-matrix *flatten(matrix *a, int len, matrix *c, mt *instance) {
+matrix *flatten(void *a, int len, matrix *c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix(1, a->x * a->y);
+        c = malloc_matrix(1, ((matrix*)a)->x * ((matrix*)a)->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
-        for(int i = 0; i < a->x / len; i++) {
-            for(int j = 0; j < a->y; j++) {
+        for(int i = 0; i < ((matrix*)a)->x / len; i++) {
+            for(int j = 0; j < ((matrix*)a)->y; j++) {
                 for(int m = 0; m < len; m++) {
-                    int idx = i * a->y * len + j * len + m;
-                    c->m[get_idx(0, idx, c->y)] = a->m[get_idx(i, j, a->y) + m * ((a->x / len) * a->y)];
+                    int idx = i * ((matrix*)a)->y * len + j * len + m;
+                    c->m[get_idx(0, idx, c->y)] = ((matrix*)a)->m[get_idx(i, j, ((matrix*)a)->y) + m * ((((matrix*)a)->x / len) * ((matrix*)a)->y)];
                 }
             }
         }
@@ -145,7 +160,7 @@ matrix *flatten(matrix *a, int len, matrix *c, mt *instance) {
             arg[i].a = &a;
             arg[i].c = &c;
             arg[i].len = len;
-            if(instance->THREADS < a->x / len) {
+            if(instance->THREADS < ((matrix*)a)->x / len) {
                 arg[i].single_core = 1;
                 instance->flatten_mt(&arg[i]);
                 return c;
@@ -159,16 +174,16 @@ matrix *flatten(matrix *a, int len, matrix *c, mt *instance) {
     return c;
 }
 
-matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance) {
+matrix **flip_kernels(void **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_matrix_ptr(len, ((matrix*)a[0])->x, ((matrix*)a[0])->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for (int i = 0; i < a[0]->x; i++) {
-                for (int j = 0; j < a[0]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[0]->y)] = a[m]->m[get_idx(a[0]->x - i - 1, a[0]->y - j - 1, a[0]->y)];
+            for (int i = 0; i < ((matrix*)a[0])->x; i++) {
+                for (int j = 0; j < ((matrix*)a[0])->y; j++) {
+                    c[m]->m[get_idx(i, j, c[0]->y)] = ((matrix*)a[m])->m[get_idx(((matrix*)a[0])->x - i - 1, ((matrix*)a[0])->y - j - 1, ((matrix*)a[0])->y)];
                 }
             }
         }
@@ -180,7 +195,7 @@ matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a[0]->x) {
+                if(instance->THREADS < ((matrix*)a[0])->x) {
                     arg[i].single_core = 1;
                     instance->flip_kernels_mt(&arg[i]);
                     break;
@@ -189,7 +204,7 @@ matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].start_routine = instance->flip_kernels_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a[0]->x) {
+            if(instance->THREADS >= ((matrix*)a[0])->x) {
                 instance->wait_mt();
             }
         }
@@ -197,16 +212,16 @@ matrix **flip_kernels(matrix **a, int len, matrix **c, mt *instance) {
     return c;
 }
 
-matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance) {
+matrix **hyperbolic_tangent(void **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_matrix_ptr(len, ((matrix*)a[0])->x, ((matrix*)a[0])->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[0]->x; i++) {
-                for(int j = 0; j < a[0]->y; j++) {
-                    c[m]->m[get_idx(i, j, c[0]->y)] = tanh(a[m]->m[get_idx(i, j, a[0]->y)]);
+            for(int i = 0; i < ((matrix*)a[0])->x; i++) {
+                for(int j = 0; j < ((matrix*)a[0])->y; j++) {
+                    c[m]->m[get_idx(i, j, c[0]->y)] = tanh(((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)]);
                 }
             }
         }
@@ -218,7 +233,7 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a[0]->x) {
+                if(instance->THREADS < ((matrix*)a[0])->x) {
                     arg[i].single_core = 1;
                     instance->hyperbolic_tangent_mt(&arg[i]);
                     break;
@@ -227,7 +242,7 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].start_routine = instance->hyperbolic_tangent_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a[0]->x) {
+            if(instance->THREADS >= ((matrix*)a[0])->x) {
                 instance->wait_mt();
             }
         }
@@ -235,17 +250,21 @@ matrix **hyperbolic_tangent(matrix **a, int len, matrix **c, mt *instance) {
     return c;
 }
 
-matrix *matmul(matrix *a, matrix *b, matrix *c, mt *instance) {
+matrix *matmul(void *a, void *b, matrix *c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix(a->x, b->x);
+        c = malloc_matrix(((matrix*)a)->x, ((matrix*)b)->x);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(2)
         for(int i = 0; i < c->x; i++) {
             for(int j = 0; j < c->y; j++) {
                 c->m[get_idx(i, j, c->y)] = 0;
-                for(int k = 0; k < a->y; k++) {
-                    c->m[get_idx(i, j, c->y)] += a->m[get_idx(i, k, a->y)] * b->m[get_idx(j, k, b->y)];
+                for(int k = 0; k < ((matrix*)a)->y; k++) {
+                    #ifdef INT
+                        c->m[get_idx(i, j, c->y)] += ((matrix*)a)->m[get_idx(i, k, ((matrix*)a)->y)] * ((matrix_int8*)b)->m[get_idx(j, k, ((matrix*)b)->y)];
+                    #else
+                        c->m[get_idx(i, j, c->y)] += ((matrix*)a)->m[get_idx(i, k, ((matrix*)a)->y)] * ((matrix*)b)->m[get_idx(j, k, ((matrix*)b)->y)];
+                    #endif
                 }
             }
         }
@@ -274,19 +293,19 @@ matrix *matmul(matrix *a, matrix *b, matrix *c, mt *instance) {
     return c;
 }
 
-matrix *maxpool(matrix **a, int len, matrix *c, mt *instance) {
+matrix *maxpool(void **a, int len, matrix *c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix(len * (a[0]->x / POOL_LEN), (a[0]->y / POOL_LEN));
+        c = malloc_matrix(len * (((matrix*)a[0])->x / POOL_LEN), (((matrix*)a[0])->y / POOL_LEN));
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[0]->x; i += POOL_LEN) {
-                for(int j = 0; j < a[0]->y; j += POOL_LEN) {
-                    DATA_TYPE max_val = a[m]->m[get_idx(i, j, a[0]->y)];
+            for(int i = 0; i < ((matrix*)a[0])->x; i += POOL_LEN) {
+                for(int j = 0; j < ((matrix*)a[0])->y; j += POOL_LEN) {
+                    DATA_TYPE max_val = ((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)];
                     for(int k = 0; k < POOL_LEN; k++) {
                         for(int l = 0; l < POOL_LEN; l++) {
-                            DATA_TYPE curr_val = a[m]->m[get_idx(i + k, j + l, a[0]->y)];
+                            DATA_TYPE curr_val = ((matrix*)a[m])->m[get_idx(i + k, j + l, ((matrix*)a[0])->y)];
                             if(curr_val > max_val) {
                                 max_val = curr_val;
                             }
@@ -304,7 +323,7 @@ matrix *maxpool(matrix **a, int len, matrix *c, mt *instance) {
                 arg[i].c = &c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a[0]->x) {
+                if(instance->THREADS < ((matrix*)a[0])->x) {
                     arg[i].single_core = 1;
                     instance->maxpool_mt(&arg[i]);
                     break;
@@ -313,7 +332,7 @@ matrix *maxpool(matrix **a, int len, matrix *c, mt *instance) {
                 arg[i].start_routine = instance->maxpool_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a[0]->x) {
+            if(instance->THREADS >= ((matrix*)a[0])->x) {
                 instance->wait_mt();
             }
         }
@@ -321,18 +340,18 @@ matrix *maxpool(matrix **a, int len, matrix *c, mt *instance) {
     return c;
 }
 
-matrix **relu(matrix **a, int len, matrix **c, mt *instance) {
+matrix **relu(void **a, int len, matrix **c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix_ptr(len, a[0]->x, a[0]->y);
+        c = malloc_matrix_ptr(len, ((matrix*)a[0])->x, ((matrix*)a[0])->y);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(3)
         for(int m = 0; m < len; m++) {
-            for(int i = 0; i < a[0]->x; i++) {
-                for(int j = 0; j < a[0]->y; j++) {
+            for(int i = 0; i < ((matrix*)a[0])->x; i++) {
+                for(int j = 0; j < ((matrix*)a[0])->y; j++) {
                     DATA_TYPE val = 0;
-                    if(a[m]->m[get_idx(i, j, a[0]->y)] > 0) {
-                        val = a[m]->m[get_idx(i, j, a[0]->y)];
+                    if(((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)] > 0) {
+                        val = ((matrix*)a[m])->m[get_idx(i, j, ((matrix*)a[0])->y)];
                     }
                     c[m]->m[get_idx(i, j, c[0]->y)] = val;
                 }
@@ -346,7 +365,7 @@ matrix **relu(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].c = c;
                 arg[i].len = len;
                 arg[i].m = m;
-                if(instance->THREADS < a[0]->x) {
+                if(instance->THREADS < ((matrix*)a[0])->x) {
                     arg[i].single_core = 1;
                     instance->relu_mt(&arg[i]);
                     break;
@@ -355,7 +374,7 @@ matrix **relu(matrix **a, int len, matrix **c, mt *instance) {
                 arg[i].start_routine = instance->relu_mt_wrapper;
                 instance->push_mt(&arg[i]);
             }
-            if(instance->THREADS >= a[0]->x) {
+            if(instance->THREADS >= ((matrix*)a[0])->x) {
                 instance->wait_mt();
             }
         }
@@ -363,15 +382,15 @@ matrix **relu(matrix **a, int len, matrix **c, mt *instance) {
     return c;
 }
 
-matrix *transpose(matrix *a, matrix *c, mt *instance) {
+matrix *transpose(void *a, matrix *c, mt *instance) {
     if(c == NULL) {
-        c = malloc_matrix(a->y, a->x);
+        c = malloc_matrix(((matrix*)a)->y, ((matrix*)a)->x);
     }
     #ifdef OMP
         #pragma omp parallel for collapse(2)
-        for(int i = 0; i < a->x; i++) {
-            for(int j = 0; j < a->y; j++) {
-                c->m[get_idx(j, i, c->y)] = a->m[get_idx(i, j, a->y)];
+        for(int i = 0; i < ((matrix*)a)->x; i++) {
+            for(int j = 0; j < ((matrix*)a)->y; j++) {
+                c->m[get_idx(j, i, c->y)] = ((matrix*)a)->m[get_idx(i, j, ((matrix*)a)->y)];
             }
         }
     #else
@@ -379,7 +398,7 @@ matrix *transpose(matrix *a, matrix *c, mt *instance) {
         for(int i = 0; i < instance->THREADS; i++) {
             arg[i].a = &a;
             arg[i].c = &c;
-            if(instance->THREADS < a->x) {
+            if(instance->THREADS < ((matrix*)a)->x) {
                 arg[i].single_core = 1;
                 instance->transpose_mt(&arg[i]);
                 return c;

@@ -2,6 +2,9 @@
     #define MAIN_HPP
 
     #include "img.hpp"
+    #ifdef INT
+        #include "io_int8.hpp"
+    #endif
     #include "io.hpp"
     #include "mt.hpp"
     #ifdef NVIDIA
@@ -179,17 +182,14 @@
 
             int THREADS = sysconf(_SC_NPROCESSORS_ONLN);
 
-            io *io = malloc_io();
-
-            #ifdef DEBUG
-                matrix **flipped_masks = malloc_matrix_ptr(io->masks_len, io->masks[0]->x, io->masks[0]->y);
-                matrix **flipped_c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - flipped_masks[0]->x + 1, io->image[0]->y - flipped_masks[0]->y + 1);
+            #ifdef INT
+                io_int8 *io = malloc_io_int8();
+            #else
+                io *io = malloc_io();
             #endif
+
             matrix **c = malloc_matrix_ptr(io->masks_len, io->image[0]->x - io->masks[0]->x + 1, io->image[0]->y - io->masks[0]->y + 1);
             matrix **b = malloc_matrix_ptr(io->masks_len, c[0]->x, c[0]->y);
-            #ifdef DEBUG
-                matrix **hyperbolic_r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
-            #endif
             matrix **r = malloc_matrix_ptr(io->masks_len, b[0]->x, b[0]->y);
             matrix *m = malloc_matrix(io->masks_len * (r[0]->x / POOL_LEN), (r[0]->y / POOL_LEN));
             matrix *f = malloc_matrix(1, m->x * m->y);
@@ -205,20 +205,13 @@
             #endif
 
             for(int j = 0; j < io->image_len; j++) {
-                #ifdef DEBUG
-                    flip_kernels(io->masks, io->masks_len, flipped_masks, NULL);
-                    conv2d(io->image[j], flipped_masks, io->masks_len, flipped_c, NULL);
-                #endif
-                conv2d(io->image[j], io->masks, io->masks_len, c, NULL);
-                biasing(c, io->masks_len, io->conv_bias, b, NULL);
-                #ifdef DEBUG
-                    hyperbolic_tangent(b, io->masks_len, hyperbolic_r, NULL);
-                #endif
-                relu(b, io->masks_len, r, NULL);
-                maxpool(r, io->masks_len, m, NULL);
-                flatten(m, io->masks_len, f, NULL);
-                matmul(f, io->fc_weights, mm, NULL);
-                add(mm, io->fc_bias, a, NULL);
+                conv2d((void*)io->image[j], (void**)io->masks, io->masks_len, c, NULL);
+                biasing((void**)c, io->masks_len, (void*)io->conv_bias, b, NULL);
+                relu((void**)b, io->masks_len, r, NULL);
+                maxpool((void**)r, io->masks_len, m, NULL);
+                flatten((void*)m, io->masks_len, f, NULL);
+                matmul((void*)f, (void*)io->fc_weights, mm, NULL);
+                add((void*)mm, (void*)io->fc_bias, a, NULL);
                 max_val = index_of_max_element(a);
                 #ifdef DEBUG
                     if(max_val == io->label[j]) {
@@ -241,17 +234,14 @@
             free_matrix(f);
             free_matrix(m);
             free_matrix_ptr(r, io->masks_len);
-            #ifdef DEBUG
-                free_matrix_ptr(hyperbolic_r, io->masks_len);
-            #endif
             free_matrix_ptr(b, io->masks_len);
             free_matrix_ptr(c, io->masks_len);
-            #ifdef DEBUG
-                free_matrix_ptr(flipped_c, io->masks_len);
-                free_matrix_ptr(flipped_masks, io->masks_len);
-            #endif
 
-            free_io(io);
+            #ifdef INT
+                free_io_int8(io);
+            #else
+                free_io(io);
+            #endif
 
             free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
@@ -294,7 +284,11 @@
             create_mt_time_us = delta_time_us(start_time, stop_timer());
             next_time = start_timer();
 
-            io *io = malloc_io();
+            #ifdef INT
+                io_int8 *io = malloc_io_int8();
+            #else
+                io *io = malloc_io();
+            #endif
 
             malloc_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
@@ -314,7 +308,11 @@
             processing_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();
 
-            free_io(io);
+            #ifdef INT
+                free_io_int8(io);
+            #else
+                free_io(io);
+            #endif
 
             free_time_us = delta_time_us(next_time, stop_timer());
             next_time = start_timer();

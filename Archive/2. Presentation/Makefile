@@ -1,4 +1,4 @@
-PROGRAM := tf
+PROGRAM := radl
 CC := gcc
 ICX := /opt/intel/oneapi/compiler/latest/bin/icx
 CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -pthread

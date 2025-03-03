@@ -1,4 +1,4 @@
-PROGRAM := tf
+PROGRAM := radl
 
 CC := clang++
 ICPX := /opt/intel/oneapi/compiler/latest/bin/icpx

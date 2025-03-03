@@ -109,12 +109,12 @@
 
         __attribute__((always_inline)) inline void biasing_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < arg->a[arg->m]->x; i++) {
+                for(int i = 0; i < ((matrix*)arg->a[arg->m])->x; i++) {
                     arg->i = i;
                     biasing_simd(arg);
                 }
             } else {
-                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
+                for(int i = arg->idx * (((matrix*)arg->a[arg->m])->x / THREADS); i < ((arg->idx + 1) * (((matrix*)arg->a[arg->m])->x / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)arg->a[arg->m])->x % THREADS : 0); i++) {
                     arg->i = i;
                     biasing_simd(arg);
                 }
@@ -128,16 +128,16 @@
 
         __attribute__((always_inline)) inline void conv2d_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < (*arg->a)->x - arg->b[arg->m]->x + 1; i++) {
-                    for(int j = 0; j < (*arg->a)->y - arg->b[arg->m]->y + 1; j++) {
+                for(int i = 0; i < ((matrix*)*arg->a)->x - ((matrix*)arg->b[arg->m])->x + 1; i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y - ((matrix*)arg->b[arg->m])->y + 1; j++) {
                         arg->i = i;
                         arg->j = j;
                         conv2d_simd(arg);
                     }
                 }
             } else {
-                for(int i = arg->idx * (((*arg->a)->x - arg->b[arg->m]->x + 1) / THREADS); i < ((arg->idx + 1) * (((*arg->a)->x - arg->b[arg->m]->x + 1) / THREADS)) + (arg->idx == THREADS - 1 ? ((*arg->a)->x - arg->b[arg->m]->x + 1) % THREADS : 0); i++) {
-                    for(int j = 0; j < (*arg->a)->y - arg->b[arg->m]->y + 1; j++) {
+                for(int i = arg->idx * ((((matrix*)*arg->a)->x - ((matrix*)arg->b[arg->m])->x + 1) / THREADS); i < ((arg->idx + 1) * ((((matrix*)*arg->a)->x - ((matrix*)arg->b[arg->m])->x + 1) / THREADS)) + (arg->idx == THREADS - 1 ? (((matrix*)*arg->a)->x - ((matrix*)arg->b[arg->m])->x + 1) % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y - ((matrix*)arg->b[arg->m])->y + 1; j++) {
                         arg->i = i;
                         arg->j = j;
                         conv2d_simd(arg);
@@ -153,20 +153,20 @@
 
         __attribute__((always_inline)) inline void flatten_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < (*arg->a)->x / arg->len; i++) {
-                    for(int j = 0; j < (*arg->a)->y; j++) {
+                for(int i = 0; i < ((matrix*)*arg->a)->x / arg->len; i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y; j++) {
                         for(int m = 0; m < arg->len; m++) {
-                            int idx = i * (*arg->a)->y * arg->len + j * arg->len + m;
-                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y) + m * (((*arg->a)->x / arg->len) * (*arg->a)->y)];
+                            int idx = i * ((matrix*)*arg->a)->y * arg->len + j * arg->len + m;
+                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = ((matrix*)*arg->a)->m[get_idx(i, j, ((matrix*)*arg->a)->y) + m * ((((matrix*)*arg->a)->x / arg->len) * ((matrix*)*arg->a)->y)];
                         }
                     }
                 }
             } else {
-                for(int i = arg->idx * ((*arg->a)->x / arg->len / THREADS); i < ((arg->idx + 1) * ((*arg->a)->x / arg->len / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->a)->x / arg->len % THREADS : 0); i++) {
-                    for(int j = 0; j < (*arg->a)->y; j++) {
+                for(int i = arg->idx * (((matrix*)*arg->a)->x / arg->len / THREADS); i < ((arg->idx + 1) * (((matrix*)*arg->a)->x / arg->len / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)*arg->a)->x / arg->len % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y; j++) {
                         for(int m = 0; m < arg->len; m++) {
-                            int idx = i * (*arg->a)->y * arg->len + j * arg->len + m;
-                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y) + m * (((*arg->a)->x / arg->len) * (*arg->a)->y)];
+                            int idx = i * ((matrix*)*arg->a)->y * arg->len + j * arg->len + m;
+                            (*arg->c)->m[get_idx(0, idx, (*arg->c)->y)] = ((matrix*)*arg->a)->m[get_idx(i, j, ((matrix*)*arg->a)->y) + m * ((((matrix*)*arg->a)->x / arg->len) * ((matrix*)*arg->a)->y)];
                         }
                     }
                 }
@@ -180,15 +180,15 @@
 
         __attribute__((always_inline)) inline void flip_kernels_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < arg->a[arg->m]->x; i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
-                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = arg->a[arg->m]->m[get_idx(arg->a[arg->m]->x - i - 1, arg->a[arg->m]->y - j - 1, arg->a[arg->m]->y)];
+                for(int i = 0; i < ((matrix*)arg->a[arg->m])->x; i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = ((matrix*)arg->a[arg->m])->m[get_idx(((matrix*)arg->a[arg->m])->x - i - 1, ((matrix*)arg->a[arg->m])->y - j - 1, ((matrix*)arg->a[arg->m])->y)];
                     }
                 }
             } else {
-                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
-                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = arg->a[arg->m]->m[get_idx(arg->a[arg->m]->x - i - 1, arg->a[arg->m]->y - j - 1, arg->a[arg->m]->y)];
+                for(int i = arg->idx * (((matrix*)arg->a[arg->m])->x / THREADS); i < ((arg->idx + 1) * (((matrix*)arg->a[arg->m])->x / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)arg->a[arg->m])->x % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = ((matrix*)arg->a[arg->m])->m[get_idx(((matrix*)arg->a[arg->m])->x - i - 1, ((matrix*)arg->a[arg->m])->y - j - 1, ((matrix*)arg->a[arg->m])->y)];
                     }
                 }
                 wait_mt();
@@ -201,15 +201,15 @@
 
         __attribute__((always_inline)) inline void hyperbolic_tangent_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < arg->a[arg->m]->x; i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
-                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)]);
+                for(int i = 0; i < ((matrix*)arg->a[arg->m])->x; i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)]);
                     }
                 }
             } else {
-                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
-                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)]);
+                for(int i = arg->idx * (((matrix*)arg->a[arg->m])->x / THREADS); i < ((arg->idx + 1) * (((matrix*)arg->a[arg->m])->x / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)arg->a[arg->m])->x % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
+                        arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = tanh(((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)]);
                     }
                 }
                 wait_mt();
@@ -243,12 +243,12 @@
 
         __attribute__((always_inline)) inline void maxpool_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < arg->a[arg->m]->x; i += POOL_LEN) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j += POOL_LEN) {
-                        DATA_TYPE max_val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                for(int i = 0; i < ((matrix*)arg->a[arg->m])->x; i += POOL_LEN) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j += POOL_LEN) {
+                        DATA_TYPE max_val = ((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)];
                         for(int k = 0; k < POOL_LEN; k++) {
                             for(int l = 0; l < POOL_LEN; l++) {
-                                DATA_TYPE curr_val = arg->a[arg->m]->m[get_idx(i + k, j + l, arg->a[arg->m]->y)];
+                                DATA_TYPE curr_val = ((matrix*)arg->a[arg->m])->m[get_idx(i + k, j + l, ((matrix*)arg->a[arg->m])->y)];
                                 if(curr_val > max_val) {
                                     max_val = curr_val;
                                 }
@@ -258,13 +258,13 @@
                     }
                 }
             } else {
-                for(int m = arg->idx * ((arg->a[arg->m]->x / POOL_LEN) / THREADS); m < ((arg->idx + 1) * ((arg->a[arg->m]->x / POOL_LEN) / THREADS)) + (arg->idx == THREADS - 1 ? (arg->a[arg->m]->x / POOL_LEN) % THREADS : 0); m++) {
+                for(int m = arg->idx * ((((matrix*)arg->a[arg->m])->x / POOL_LEN) / THREADS); m < ((arg->idx + 1) * ((((matrix*)arg->a[arg->m])->x / POOL_LEN) / THREADS)) + (arg->idx == THREADS - 1 ? (((matrix*)arg->a[arg->m])->x / POOL_LEN) % THREADS : 0); m++) {
                     int i = m * POOL_LEN;
-                    for(int j = 0; j < arg->a[arg->m]->y; j += POOL_LEN) {
-                        DATA_TYPE max_val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j += POOL_LEN) {
+                        DATA_TYPE max_val = ((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)];
                         for(int k = 0; k < POOL_LEN; k++) {
                             for(int l = 0; l < POOL_LEN; l++) {
-                                DATA_TYPE curr_val = arg->a[arg->m]->m[get_idx(i + k, j + l, arg->a[arg->m]->y)];
+                                DATA_TYPE curr_val = ((matrix*)arg->a[arg->m])->m[get_idx(i + k, j + l, ((matrix*)arg->a[arg->m])->y)];
                                 if(curr_val > max_val) {
                                     max_val = curr_val;
                                 }
@@ -283,21 +283,21 @@
 
         __attribute__((always_inline)) inline void relu_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < arg->a[arg->m]->x; i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                for(int i = 0; i < ((matrix*)arg->a[arg->m])->x; i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
                         DATA_TYPE val = 0;
-                        if(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)] > 0) {
-                            val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        if(((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)] > 0) {
+                            val = ((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)];
                         }
                         arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = val;
                     }
                 }
             } else {
-                for(int i = arg->idx * (arg->a[arg->m]->x / THREADS); i < ((arg->idx + 1) * (arg->a[arg->m]->x / THREADS)) + (arg->idx == THREADS - 1 ? arg->a[arg->m]->x % THREADS : 0); i++) {
-                    for(int j = 0; j < arg->a[arg->m]->y; j++) {
+                for(int i = arg->idx * (((matrix*)arg->a[arg->m])->x / THREADS); i < ((arg->idx + 1) * (((matrix*)arg->a[arg->m])->x / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)arg->a[arg->m])->x % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)arg->a[arg->m])->y; j++) {
                         DATA_TYPE val = 0;
-                        if(arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)] > 0) {
-                            val = arg->a[arg->m]->m[get_idx(i, j, arg->a[arg->m]->y)];
+                        if(((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)] > 0) {
+                            val = ((matrix*)arg->a[arg->m])->m[get_idx(i, j, ((matrix*)arg->a[arg->m])->y)];
                         }
                         arg->c[arg->m]->m[get_idx(i, j, arg->c[arg->m]->y)] = val;
                     }
@@ -312,15 +312,15 @@
 
         __attribute__((always_inline)) inline void transpose_mt(mt_arg *arg) {
             if(arg->single_core) {
-                for(int i = 0; i < (*arg->a)->x; i++) {
-                    for(int j = 0; j < (*arg->a)->y; j++) {
-                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y)];
+                for(int i = 0; i < ((matrix*)*arg->a)->x; i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y; j++) {
+                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = ((matrix*)*arg->a)->m[get_idx(i, j, ((matrix*)*arg->a)->y)];
                     }
                 }
             } else {
-                for(int i = arg->idx * ((*arg->a)->x / THREADS); i < ((arg->idx + 1) * ((*arg->a)->x / THREADS)) + (arg->idx == THREADS - 1 ? (*arg->a)->x % THREADS : 0); i++) {
-                    for(int j = 0; j < (*arg->a)->y; j++) {
-                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = (*arg->a)->m[get_idx(i, j, (*arg->a)->y)];
+                for(int i = arg->idx * (((matrix*)*arg->a)->x / THREADS); i < ((arg->idx + 1) * (((matrix*)*arg->a)->x / THREADS)) + (arg->idx == THREADS - 1 ? ((matrix*)*arg->a)->x % THREADS : 0); i++) {
+                    for(int j = 0; j < ((matrix*)*arg->a)->y; j++) {
+                        (*arg->c)->m[get_idx(j, i, (*arg->c)->y)] = ((matrix*)*arg->a)->m[get_idx(i, j, ((matrix*)*arg->a)->y)];
                     }
                 }
                 wait_mt();

@@ -1,5 +1,5 @@
 #!/bin/bash
-PROGRAM="tf"
+PROGRAM="radl"
 ICPX="/opt/intel/oneapi/compiler/latest/bin/icpx"
 CFLAGS="-O3 $(pkg-config --cflags glib-2.0 | sed 's/ -pthread//g') -Xcompiler -Wno-unused-command-line-argument -Xcompiler -Wno-unused-result -std=c++11"
 LDFLAGS="$(pkg-config --libs glib-2.0) -lm"

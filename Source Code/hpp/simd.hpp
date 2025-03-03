@@ -2,7 +2,7 @@
     #define SIMD_HPP
 
     #include "mt_arg.hpp"
-    #include "utils.hpp"
+    //#include "utils.hpp"
 
     #if defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
         #define x86
@@ -15,6 +15,7 @@
     #endif
 
     __attribute__((always_inline)) inline void add_simd(mt_arg *mt) {
+        /*
         #ifdef x86
             #ifdef __AVX512F__
                 #ifdef INT
@@ -88,9 +89,11 @@
                 }
             #endif
         #endif
+        */
     }
 
     __attribute__((always_inline)) inline void biasing_simd(mt_arg *mt) {
+        /*
         #ifdef x86
             #ifdef __AVX512F__
                 #ifdef INT
@@ -164,9 +167,11 @@
                 }
             #endif
         #endif
+        */
     }
 
     __attribute__((always_inline)) inline void conv2d_simd(mt_arg *mt) {
+        /*
         #ifdef x86
             #ifdef __AVX512F__
                 #ifdef INT
@@ -340,9 +345,11 @@
                 #endif
             #endif
         #endif
+        */
     }
 
     __attribute__((always_inline)) inline void matmul_simd(mt_arg *mt) {
+        /*
         #ifdef x86
             #ifdef __AVX512F__
                 #ifdef INT
@@ -488,5 +495,6 @@
                 #endif
             #endif
         #endif
+        */
     }
 #endif

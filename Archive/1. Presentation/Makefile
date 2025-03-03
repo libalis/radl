@@ -1,4 +1,4 @@
-PROGRAM := tf
+PROGRAM := radl
 CC := gcc
 CFLAGS :=
 BUILD_DIR := ./build
