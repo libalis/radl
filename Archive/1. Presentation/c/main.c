@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int main(int argc, char* argv[]) {
-    int ts[] = {1};//, 4, 5, 8, 11, 16};
+    int ts[] = {1, 4, 5, 8, 11, 16};
 
     system("bash -c \"mkdir -p ./csv\"");
 
@@ -13,13 +13,7 @@ int main(int argc, char* argv[]) {
     fprintf(file, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
     fclose(file);
 
-    #if defined(DEBUG) || defined(NVIDIA) || defined(OMP)
-        int RUNS = 1;
-    #else
-        int RUNS = sizeof(ts) / sizeof(ts[0]);
-    #endif
-
-    for(int t = 0; t < RUNS; t++) {
+    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
         for(int i = -2; i < 10; i++) {
             #ifdef DEBUG
                 printf("Cycle %d start", i);

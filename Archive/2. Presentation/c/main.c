@@ -11,23 +11,17 @@
 
 int main(int argc, char *argv[]) {
     long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
-    long ts[] = {1};//, 4, 5, 8, 11, 16};
+    long ts[] = {1, 4, 5, 8, 11, 16};
 
     system(EXPORT);
 
     system("bash -c \"mkdir -p ./csv\"");
 
-    FILE *f = fopen(BENCHMARK, "w");
-    fprintf(f, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
-    fclose(f);
+    FILE *file = fopen(BENCHMARK, "w");
+    fprintf(file, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
+    fclose(file);
 
-    int RUNS;
-    #ifndef DEBUG
-        RUNS = sizeof(ts) / sizeof(ts[0]);
-    #else
-        RUNS = 1;
-    #endif
-    for(int t = 0; t < RUNS; t++) {
+    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
         for(int i = -2; i < 10; i++) {
             #ifdef DEBUG
                 printf("Run %d start\n", i);
@@ -100,9 +94,11 @@ int main(int argc, char *argv[]) {
 
             long total_time_us = delta_time_us(start_time, stop_timer());
 
-            FILE *f = fopen(BENCHMARK, "a");
-            fprintf(f, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
-            fclose(f);
+            if(i >= 0) {
+                FILE *file = fopen(BENCHMARK, "a");
+                fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
+                fclose(file);
+            }
         }
     }
 

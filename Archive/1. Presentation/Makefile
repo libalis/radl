@@ -21,9 +21,9 @@ benchmark:
 $(BUILD_DIR)/$(PROGRAM): $(C_DIR)/io.c $(C_DIR)/main.c $(C_DIR)/matrix.c $(C_DIR)/tf.c $(C_DIR)/timer.c $(H_DIR)/io.h $(H_DIR)/matrix.h $(H_DIR)/tf.h $(H_DIR)/timer.h
 	mkdir -p $(BUILD_DIR)
 	if [ -n "$(CFLAGS)" ]; then \
-        $(CC) $(CFLAGS) -o $@ $^ -lm; \
-    else \
-        $(CC) -o $@ $^ -lm; \
-    fi
+		$(CC) $(CFLAGS) -o $@ $^ -lm; \
+	else \
+		$(CC) -o $@ $^ -lm; \
+	fi
 
 .PHONY: all clean debug benchmark
