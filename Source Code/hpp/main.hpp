@@ -68,9 +68,9 @@
                 matrix **d_hyperbolic_r = malloc_cuda_matrix_ptr(io->masks_len, d_calc[0]->x, d_calc[0]->y);
             #endif
             matrix *d_m = malloc_cuda_matrix(io->masks_len * (d_calc[0]->x / POOL_LEN), (d_calc[0]->y / POOL_LEN));
-            matrix* d_f = malloc_cuda_matrix(1, d_m->x * d_m->y);
-            matrix* d_end = malloc_cuda_matrix(d_f->x, d_fc_weights->x);
-            matrix* d_fc_bias = malloc_cuda_matrix(io->fc_bias->x, io->fc_bias->y);
+            matrix *d_f = malloc_cuda_matrix(1, d_m->x * d_m->y);
+            matrix *d_end = malloc_cuda_matrix(d_f->x, d_fc_weights->x);
+            matrix *d_fc_bias = malloc_cuda_matrix(io->fc_bias->x, io->fc_bias->y);
             copy_cuda_matrix(io->fc_bias, d_fc_bias, true);
             matrix *a = malloc_matrix(d_end->x, d_end->y);
             int max_val = 0;
