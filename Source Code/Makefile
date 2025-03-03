@@ -136,6 +136,8 @@ int_xl:
 	-DBENCHMARK=\"\\\"./csv/benchmark_int_xl.csv\\\"\""
 
 benchmark:
+	$(MAKE) -C ../Archive/1.\ Presentation benchmark
+	$(MAKE) -C ../Archive/2.\ Presentation benchmark
 	$(MAKE) clean
 	$(MAKE)
 	$(BUILD_DIR)/$(PROGRAM)
@@ -156,6 +158,7 @@ benchmark:
 	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
+	$(MAKE) -C ../Archive/2.\ Presentation benchmark_intel
 	$(MAKE) benchmark
 	$(MAKE) clean
 	$(MAKE) intel

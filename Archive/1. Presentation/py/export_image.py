@@ -38,7 +38,7 @@ train_ds = train_ds.cache()
 
 # shuffling and dividing in batches
 shuffle_size = 60000
-batch_size = 60000
+batch_size = 128
 train_ds = train_ds.shuffle(shuffle_size).batch(batch_size)
 
 # define iterator over batches of data

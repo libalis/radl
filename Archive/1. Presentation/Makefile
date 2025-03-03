@@ -13,8 +13,17 @@ clean:
 debug:
 	$(MAKE) CFLAGS="$(CFLAGS) -g -DDEBUG"
 
+benchmark:
+	$(MAKE) clean
+	$(MAKE)
+	$(BUILD_DIR)/$(PROGRAM)
+
 $(BUILD_DIR)/$(PROGRAM): $(C_DIR)/io.c $(C_DIR)/main.c $(C_DIR)/matrix.c $(C_DIR)/tf.c $(C_DIR)/timer.c $(H_DIR)/io.h $(H_DIR)/matrix.h $(H_DIR)/tf.h $(H_DIR)/timer.h
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	if [ -n "$(CFLAGS)" ]; then \
+        $(CC) $(CFLAGS) -o $@ $^ -lm; \
+    else \
+        $(CC) -o $@ $^ -lm; \
+    fi
 
-.PHONY: all clean debug
+.PHONY: all clean debug benchmark

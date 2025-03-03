@@ -48,19 +48,18 @@ xl_intel:
 benchmark:
 	$(MAKE) clean
 	$(MAKE)
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
-	$(MAKE) benchmark
 	$(MAKE) clean
 	$(MAKE) intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) xl_intel
-	./$(BUILD_DIR)/$(PROGRAM)
+	$(BUILD_DIR)/$(PROGRAM)
 
 $(BUILD_DIR)/$(PROGRAM): $(patsubst $(C_DIR)/%.c, $(BUILD_DIR)/%.o, $(wildcard $(C_DIR)/*.c))
 	mkdir -p $(BUILD_DIR)

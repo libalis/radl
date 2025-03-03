@@ -9,7 +9,7 @@ except:
     pass
 
 batch_size = 128
-scale_factor = 20
+scale_factor = 32
 
 # save how many images there are
 with open("./tmp/image_len.txt", "w") as f:

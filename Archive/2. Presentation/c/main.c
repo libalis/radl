@@ -11,14 +11,14 @@
 
 int main(int argc, char *argv[]) {
     long MAX_THREADS = sysconf(_SC_NPROCESSORS_ONLN);
-    long ts[] = {1, 4, 5, 8, 11, 16};
+    long ts[] = {1};//, 4, 5, 8, 11, 16};
 
     system(EXPORT);
 
     system("bash -c \"mkdir -p ./csv\"");
 
     FILE *f = fopen(BENCHMARK, "w");
-    fprintf(f, "create_mt_time_us,malloc_io_time_us,processing_time_us,free_io_time_us,join_mt_time_us,total_time_us,threads\n");
+    fprintf(f, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
     fclose(f);
 
     int RUNS;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
         RUNS = 1;
     #endif
     for(int t = 0; t < RUNS; t++) {
-        for(int i = 0; i < EPOCHS; i++) {
+        for(int i = -2; i < 10; i++) {
             #ifdef DEBUG
                 printf("Run %d start\n", i);
             #endif
