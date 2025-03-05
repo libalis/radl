@@ -32,7 +32,7 @@ avx() {
         if [[ $? -ne 0 ]]; then
             exit
         fi
-        CFLAGS="$CFLAGS -Xcompiler -mavx512f"
+        CFLAGS="$CFLAGS -Xcompiler -mavx512f -Xcompiler -mavx512bw -Xcompiler -mavx512vl"
     else
         AVX=$(dialog --title "AVX-512" --msgbox \
             "\nNo AVX-512 support detected\

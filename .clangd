@@ -5,8 +5,6 @@ CompileFlags:
     - "--include-directory=/usr/include/glib-2.0"
     - "--include-directory=/usr/lib/glib-2.0/include"
     - "--no-cuda-version-check"
-    - "-DOMP"
-    - "-DINT"
     - "-DDEBUG"
 Diagnostics:
   MissingIncludes: None
