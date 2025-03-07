@@ -102,9 +102,7 @@ openmp() {
         fi
     else
         CFLAGS="$CFLAGS -Xcompiler -pthread"
-        if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
-            amx
-        fi
+        simd
     fi
     data_type
 }
@@ -144,6 +142,21 @@ scale_factor() {
     options
 }
 
+simd() {
+    SIMD=$(dialog --title "SIMD" --defaultno --yesno \
+        "\nDo you want to disable SIMD, or use it by default?" \
+        10 60 3>&1 1>&2 2>&3)
+    if [[ $? -ne 0 ]]; then
+        if [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
+            amx
+        else
+            avx
+        fi
+    else
+        CFLAGS="$CFLAGS -DNO_SIMD"
+    fi
+}
+
 summary() {
     SUMMARY=$(dialog --title "Summary" --colors --msgbox \
         "\nThe following flags have been selected: \
@@ -177,7 +190,6 @@ target() {
 uname() {
     if [[ "$UNAME" == "x86_64" || "$UNAME" == "i386" || "$UNAME" == "i686" ]]; then
         architecture
-        avx
         compiler
     elif [[ "$UNAME" == "aarch64" || "$UNAME" == "armv7l" || "$UNAME" == "armv6l" || "$UNAME" == "arm64" ]]; then
         CFLAGS="$CFLAGS -I/opt/homebrew/opt/libomp/include"

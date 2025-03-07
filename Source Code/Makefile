@@ -29,6 +29,7 @@ endif
 AMX := -DAMX
 DEBUG := -g -pg -fsanitize=address -DDEBUG
 INT := -DINT
+NO_SIMD := -DNO_SIMD
 NVIDIA := -DNVIDIA
 OMP := -Xcompiler -fopenmp -DOMP
 OMP_DARWIN := -Xclang -fopenmp -DOMP
@@ -135,6 +136,22 @@ int_xl:
 	$(MAKE) CFLAGS="$(CFLAGS) $(INT) $(XL) \
 	-DBENCHMARK=\"\\\"./csv/benchmark_int_xl.csv\\\"\""
 
+no_simd:
+	$(MAKE) CFLAGS="$(CFLAGS) $(NO_SIMD) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_no_simd.csv\\\"\""
+
+no_simd_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) $(NO_SIMD) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_no_simd_xl.csv\\\"\""
+
+no_simd_int:
+	$(MAKE) CFLAGS="$(CFLAGS) $(NO_SIMD) $(INT) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_no_simd_int.csv\\\"\""
+
+no_simd_int_xl:
+	$(MAKE) CFLAGS="$(CFLAGS) $(NO_SIMD) $(INT) $(XL) \
+	-DBENCHMARK=\"\\\"./csv/benchmark_no_simd_int_xl.csv\\\"\""
+
 benchmark:
 	$(MAKE) -C ../Archive/1.\ Presentation benchmark
 	$(MAKE) -C ../Archive/2.\ Presentation benchmark
@@ -155,6 +172,18 @@ benchmark:
 	$(BUILD_DIR)/$(PROGRAM)
 	$(MAKE) clean
 	$(MAKE) int_xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) no_simd
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) no_simd_xl
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) no_simd_int
+	$(BUILD_DIR)/$(PROGRAM)
+	$(MAKE) clean
+	$(MAKE) no_simd_int_xl
 	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
@@ -209,4 +238,4 @@ $(BUILD_DIR)/%.o: $(CPP_DIR)/%.cpp $(HPP_DIR)/%.hpp
 	   $(CC) $(CFLAGS) -o $@ -c $< $(LDFLAGS); \
 	fi
 
-.PHONY: all clean config debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia debug_amx amx amx_xl int int_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin
+.PHONY: all clean config debug omp omp_xl xl intel omp_intel omp_xl_intel xl_intel nvidia xl_nvidia debug_amx amx amx_xl int int_xl no_simd no_simd_xl no_simd_int no_simd_int_xl benchmark benchmark_intel benchmark_nvidia benchmark_darwin

@@ -18,7 +18,15 @@
     #endif
 
     __attribute__((always_inline)) inline void add_simd(mt_arg *mt) {
-        #ifdef x86
+        #ifdef NO_SIMD
+            for(int j = 0; j < (*mt->c)->y; j++) {
+                #ifdef INT
+                    (*mt->c)->m[get_idx(mt->i, j, (*mt->c)->y)] = ((matrix*)*mt->a)->m[get_idx(mt->i, j, ((matrix*)*mt->a)->y)] + ((matrix_int8*)*mt->b)->m[get_idx(mt->i, j, ((matrix*)*mt->b)->y)];
+                #else
+                    (*mt->c)->m[get_idx(mt->i, j, (*mt->c)->y)] = ((matrix*)*mt->a)->m[get_idx(mt->i, j, ((matrix*)*mt->a)->y)] + ((matrix*)*mt->b)->m[get_idx(mt->i, j, ((matrix*)*mt->b)->y)];
+                #endif
+            }
+        #elif defined(x86)
             #ifdef __AVX512F__
                 #ifdef INT
                     int CHUNK_SIZE = sizeof(__m512i) / sizeof(DATA_TYPE);
@@ -99,7 +107,15 @@
     }
 
     __attribute__((always_inline)) inline void biasing_simd(mt_arg *mt) {
-        #ifdef x86
+        #ifdef NO_SIMD
+            for(int j = 0; j < ((matrix*)mt->a[0])->y; j++) {
+                #ifdef INT
+                    mt->c[mt->m]->m[get_idx(mt->i, j, mt->c[0]->y)] = ((matrix*)mt->a[mt->m])->m[get_idx(mt->i, j, ((matrix*)mt->a[0])->y)] + ((matrix_int8*)*mt->b)->m[get_idx(mt->m, 0, ((matrix*)*mt->b)->y)];
+                #else
+                    mt->c[mt->m]->m[get_idx(mt->i, j, mt->c[0]->y)] = ((matrix*)mt->a[mt->m])->m[get_idx(mt->i, j, ((matrix*)mt->a[0])->y)] + ((matrix*)*mt->b)->m[get_idx(mt->m, 0, ((matrix*)*mt->b)->y)];
+                #endif
+            }
+        #elif defined(x86)
             #ifdef __AVX512F__
                 #ifdef INT
                     int CHUNK_SIZE = sizeof(__m512i) / sizeof(DATA_TYPE);
@@ -175,7 +191,19 @@
     }
 
     __attribute__((always_inline)) inline void conv2d_simd(mt_arg *mt) {
-        #ifdef x86
+        #ifdef NO_SIMD
+            DATA_TYPE sum = 0;
+            for(int k = 0; k < ((matrix*)mt->b[0])->x; k++) {
+                for(int l = 0; l < ((matrix*)mt->b[0])->y; l++) {
+                    #ifdef INT
+                        sum += ((matrix_int8*)*mt->a)->m[get_idx(mt->i + k, mt->j + l, ((matrix*)*mt->a)->y)] * ((matrix_int8*)mt->b[mt->m])->m[get_idx(k, l, ((matrix*)mt->b[0])->y)];
+                    #else
+                        sum += ((matrix*)*mt->a)->m[get_idx(mt->i + k, mt->j + l, ((matrix*)*mt->a)->y)] * ((matrix*)mt->b[mt->m])->m[get_idx(k, l, ((matrix*)mt->b[0])->y)];
+                    #endif
+                }
+            }
+            mt->c[mt->m]->m[get_idx(mt->i, mt->j, mt->c[0]->y)] = sum;
+        #elif defined(x86)
             #ifdef __AVX512F__
                 #ifdef INT
                     int CHUNK_SIZE = sizeof(__m512i) / sizeof(DATA_TYPE);
@@ -352,7 +380,15 @@
     }
 
     __attribute__((always_inline)) inline void matmul_simd(mt_arg *mt) {
-        #ifdef x86
+        #ifdef NO_SIMD
+            for(int k = 0; k < ((matrix*)*mt->a)->y; k++) {
+                #ifdef INT
+                    (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] += ((matrix*)*mt->a)->m[get_idx(mt->i, k, ((matrix*)*mt->a)->y)] * ((matrix_int8*)*mt->b)->m[get_idx(mt->j, k, ((matrix*)*mt->b)->y)];
+                #else
+                    (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] += ((matrix*)*mt->a)->m[get_idx(mt->i, k, ((matrix*)*mt->a)->y)] * ((matrix*)*mt->b)->m[get_idx(mt->j, k, ((matrix*)*mt->b)->y)];
+                #endif
+            }
+        #elif defined(x86)
             #ifdef __AVX512F__
                 #ifdef INT
                     int CHUNK_SIZE = sizeof(__m512i) / sizeof(DATA_TYPE);

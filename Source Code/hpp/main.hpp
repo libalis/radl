@@ -204,6 +204,7 @@
                 int accurate = 0;
             #endif
 
+            #pragma omp parallel for
             for(int j = 0; j < io->image_len; j++) {
                 conv2d((void*)io->image[j], (void**)io->masks, io->masks_len, c, NULL);
                 biasing((void**)c, io->masks_len, (void*)io->conv_bias, b, NULL);
