@@ -1,17 +1,9 @@
 #include "../h/io.h"
 #include <assert.h>
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define CONV_BIAS ("./data/conv_bias.txt")
-#define FC_BIAS ("./data/fc_bias.txt")
-#define FC_WEIGHTS ("./data/fc_weights.txt")
-#define IMAGE_LEN ("./tmp/image_len.txt")
-#define IMAGE ("./tmp/image_.txt")
-#define LABEL ("./tmp/label_.txt")
-#define MASKS_LEN ("./data/masks_len.txt")
-#define MASKS ("./data/masks_.txt")
 
 int get_decimals(int a) {
     int c = 1;
@@ -82,31 +74,25 @@ io* malloc_io() {
 
     a->image = malloc(a->image_len * sizeof(matrix*));
     for(int i = 0; i < a->image_len; i++) {
-        char* c = malloc(strlen(IMAGE) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
-        snprintf(c, strlen(IMAGE) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./tmp/image_%d.txt", i);
+        char* c = g_strdup_printf(IMAGE, i);
         a->image[i] = io_to_matrix(c);
         free(c);
-        c = NULL;
     }
 
     a->label = malloc(a->image_len * sizeof(int));
     for(int i = 0; i < a->image_len; i++) {
-        char* c = malloc(strlen(LABEL) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
-        snprintf(c, strlen(LABEL) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./tmp/label_%d.txt", i);
+        char* c = g_strdup_printf(LABEL, i);
         a->label[i] = get_value(c);
         free(c);
-        c = NULL;
     }
 
     a->masks_len = get_value(MASKS_LEN);
 
     a->masks = malloc(a->masks_len * sizeof(matrix*));
     for(int i = 0; i < a->masks_len; i++) {
-        char* c = malloc(strlen(MASKS) * sizeof(char) + get_decimals(i) * sizeof(char) + 2);
-        snprintf(c, strlen(MASKS) * sizeof(char) + get_decimals(i) * sizeof(char) + 2, "./data/masks_%d.txt", i);
+        char* c = g_strdup_printf(MASKS, i);
         a->masks[i] = io_to_matrix(c);
         free(c);
-        c = NULL;
     }
     return a;
 }

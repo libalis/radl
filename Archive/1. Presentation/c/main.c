@@ -1,4 +1,5 @@
 #include "../h/io.h"
+#include "../h/main.h"
 #include "../h/tf.h"
 #include "../h/timer.h"
 #include <stdio.h>
@@ -9,17 +10,23 @@ int main(int argc, char* argv[]) {
 
     system("bash -c \"mkdir -p ./csv\"");
 
-    FILE* file = fopen("./csv/benchmark.csv", "w");
+    FILE* file = fopen(BENCHMARK, "w");
     fprintf(file, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
     fclose(file);
 
-    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
-        for(int i = -2; i < 10; i++) {
+    #if defined(DEBUG) || defined(NVIDIA) || defined(OMP)
+        int RUNS = 1;
+    #else
+        int RUNS = sizeof(ts) / sizeof(ts[0]);
+    #endif
+
+    for(int t = 0; t < RUNS; t++) {
+        for(int i = -2; i < EPOCHS; i++) {
             #ifdef DEBUG
                 printf("Cycle %d start", i);
             #endif
 
-            system("bash -c \"./py/export_image.py &>/dev/null\"");
+            system(EXPORT);
 
             timeval start_time = start_timer();
 
@@ -73,11 +80,17 @@ int main(int argc, char* argv[]) {
 
             system("bash -c \"rm -rf ./tmp\"");
 
-            if(i >= 0) {
-                FILE *file = fopen("./csv/benchmark.csv", "a");
+            #ifdef DEBUG
+                FILE *file = fopen(BENCHMARK, "a");
                 fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%d\n", 0l, malloc_time_us, processing_time_us, 0l, 0l, total_time_us, ts[t]);
                 fclose(file);
-            }
+            #else
+                if(i >= 0) {
+                    FILE *file = fopen(BENCHMARK, "a");
+                    fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%d\n", 0l, malloc_time_us, processing_time_us, 0l, 0l, total_time_us, ts[t]);
+                    fclose(file);
+                }
+            #endif
         }
     }
 

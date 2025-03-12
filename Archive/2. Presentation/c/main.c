@@ -21,8 +21,14 @@ int main(int argc, char *argv[]) {
     fprintf(file, "create_mt_time_us,malloc_time_us,processing_time_us,free_time_us,join_mt_time_us,total_time_us,threads\n");
     fclose(file);
 
-    for(int t = 0; t < sizeof(ts) / sizeof(ts[0]); t++) {
-        for(int i = -2; i < 10; i++) {
+    #if defined(DEBUG) || defined(NVIDIA) || defined(OMP)
+        int RUNS = 1;
+    #else
+        int RUNS = sizeof(ts) / sizeof(ts[0]);
+    #endif
+
+    for(int t = 0; t < RUNS; t++) {
+        for(int i = -2; i < EPOCHS; i++) {
             #ifdef DEBUG
                 printf("Run %d start\n", i);
             #endif
@@ -94,11 +100,17 @@ int main(int argc, char *argv[]) {
 
             long total_time_us = delta_time_us(start_time, stop_timer());
 
-            if(i >= 0) {
+            #ifdef DEBUG
                 FILE *file = fopen(BENCHMARK, "a");
                 fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
                 fclose(file);
-            }
+            #else
+                if(i >= 0) {
+                    FILE *file = fopen(BENCHMARK, "a");
+                    fprintf(file, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", create_mt_time_us, malloc_io_time_us, processing_time_us, free_io_time_us, join_mt_time_us, total_time_us, THREADS);
+                    fclose(file);
+                }
+            #endif
         }
     }
 

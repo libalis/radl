@@ -187,6 +187,7 @@ benchmark:
 	$(BUILD_DIR)/$(PROGRAM)
 
 benchmark_intel:
+	$(MAKE) -C ../Archive/1.\ Presentation benchmark_intel
 	$(MAKE) -C ../Archive/2.\ Presentation benchmark_intel
 	$(MAKE) benchmark
 	$(MAKE) clean
