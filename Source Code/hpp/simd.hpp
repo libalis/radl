@@ -311,12 +311,12 @@
                     DATA_TYPE z_reg[LANE_SIZE];
                     DATA_TYPE sum = 0;
                     uint64_t stz = (uint64_t)&z_reg;
-                    for(int k = 0; k < mt->b[mt->m]->x; k++) {
-                        for(int l = 0; l + CHUNK_SIZE - 1 < mt->b[mt->m]->y; l += CHUNK_SIZE) {
-                            uint64_t ldx = (uint64_t)&(*mt->a)->m[get_idx(mt->i + k, mt->j + l, (*mt->a)->y)];
+                    for(int k = 0; k < ((matrix_int8*)mt->b[mt->m])->x; k++) {
+                        for(int l = 0; l + CHUNK_SIZE - 1 < ((matrix_int8*)mt->b[mt->m])->y; l += CHUNK_SIZE) {
+                            uint64_t ldx = (uint64_t)&((matrix_int8*)*mt->a)->m[get_idx(mt->i + k, mt->j + l, ((matrix*)*mt->a)->y)];
                             ldx = ldx | 1ull << 60; // four registers
                             ldx = ldx | 1ull << 62; // multiple registers
-                            uint64_t ldy = (uint64_t)&mt->b[mt->m]->m[get_idx(k, l, mt->b[mt->m]->y)];
+                            uint64_t ldy = (uint64_t)&((matrix_int8*)mt->b[mt->m])->m[get_idx(k, l, ((matrix*)mt->b[mt->m])->y)];
                             ldy = ldy | 1ull << 60; // four registers
                             ldy = ldy | 1ull << 62; // multiple registers
                             AMX_SET();
@@ -335,8 +335,8 @@
                             }
                             mt->c[mt->m]->m[get_idx(mt->i, mt->j, mt->c[mt->m]->y)] = sum;
                         }
-                        for(int l = mt->b[mt->m]->y - (mt->b[mt->m]->y % CHUNK_SIZE); l < mt->b[mt->m]->y; l++) {
-                            sum += (*mt->a)->m[get_idx(mt->i + k, mt->j + l, (*mt->a)->y)] * mt->b[mt->m]->m[get_idx(k, l, mt->b[mt->m]->y)];
+                        for(int l = ((matrix_int8*)mt->b[mt->m])->y - (((matrix_int8*)mt->b[mt->m])->y % CHUNK_SIZE); l < ((matrix_int8*)mt->b[mt->m])->y; l++) {
+                            sum += ((matrix_int8*)*mt->a)->m[get_idx(mt->i + k, mt->j + l, ((matrix*)*mt->a)->y)] * ((matrix_int8*)mt->b[mt->m])->m[get_idx(k, l, ((matrix*)mt->b[mt->m])->y)];
                         }
                     }
                     mt->c[mt->m]->m[get_idx(mt->i, mt->j, mt->c[mt->m]->y)] = sum;
@@ -490,17 +490,17 @@
                     const int CHUNK_SIZE = 4 * LANE_SIZE;
                     DATA_TYPE z_reg[LANE_SIZE];
                     DATA_TYPE sum = 0;
-                    uint64_t ldx = (uint64_t)&(*mt->a)->m[get_idx(mt->i, 0, (*mt->a)->y)];
+                    uint64_t ldx = (uint64_t)&((matrix*)*mt->a)->m[get_idx(mt->i, 0, ((matrix*)*mt->a)->y)];
                     ldx = ldx | 1ull << 60; // four registers
                     ldx = ldx | 1ull << 62; // multiple registers
-                    uint64_t ldy = (uint64_t)&(*mt->b)->m[get_idx(mt->j, 0, (*mt->b)->y)];
+                    uint64_t ldy = (uint64_t)&((matrix_int8*)*mt->b)->m[get_idx(mt->j, 0, ((matrix*)*mt->b)->y)];
                     ldy = ldy | 1ull << 60; // four registers
                     ldy = ldy | 1ull << 62; // multiple registers
                     uint64_t mac16 = 1ull << 63; // vector mode
                     // mac16 = mac16 | 1ull << 62; // z is i32
                     uint64_t stz = (uint64_t)&z_reg;
                     AMX_SET();
-                    for(int k = 0; k + CHUNK_SIZE - 1 < (*mt->a)->y; k += CHUNK_SIZE) {
+                    for(int k = 0; k + CHUNK_SIZE - 1 < ((matrix*)*mt->a)->y; k += CHUNK_SIZE) {
                         size_t k_offset = k * sizeof(DATA_TYPE);
                         AMX_LDX(ldx + k_offset);
                         AMX_LDY(ldy + k_offset);
@@ -515,8 +515,8 @@
                         sum += z_reg[i];
                     }
                     (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] = sum;
-                    for(int k = (*mt->a)->y - ((*mt->a)->y % CHUNK_SIZE); k < (*mt->a)->y; k++) {
-                        (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] += (*mt->a)->m[get_idx(mt->i, k, (*mt->a)->y)] * (*mt->b)->m[get_idx(mt->j, k, (*mt->b)->y)];
+                    for(int k = ((matrix*)*mt->a)->y - (((matrix*)*mt->a)->y % CHUNK_SIZE); k < ((matrix*)*mt->a)->y; k++) {
+                        (*mt->c)->m[get_idx(mt->i, mt->j, (*mt->c)->y)] += ((matrix*)*mt->a)->m[get_idx(mt->i, k, ((matrix*)*mt->a)->y)] * ((matrix_int8*)*mt->b)->m[get_idx(mt->j, k, ((matrix*)*mt->b)->y)];
                     }
                 #else
                     const long LANE_SIZE = 16; // only 16 values can be performed at once
