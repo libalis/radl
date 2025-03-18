@@ -50,6 +50,7 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
         - Implementation Details
         - Performance Benefits (Memory Usage)
         - Performance Benchmarks (SIMD vs. Quantization)
+    - Other Optimizations
     - Compiler & Build Tools
         - GCC vs. Clang (Dustin)
         - Clang vs. ICPX (Robert) (SIMD vs. ICPX)
