@@ -1,8 +1,8 @@
 PROGRAM := radl
 CC := gcc
 ICX := /opt/intel/oneapi/compiler/latest/bin/icx
-CFLAGS := $(shell pkg-config --cflags --libs glib-2.0) -pthread
-LDFLAGS := -lm
+CFLAGS := $(shell pkg-config --cflags glib-2.0) -pthread
+LDFLAGS := $(shell pkg-config --libs glib-2.0) -lm
 BUILD_DIR := ./build
 C_DIR := ./c
 H_DIR := ./h
