@@ -45,10 +45,13 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - NEON
             - Performance Benchmarks (NO_SIMD vs. SIMD)
             - AMX (NEON vs. AMX)
+            - AMX (Power Consumption)
     - Quantization (Dustin)
         - Overview of Quantization
         - Implementation Details
         - Performance Benefits (Memory Usage)
+            - NO_SIMD: 2,409,961 bytes
+            - NO_SIMD INT: 2,050,771 bytes
         - Performance Benchmarks (SIMD vs. Quantization)
     - Other Optimizations
     - Compiler & Build Tools

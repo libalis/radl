@@ -115,7 +115,7 @@ file_paths = {
         "amx_xxl_7": "./csv/7. Presentation/apple/benchmark_amx_xxl.csv",
         "neon_7": "./csv/7. Presentation/apple/benchmark.csv",
         "neon_xl_7": "./csv/7. Presentation/apple/benchmark_xl.csv",
-        "neon_xxl": "./csv/7. Presentation/apple/benchmark_neon_xxl.csv",
+        "neon_xxl_7": "./csv/7. Presentation/apple/benchmark_neon_xxl.csv",
         "no_neon_7": "./csv/7. Presentation/apple/benchmark_no_simd.csv",
         "no_neon_xl_7": "./csv/7. Presentation/apple/benchmark_no_simd_xl.csv",
         "no_simd_7": "./csv/7. Presentation/apple/benchmark_no_simd.csv",
@@ -218,7 +218,23 @@ for i in range(len(threads)):
                 df_dict[group][key].loc[threads.index(threads[i]), "avg"] = np.average(tt_dict[group][key][10*i:10*(i+1)])
                 df_dict[group][key].loc[threads.index(threads[i]), "max"] = np.max(tt_dict[group][key][10*i:10*(i+1)])
 
-figures = ["naive", "naive_xl", "mt_init", "mt_init_xl", "mt", "mt_xl", "omp", "omp_xl", "sse", "sse_xl", "avx", "avx_xl", "neon", "neon_xl"]
+
+try:
+    os.mkdir("../Graphs/7. Presentation")
+except:
+    pass
+try:
+    os.mkdir("../Graphs/7. Presentation/csv")
+except:
+    pass
+
+for group, files in file_paths.items():
+    for key, file_path in files.items():
+        df_dict[group][key].to_csv(f"../Graphs/7. Presentation/csv/{key}_{group}.csv", index=False)
+
+figures = ["naive", "naive_xl", "mt_init", "mt_init_xl", "mt", "mt_xl", "omp", "omp_xl", "sse", "sse_xl", "avx", "avx_xl",\
+            "neon", "neon_xl", "amx", "amx_xxl", "int", "int_xl", "icpx", "icpx_xl", "icpx_omp", "icpx_omp_xl", "final", "final_xl",\
+            "cuda", "cuda_xl", "cuda_final", "cuda_final_xl", "cpu_gpu", "cpu_gpu_xl"]
 for f in figures:
     bar_width = 0.15
 
@@ -512,12 +528,12 @@ for f in figures:
             df_apple_no_neon_7 = df_dict["apple"]["no_neon_7"].drop(index=2).reset_index(drop=True)
             df_apple_neon_7 = df_dict["apple"]["neon_7"].drop(index=2).reset_index(drop=True)
 
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["max"], width=bar_width, label=f"{label_intel} Multithreading Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["avg"], width=bar_width, label=f"{label_intel} Multithreading Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["min"], width=bar_width, label=f"{label_intel} Multithreading Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["max"], width=bar_width, label=f"{label_intel} Multithreading + Neon Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["avg"], width=bar_width, label=f"{label_intel} Multithreading + Neon Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["min"], width=bar_width, label=f"{label_intel} Multithreading + Neon Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["max"], width=bar_width, label=f"{label_apple} Multithreading Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["avg"], width=bar_width, label=f"{label_apple} Multithreading Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_7["min"], width=bar_width, label=f"{label_apple} Multithreading Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["max"], width=bar_width, label=f"{label_apple} Multithreading + Neon Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["avg"], width=bar_width, label=f"{label_apple} Multithreading + Neon Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Neon", fontsize=12, color=foreground_color, loc="center")
         case "neon_xl":
@@ -526,35 +542,382 @@ for f in figures:
             indices = np.arange(len([1, 11])) * (group_width + group_gap)
 
             df_apple_no_neon_xl_7 = df_dict["apple"]["no_neon_xl_7"].drop(index=2).reset_index(drop=True)
-            df_apple_xl_7 = df_dict["apple"]["neon_xl_7"].drop(index=2).reset_index(drop=True)
+            df_apple_neon_xl_7 = df_dict["apple"]["neon_xl_7"].drop(index=2).reset_index(drop=True)
 
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["max"], width=bar_width, label=f"{label_intel} Multithreading XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["avg"], width=bar_width, label=f"{label_intel} Multithreading XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["min"], width=bar_width, label=f"{label_intel} Multithreading XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_xl_7["max"], width=bar_width, label=f"{label_intel} Multithreading + Neon XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_xl_7["avg"], width=bar_width, label=f"{label_intel} Multithreading + Neon XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_apple_xl_7["min"], width=bar_width, label=f"{label_intel} Multithreading + Neon XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["max"], width=bar_width, label=f"{label_apple} Multithreading XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["avg"], width=bar_width, label=f"{label_apple} Multithreading XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_no_neon_xl_7["min"], width=bar_width, label=f"{label_apple} Multithreading XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl_7["max"], width=bar_width, label=f"{label_apple} Multithreading + Neon XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl_7["avg"], width=bar_width, label=f"{label_apple} Multithreading + Neon XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl_7["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Neon XL", fontsize=12, color=foreground_color, loc="center")
+        case "amx":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([1, 11])) * (group_width + group_gap)
 
-    if "naive" in f:
-        pass
-    elif "cuda" in f or "cpu" in f:
-        ax.set_xlabel("Device", fontsize=12, color=foreground_color)
-    else:
-        ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
+            df_apple_neon_6 = df_dict["apple"]["neon_6"].drop(index=2).reset_index(drop=True)
+            df_apple_amx_6 = df_dict["apple"]["amx_6"].drop(index=2).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_6["max"], width=bar_width, label=f"{label_apple} Multithreading + Neon Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_6["avg"], width=bar_width, label=f"{label_apple} Multithreading + Neon Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_6["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_6["max"], width=bar_width, label=f"{label_apple} Multithreading + AMX Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_6["avg"], width=bar_width, label=f"{label_apple} Multithreading + AMX Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_6["min"], width=bar_width, label=f"{label_apple} Multithreading + AMX Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("AMX", fontsize=12, color=foreground_color, loc="center")
+        case "amx_xxl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([1, 11])) * (group_width + group_gap)
+
+            df_apple_neon_xxl_6 = df_dict["apple"]["neon_xxl_6"].drop(index=2).reset_index(drop=True)
+            df_apple_amx_xxl_6 = df_dict["apple"]["amx_xxl_6"].drop(index=2).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_xxl_6["max"], width=bar_width, label=f"{label_apple} Multithreading + Neon XXL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_xxl_6["avg"], width=bar_width, label=f"{label_apple} Multithreading + Neon XXL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_apple_neon_xxl_6["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon XXL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_xxl_6["max"], width=bar_width, label=f"{label_apple} Multithreading + AMX XXL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_xxl_6["avg"], width=bar_width, label=f"{label_apple} Multithreading + AMX XXL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_apple_amx_xxl_6["min"], width=bar_width, label=f"{label_apple} Multithreading + AMX XXL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("AMX XXL", fontsize=12, color=foreground_color, loc="center")
+        case "int":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["max"], width=bar_width, label=f"{label_intel} AVX-512 Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["avg"], width=bar_width, label=f"{label_intel} AVX-512 Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["min"], width=bar_width, label=f"{label_intel} AVX-512 Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_7"]["max"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_7"]["avg"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_7"]["min"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_7"]["max"], width=bar_width, label=f"{label_apple} Neon Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_7"]["avg"], width=bar_width, label=f"{label_apple} Neon Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_7"]["min"], width=bar_width, label=f"{label_apple} Neon Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_7"]["max"], width=bar_width, label=f"{label_apple} Neon + Quantization Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_7"]["avg"], width=bar_width, label=f"{label_apple} Neon + Quantization Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_7"]["min"], width=bar_width, label=f"{label_apple} Neon + Quantization Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["max"], width=bar_width, label=f"{label_amd} AVX2 Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["avg"], width=bar_width, label=f"{label_amd} AVX2 Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_7"]["max"], width=bar_width, label=f"{label_amd} AVX2 + Quantization Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_7"]["avg"], width=bar_width, label=f"{label_amd} AVX2 + Quantization Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 + Quantization Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("Quantization", fontsize=12, color=foreground_color, loc="center")
+        case "int_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["max"], width=bar_width, label=f"{label_intel} AVX-512 XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["avg"], width=bar_width, label=f"{label_intel} AVX-512 XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["min"], width=bar_width, label=f"{label_intel} AVX-512 XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_xl_7"]["max"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_xl_7"]["avg"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["int_xl_7"]["min"], width=bar_width, label=f"{label_intel} AVX-512 + Quantization XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_7"]["max"], width=bar_width, label=f"{label_apple} Neon XL Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_7"]["avg"], width=bar_width, label=f"{label_apple} Neon XL Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_7"]["min"], width=bar_width, label=f"{label_apple} Neon XL Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_xl_7"]["max"], width=bar_width, label=f"{label_apple} Neon + Quantization XL Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_xl_7"]["avg"], width=bar_width, label=f"{label_apple} Neon + Quantization XL Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["int_xl_7"]["min"], width=bar_width, label=f"{label_apple} Neon + Quantization XL Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["max"], width=bar_width, label=f"{label_amd} AVX2 XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["avg"], width=bar_width, label=f"{label_amd} AVX2 XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_xl_7"]["max"], width=bar_width, label=f"{label_amd} AVX2 + Quantization XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_xl_7"]["avg"], width=bar_width, label=f"{label_amd} AVX2 + Quantization XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_xl_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 + Quantization XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("Quantization XL", fontsize=12, color=foreground_color, loc="center")
+        case "icpx":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_b_1 = df_dict["intel"]["b_1"].drop(index=1).reset_index(drop=True)
+            df_intel_intel_1 = df_dict["intel"]["intel_1"].drop(index=1).reset_index(drop=True)
+            df_amd_b_1 = df_dict["amd"]["b_1"].drop(index=1).reset_index(drop=True)
+            df_amd_intel_1 = df_dict["amd"]["intel_1"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_b_1["max"], width=bar_width, label=f"{label_intel} Clang Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_b_1["avg"], width=bar_width, label=f"{label_intel} Clang Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_b_1["min"], width=bar_width, label=f"{label_intel} Clang Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_intel_1["max"], width=bar_width, label=f"{label_intel} ICPX Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_intel_1["avg"], width=bar_width, label=f"{label_intel} ICPX Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_intel_1["min"], width=bar_width, label=f"{label_intel} ICPX Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_b_1["max"], width=bar_width, label=f"{label_amd} Clang Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_b_1["avg"], width=bar_width, label=f"{label_amd} Clang Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_b_1["min"], width=bar_width, label=f"{label_amd} Clang Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_intel_1["max"], width=bar_width, label=f"{label_amd} ICPX Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_intel_1["avg"], width=bar_width, label=f"{label_amd} ICPX Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_intel_1["min"], width=bar_width, label=f"{label_amd} ICPX Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("ICPX", fontsize=12, color=foreground_color, loc="center")
+        case "icpx_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_xl_1 = df_dict["intel"]["xl_1"].drop(index=1).reset_index(drop=True)
+            df_intel_xl_intel_1 = df_dict["intel"]["xl_intel_1"].drop(index=1).reset_index(drop=True)
+            df_amd_xl_1 = df_dict["amd"]["xl_1"].drop(index=1).reset_index(drop=True)
+            df_amd_xl_intel_1 = df_dict["amd"]["xl_intel_1"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_1["max"], width=bar_width, label=f"{label_intel} Clang XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_1["avg"], width=bar_width, label=f"{label_intel} Clang XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_1["min"], width=bar_width, label=f"{label_intel} Clang XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_intel_1["max"], width=bar_width, label=f"{label_intel} ICPX XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_intel_1["avg"], width=bar_width, label=f"{label_intel} ICPX XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_intel_1["min"], width=bar_width, label=f"{label_intel} ICPX XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_1["max"], width=bar_width, label=f"{label_amd} Clang XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_1["avg"], width=bar_width, label=f"{label_amd} Clang XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_1["min"], width=bar_width, label=f"{label_amd} Clang XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_intel_1["max"], width=bar_width, label=f"{label_amd} ICPX XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_intel_1["avg"], width=bar_width, label=f"{label_amd} ICPX XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_intel_1["min"], width=bar_width, label=f"{label_amd} ICPX XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("ICPX XL", fontsize=12, color=foreground_color, loc="center")
+        case "icpx_omp":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_omp_4 = df_dict["intel"]["omp_4"].drop(index=1).reset_index(drop=True)
+            df_intel_omp_intel_4 = df_dict["intel"]["omp_intel_4"].drop(index=1).reset_index(drop=True)
+            df_amd_omp_4 = df_dict["amd"]["omp_4"].drop(index=1).reset_index(drop=True)
+            df_amd_omp_intel_4 = df_dict["amd"]["omp_intel_4"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_4["max"], width=bar_width, label=f"{label_intel} Clang OpenMP Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_4["avg"], width=bar_width, label=f"{label_intel} Clang OpenMP Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_4["min"], width=bar_width, label=f"{label_intel} Clang OpenMP Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel_4["max"], width=bar_width, label=f"{label_intel} ICPX OpenMP Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel_4["avg"], width=bar_width, label=f"{label_intel} ICPX OpenMP Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_intel_4["min"], width=bar_width, label=f"{label_intel} ICPX OpenMP Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_4["max"], width=bar_width, label=f"{label_amd} Clang OpenMP Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_4["avg"], width=bar_width, label=f"{label_amd} Clang OpenMP Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_4["min"], width=bar_width, label=f"{label_amd} Clang OpenMP Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel_4["max"], width=bar_width, label=f"{label_amd} ICPX OpenMP Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel_4["avg"], width=bar_width, label=f"{label_amd} ICPX OpenMP Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel_4["min"], width=bar_width, label=f"{label_amd} ICPX OpenMP Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("ICPX OpenMP", fontsize=12, color=foreground_color, loc="center")
+        case "icpx_omp_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_omp_xl_4 = df_dict["intel"]["omp_xl_4"].drop(index=1).reset_index(drop=True)
+            df_intel_omp_xl_intel_4 = df_dict["intel"]["omp_xl_intel_4"].drop(index=1).reset_index(drop=True)
+            df_amd_omp_xl_4 = df_dict["amd"]["omp_xl_4"].drop(index=1).reset_index(drop=True)
+            df_amd_omp_xl_intel_4 = df_dict["amd"]["omp_xl_intel_4"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl_4["max"], width=bar_width, label=f"{label_intel} Clang OpenMP XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl_4["avg"], width=bar_width, label=f"{label_intel} Clang OpenMP XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_omp_xl_4["min"], width=bar_width, label=f"{label_intel} Clang OpenMP XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel_4["max"], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel_4["avg"], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_omp_xl_intel_4["min"], width=bar_width, label=f"{label_intel} ICPX OpenMP XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl_4["max"], width=bar_width, label=f"{label_amd} Clang OpenMP XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl_4["avg"], width=bar_width, label=f"{label_amd} Clang OpenMP XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_omp_xl_4["min"], width=bar_width, label=f"{label_amd} Clang OpenMP XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel_4["max"], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel_4["avg"], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel_4["min"], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("ICPX OpenMP XL", fontsize=12, color=foreground_color, loc="center")
+        case "final":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_1"]["max"], width=bar_width, label=f"{label_intel} Naive Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_1"]["avg"], width=bar_width, label=f"{label_intel} Naive Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_1"]["min"], width=bar_width, label=f"{label_intel} Naive Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["b_7"]["max"], width=bar_width, label=f"{label_intel} Final Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["b_7"]["avg"], width=bar_width, label=f"{label_intel} Final Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["b_7"]["min"], width=bar_width, label=f"{label_intel} Final Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_1"]["max"], width=bar_width, label=f"{label_apple} Naive Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_1"]["avg"], width=bar_width, label=f"{label_apple} Naive Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["b_1"]["min"], width=bar_width, label=f"{label_apple} Naive Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["b_7"]["max"], width=bar_width, label=f"{label_apple} Final Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["b_7"]["avg"], width=bar_width, label=f"{label_apple} Final Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["b_7"]["min"], width=bar_width, label=f"{label_apple} Final Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_1"]["max"], width=bar_width, label=f"{label_amd} Naive Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_1"]["avg"], width=bar_width, label=f"{label_amd} Naive Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_1"]["min"], width=bar_width, label=f"{label_amd} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["b_7"]["max"], width=bar_width, label=f"{label_amd} Final Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["b_7"]["avg"], width=bar_width, label=f"{label_amd} Final Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["b_7"]["min"], width=bar_width, label=f"{label_amd} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("Final", fontsize=12, color=foreground_color, loc="center")
+        case "final_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["max"], width=bar_width, label=f"{label_intel} Naive Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["avg"], width=bar_width, label=f"{label_intel} Naive Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["min"], width=bar_width, label=f"{label_intel} Naive Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["max"], width=bar_width, label=f"{label_intel} Final Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["avg"], width=bar_width, label=f"{label_intel} Final Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["min"], width=bar_width, label=f"{label_intel} Final Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["max"], width=bar_width, label=f"{label_apple} Naive Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["avg"], width=bar_width, label=f"{label_apple} Naive Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["min"], width=bar_width, label=f"{label_apple} Naive Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["max"], width=bar_width, label=f"{label_apple} Final Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["avg"], width=bar_width, label=f"{label_apple} Final Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["min"], width=bar_width, label=f"{label_apple} Final Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["max"], width=bar_width, label=f"{label_amd} Naive Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["avg"], width=bar_width, label=f"{label_amd} Naive Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["min"], width=bar_width, label=f"{label_amd} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["max"], width=bar_width, label=f"{label_amd} Final Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["avg"], width=bar_width, label=f"{label_amd} Final Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("Final XL", fontsize=12, color=foreground_color, loc="center")
+        case "cuda":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_nvidia_3 = df_dict["intel"]["nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_amd_nvidia_3 = df_dict["amd"]["nvidia_3"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices, df_intel_nvidia_3["max"], width=bar_width, label=f"{label_intel_nvidia} Naive Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_nvidia_3["avg"], width=bar_width, label=f"{label_intel_nvidia} Naive Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_nvidia_3["min"], width=bar_width, label=f"{label_intel_nvidia} Naive Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_nvidia_3["max"], width=bar_width, label=f"{label_amd_nvidia} Naive Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_nvidia_3["avg"], width=bar_width, label=f"{label_amd_nvidia} Naive Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CUDA Naive", fontsize=12, color=foreground_color, loc="center")
+        case "cuda_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_xl_nvidia_3 = df_dict["intel"]["xl_nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_amd_xl_nvidia_3 = df_dict["amd"]["xl_nvidia_3"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices, df_intel_xl_nvidia_3["max"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_xl_nvidia_3["avg"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_intel_xl_nvidia_3["min"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_xl_nvidia_3["max"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_xl_nvidia_3["avg"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_amd_xl_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CUDA Naive XL", fontsize=12, color=foreground_color, loc="center")
+        case "cuda_final":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_nvidia_3 = df_dict["intel"]["nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_intel_nvidia_7 = df_dict["intel"]["nvidia_7"].drop(index=1).reset_index(drop=True)
+            df_amd_nvidia_3 = df_dict["amd"]["nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_amd_nvidia_7 = df_dict["amd"]["nvidia_7"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_nvidia_3["max"], width=bar_width, label=f"{label_intel_nvidia} Naive Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_nvidia_3["avg"], width=bar_width, label=f"{label_intel_nvidia} Naive Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_nvidia_3["min"], width=bar_width, label=f"{label_intel_nvidia} Naive Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia_7["max"], width=bar_width, label=f"{label_intel_nvidia} Final Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia_7["avg"], width=bar_width, label=f"{label_intel_nvidia} Final Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_nvidia_7["min"], width=bar_width, label=f"{label_intel_nvidia} Final Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_nvidia_3["max"], width=bar_width, label=f"{label_amd_nvidia} Naive Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_nvidia_3["avg"], width=bar_width, label=f"{label_amd_nvidia} Naive Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia_7["max"], width=bar_width, label=f"{label_amd_nvidia} Final Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia_7["avg"], width=bar_width, label=f"{label_amd_nvidia} Final Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_nvidia_7["min"], width=bar_width, label=f"{label_amd_nvidia} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CUDA Final", fontsize=12, color=foreground_color, loc="center")
+        case "cuda_final_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len([8, 16])) * (group_width + group_gap)
+
+            df_intel_xl_nvidia_3 = df_dict["intel"]["xl_nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_intel_xl_nvidia_7 = df_dict["intel"]["xl_nvidia_7"].drop(index=1).reset_index(drop=True)
+            df_amd_xl_nvidia_3 = df_dict["amd"]["xl_nvidia_3"].drop(index=1).reset_index(drop=True)
+            df_amd_xl_nvidia_7 = df_dict["amd"]["xl_nvidia_7"].drop(index=1).reset_index(drop=True)
+
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_nvidia_3["max"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_nvidia_3["avg"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_intel_xl_nvidia_3["min"], width=bar_width, label=f"{label_intel_nvidia} Naive XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia_7["max"], width=bar_width, label=f"{label_intel_nvidia} Final XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia_7["avg"], width=bar_width, label=f"{label_intel_nvidia} Final XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_intel_xl_nvidia_7["min"], width=bar_width, label=f"{label_intel_nvidia} Final XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_nvidia_3["max"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_nvidia_3["avg"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_amd_xl_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia_7["max"], width=bar_width, label=f"{label_amd_nvidia} Final XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia_7["avg"], width=bar_width, label=f"{label_amd_nvidia} Final XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia_7["min"], width=bar_width, label=f"{label_amd_nvidia} Final XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CUDA Final XL", fontsize=12, color=foreground_color, loc="center")
+        case "cpu_gpu":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["max"], width=bar_width, label=f"{label_intel} Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["avg"], width=bar_width, label=f"{label_intel} Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["b_7"]["min"], width=bar_width, label=f"{label_intel} Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["nvidia_7"]["max"], width=bar_width, label=f"{label_intel_nvidia} Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["nvidia_7"]["avg"], width=bar_width, label=f"{label_intel_nvidia} Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["nvidia_7"]["min"], width=bar_width, label=f"{label_intel_nvidia} Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["b_7"]["max"], width=bar_width, label=f"{label_apple} Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["b_7"]["avg"], width=bar_width, label=f"{label_apple} Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["b_7"]["min"], width=bar_width, label=f"{label_apple} Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["max"], width=bar_width, label=f"{label_amd} Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["avg"], width=bar_width, label=f"{label_amd} Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["b_7"]["min"], width=bar_width, label=f"{label_amd} Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["nvidia_7"]["max"], width=bar_width, label=f"{label_amd_nvidia} Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["nvidia_7"]["avg"], width=bar_width, label=f"{label_amd_nvidia} Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["nvidia_7"]["min"], width=bar_width, label=f"{label_amd_nvidia} Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CPU vs. GPU", fontsize=12, color=foreground_color, loc="center")
+        case "cpu_gpu_xl":
+            group_width = bar_width * 2
+            group_gap = 0.15
+            indices = np.arange(len(threads_omp)) * (group_width + group_gap)
+
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["max"], width=bar_width, label=f"{label_intel} XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["avg"], width=bar_width, label=f"{label_intel} XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_7"]["min"], width=bar_width, label=f"{label_intel} XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_nvidia_7"]["max"], width=bar_width, label=f"{label_intel_nvidia} XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_nvidia_7"]["avg"], width=bar_width, label=f"{label_intel_nvidia} XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_nvidia_7"]["min"], width=bar_width, label=f"{label_intel_nvidia} XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["xl_7"]["max"], width=bar_width, label=f"{label_apple} XL Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["xl_7"]["avg"], width=bar_width, label=f"{label_apple} XL Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices, df_dict["apple"]["xl_7"]["min"], width=bar_width, label=f"{label_apple} XL Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["max"], width=bar_width, label=f"{label_amd} XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["avg"], width=bar_width, label=f"{label_amd} XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_nvidia_7"]["max"], width=bar_width, label=f"{label_amd_nvidia} XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_nvidia_7"]["avg"], width=bar_width, label=f"{label_amd_nvidia} XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_nvidia_7"]["min"], width=bar_width, label=f"{label_amd_nvidia} XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+
+            ax.set_title("CPU vs. GPU XL", fontsize=12, color=foreground_color, loc="center")
+
+    #ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
     ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
     ax.set_xticks(indices)
-    if "naive" in f:
-        ax.set_xticklabels([label_intel, label_apple, label_amd], color=foreground_color)
-    elif "sse" in f or "avx" in f:
-        ax.set_xticklabels([8, 16], color=foreground_color)
-    elif "neon" in f:
-        ax.set_xticklabels([1, 11], color=foreground_color)
-    elif "cuda" in f or "cpu" in f:
-        ax.set_xticklabels(["Laptop", "Desktop"], color=foreground_color)
+    if "sse" in f or "avx" in f or "icpx" in f:
+        ax.set_xticklabels([label_intel, label_amd], color=foreground_color)
+    elif "neon" in f or "amx" in f:
+        ax.set_xticklabels(["w/o Multithreading", "w/ Multithreading"], color=foreground_color)
+    elif "cuda" in f:
+        ax.set_xticklabels([label_intel_nvidia, label_amd_nvidia], color=foreground_color)
+    elif "cpu" in f:
+        ax.set_xticklabels([f"{label_intel}\nvs.\n{label_intel_nvidia}", label_apple, f"{label_amd}\nvs.\n{label_amd_nvidia}"], color=foreground_color)
     else:
-        ax.set_xticklabels(threads_omp, color=foreground_color)
+        ax.set_xticklabels([label_intel, label_apple, label_amd], color=foreground_color)
     ax.tick_params(axis="x", colors=foreground_color)
     ax.tick_params(axis="y", colors=foreground_color)
     ax.legend(loc="upper left", bbox_to_anchor=(1, 1), facecolor=background_color, edgecolor=foreground_color, labelcolor=foreground_color)
@@ -567,41 +930,67 @@ for f in figures:
 
     plt.tight_layout()
 
-    try:
-        os.rmdir("../Graphs/7. Presentation")
-        os.mkdir("../Graphs/7. Presentation")
-    except:
-        pass
-
     match f:
         case "naive":
-            plt.savefig("../Graphs/7. Presentation/Naive.png")
+            plt.savefig("../Graphs/7. Presentation/Naive.png", dpi=300)
         case "naive_xl":
-            plt.savefig("../Graphs/7. Presentation/Naive XL.png")
+            plt.savefig("../Graphs/7. Presentation/Naive XL.png", dpi=300)
         case "mt_init":
-            plt.savefig("../Graphs/7. Presentation/Initial Multithreading.png")
+            plt.savefig("../Graphs/7. Presentation/Initial Multithreading.png", dpi=300)
         case "mt_init_xl":
-            plt.savefig("../Graphs/7. Presentation/Initial Multithreading XL.png")
+            plt.savefig("../Graphs/7. Presentation/Initial Multithreading XL.png", dpi=300)
         case "mt":
-            plt.savefig("../Graphs/7. Presentation/Multithreading.png")
+            plt.savefig("../Graphs/7. Presentation/Multithreading.png", dpi=300)
         case "mt_xl":
-            plt.savefig("../Graphs/7. Presentation/Multithreading XL.png")
+            plt.savefig("../Graphs/7. Presentation/Multithreading XL.png", dpi=300)
         case "omp":
-            plt.savefig("../Graphs/7. Presentation/OpenMP.png")
+            plt.savefig("../Graphs/7. Presentation/OpenMP.png", dpi=300)
         case "omp_xl":
-            plt.savefig("../Graphs/7. Presentation/OpenMP XL.png")
+            plt.savefig("../Graphs/7. Presentation/OpenMP XL.png", dpi=300)
         case "sse":
-            plt.savefig("../Graphs/7. Presentation/SSE.png")
+            plt.savefig("../Graphs/7. Presentation/SSE.png", dpi=300)
         case "sse_xl":
-            plt.savefig("../Graphs/7. Presentation/SSE XL.png")
+            plt.savefig("../Graphs/7. Presentation/SSE XL.png", dpi=300)
         case "avx":
-            plt.savefig("../Graphs/7. Presentation/AVX.png")
+            plt.savefig("../Graphs/7. Presentation/AVX.png", dpi=300)
         case "avx_xl":
-            plt.savefig("../Graphs/7. Presentation/AVX XL.png")
+            plt.savefig("../Graphs/7. Presentation/AVX XL.png", dpi=300)
         case "neon":
-            plt.savefig("../Graphs/7. Presentation/Neon.png")
+            plt.savefig("../Graphs/7. Presentation/Neon.png", dpi=300)
         case "neon_xl":
-            plt.savefig("../Graphs/7. Presentation/Neon XL.png")
+            plt.savefig("../Graphs/7. Presentation/Neon XL.png", dpi=300)
+        case "amx":
+            plt.savefig("../Graphs/7. Presentation/AMX.png", dpi=300)
+        case "amx_xxl":
+            plt.savefig("../Graphs/7. Presentation/AMX XXL.png", dpi=300)
+        case "int":
+            plt.savefig("../Graphs/7. Presentation/Quantization.png", dpi=300)
+        case "int_xl":
+            plt.savefig("../Graphs/7. Presentation/Quantization XL.png", dpi=300)
+        case "icpx":
+            plt.savefig("../Graphs/7. Presentation/ICPX.png", dpi=300)
+        case "icpx_xl":
+            plt.savefig("../Graphs/7. Presentation/ICPX XL.png", dpi=300)
+        case "icpx_omp":
+            plt.savefig("../Graphs/7. Presentation/ICPX OpenMP.png", dpi=300)
+        case "icpx_omp_xl":
+            plt.savefig("../Graphs/7. Presentation/ICPX OpenMP XL.png", dpi=300)
+        case "final":
+            plt.savefig("../Graphs/7. Presentation/Final.png", dpi=300)
+        case "final_xl":
+            plt.savefig("../Graphs/7. Presentation/Final XL.png", dpi=300)
+        case "cuda":
+            plt.savefig("../Graphs/7. Presentation/CUDA.png", dpi=300)
+        case "cuda_xl":
+            plt.savefig("../Graphs/7. Presentation/CUDA XL.png", dpi=300)
+        case "cuda_final":
+            plt.savefig("../Graphs/7. Presentation/CUDA Final.png", dpi=300)
+        case "cuda_final_xl":
+            plt.savefig("../Graphs/7. Presentation/CUDA Final XL.png", dpi=300)
+        case "cpu_gpu":
+            plt.savefig("../Graphs/7. Presentation/CPU vs. GPU.png", dpi=300)
+        case "cpu_gpu_xl":
+            plt.savefig("../Graphs/7. Presentation/CPU vs. GPU XL.png", dpi=300)
 
     # plt.show()
     plt.close(fig)
