@@ -77,9 +77,8 @@ data_type() {
 }
 
 main() {
-    MAIN=$(dialog --title "Optimizing Deep Learning Performance" --msgbox \
-        "\nA Hybrid CPU-GPU Framework with Multithreading, SIMD,\
-        \nand Evaluation of Efficiency Metrics\
+    MAIN=$(dialog --title "Optimizing AI Workloads for Enhanced Performance" --msgbox \
+        "\nA Comprehensive Framework for Comparing CPU and GPU Architectures
         \n\nThe following dialogs will guide you through the process of building the perfect executable for your needs" \
         10 60 3>&1 1>&2 2>&3)
     if [[ $? -ne 0 ]]; then

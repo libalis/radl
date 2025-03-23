@@ -1,4 +1,5 @@
-# A Hybrid CPU-GPU Framework with Multithreading, SIMD, and Evaluation of Efficiency Metrics
+# Optimizing AI Workloads for Enhanced Performance: A Comprehensive Framework for Comparing CPU and GPU Architectures
+In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantization, Compiler Selection, and CUDA Tuning for Accelerated Machine Learning Tasks
 ## Dependencies:
 - [clang](https://clang.llvm.org/)
 - [cuda](https://developer.nvidia.com/cuda-zone)

@@ -33,19 +33,23 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
         - Overview
         - Implementation
         - Performance Benchmarks (NO_SIMD vs. OMP)
+    - Compiler & Build Tools
+        - GCC vs. Clang (Dustin)
+        - Clang vs. ICPX (Robert) (SIMD vs. ICPX)
+        - Dialog (Robert) (Graph)
     - SIMD
-        - Overview of SIMD (Team)
+        - Overview of SIMD (Dustin)
+        - Arm Optimizations (Dustin)
+            - Neon
+            - Performance Benchmarks (NO_SIMD vs. SIMD)
+            - AMX (Neon vs. AMX)
+            - AMX (Power Consumption)
         - x86 Optimizations (Robert)
             - SSE
             - (Performance Benchmarks (2. Presentation vs. 3. Presentation))
             - AVX2
             - AVX-512
             - Performance Benchmarks (NO_SIMD vs. SIMD)
-        - ARM Optimizations (Dustin)
-            - NEON
-            - Performance Benchmarks (NO_SIMD vs. SIMD)
-            - AMX (NEON vs. AMX)
-            - AMX (Power Consumption)
     - Quantization (Dustin)
         - Overview of Quantization
         - Implementation Details
@@ -54,10 +58,6 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - NO_SIMD INT: 2,050,771 bytes
         - Performance Benchmarks (SIMD vs. Quantization)
     - Other Optimizations
-    - Compiler & Build Tools
-        - GCC vs. Clang (Dustin)
-        - Clang vs. ICPX (Robert) (SIMD vs. ICPX)
-        - Dialog (Robert) (Graph)
     - Inital vs. Final Benchmarks (1. Presentation vs. 6. Presentation)
 7. GPU-Based Optimizations (Max)
     - Overview of CUDA
