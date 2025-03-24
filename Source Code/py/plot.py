@@ -299,6 +299,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["b_2"]["min"], width=bar_width, label=f"{label_amd} Initial Multithreading Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Initial Multithreading", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["b_1"]["avg"][0] + df_dict["apple"]["b_1"]["avg"][1] + df_dict["amd"]["b_1"]["avg"][2]
+            b2 = df_dict["intel"]["b_2"]["avg"][0] + df_dict["apple"]["b_2"]["avg"][1] + df_dict["amd"]["b_2"]["avg"][2]
+
+            print(f"mt_init: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "mt_init_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -324,6 +329,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_2"]["min"], width=bar_width, label=f"{label_amd} Initial Multithreading XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Initial Multithreading XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["xl_1"]["avg"][0] + df_dict["apple"]["xl_1"]["avg"][1] + df_dict["amd"]["xl_1"]["avg"][2]
+            b2 = df_dict["intel"]["xl_2"]["avg"][0] + df_dict["apple"]["xl_2"]["avg"][1] + df_dict["amd"]["xl_2"]["avg"][2]
+
+            print(f"mt_init: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "mt":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -349,6 +359,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["no_simd_7"]["min"], width=bar_width, label=f"{label_amd} Multithreading Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Multithreading", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["b_2"]["avg"][0] + df_dict["apple"]["b_2"]["avg"][1] + df_dict["amd"]["b_2"]["avg"][2]
+            b2 = df_dict["intel"]["no_simd_7"]["avg"][0] + df_dict["apple"]["no_simd_7"]["avg"][1] + df_dict["amd"]["no_simd_7"]["avg"][2]
+
+            print(f"mt: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "mt_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -374,6 +389,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["no_simd_xl_7"]["min"], width=bar_width, label=f"{label_amd} Multithreading XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Multithreading XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["xl_2"]["avg"][0] + df_dict["apple"]["xl_2"]["avg"][1] + df_dict["amd"]["xl_2"]["avg"][2]
+            b2 = df_dict["intel"]["no_simd_xl_7"]["avg"][0] + df_dict["apple"]["no_simd_xl_7"]["avg"][1] + df_dict["amd"]["no_simd_xl_7"]["avg"][2]
+
+            print(f"mt_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "omp":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -399,6 +419,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["omp_4"]["min"], width=bar_width, label=f"{label_amd} OpenMP Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("OpenMP", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["no_simd_7"]["avg"][0] + df_dict["apple"]["no_simd_7"]["avg"][1] + df_dict["amd"]["no_simd_7"]["avg"][2]
+            b2 = df_dict["intel"]["omp_4"]["avg"][0] + df_dict["apple"]["omp_4"]["avg"][1] + df_dict["amd"]["omp_4"]["avg"][2]
+
+            print(f"omp: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "omp_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -424,6 +449,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["omp_xl_4"]["min"], width=bar_width, label=f"{label_amd} OpenMP XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("OpenMP XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["no_simd_xl_7"]["avg"][0] + df_dict["apple"]["no_simd_xl_7"]["avg"][1] + df_dict["amd"]["no_simd_xl_7"]["avg"][2]
+            b2 = df_dict["intel"]["omp_xl_4"]["avg"][0] + df_dict["apple"]["omp_xl_4"]["avg"][1] + df_dict["amd"]["omp_xl_4"]["avg"][2]
+
+            print(f"omp_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "sse":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -448,6 +478,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_b_3["min"], width=bar_width, label=f"{label_amd} Initial Multithreading + SSE Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("SSE", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_b_2["avg"][0] + df_amd_b_2["avg"][1]
+            b2 = df_intel_b_3["avg"][0] + df_amd_b_3["avg"][1]
+
+            print(f"sse: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "sse_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -472,6 +507,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_xl_3["min"], width=bar_width, label=f"{label_amd} Initial Multithreading + SSE XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("SSE XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_xl_2["avg"][0] + df_amd_xl_2["avg"][1]
+            b2 = df_intel_xl_3["avg"][0] + df_amd_xl_3["avg"][1]
+
+            print(f"sse_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "avx":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -496,6 +536,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_b_6["min"], width=bar_width, label=f"{label_amd} Multithreading + AVX2 Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("AVX", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_no_simd_7["avg"][0] + df_amd_no_simd_7["avg"][1]
+            b2 = df_intel_b_6["avg"][0] + df_amd_b_6["avg"][1]
+
+            print(f"avx: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "avx_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -520,6 +565,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_xl_6["min"], width=bar_width, label=f"{label_amd} Multithreading + AVX2 XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("AVX XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_no_simd_xl_7["avg"][0] + df_amd_no_simd_xl_7["avg"][1]
+            b2 = df_intel_xl_6["avg"][0] + df_amd_xl_6["avg"][1]
+
+            print(f"avx_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "neon":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -536,6 +586,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_apple_neon_7["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Neon", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_apple_no_neon_7["avg"][0] + df_apple_no_neon_7["avg"][1]
+            b2 = df_apple_neon_7["avg"][0] + df_apple_neon_7["avg"][1]
+
+            print(f"neon: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "neon_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -552,6 +607,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_apple_neon_xl_7["min"], width=bar_width, label=f"{label_apple} Multithreading + Neon XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Neon XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_apple_no_neon_xl_7["avg"][0] + df_apple_no_neon_xl_7["avg"][1]
+            b2 = df_apple_neon_xl_7["avg"][0] + df_apple_neon_xl_7["avg"][1]
+
+            print(f"neon_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "amx":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -568,6 +628,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_apple_amx_6["min"], width=bar_width, label=f"{label_apple} Multithreading + AMX Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("AMX", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_apple_neon_6["avg"][0] + df_apple_neon_6["avg"][1]
+            b2 = df_apple_amx_6["avg"][0] + df_apple_amx_6["avg"][1]
+
+            print(f"amx: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "amx_xxl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -584,6 +649,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_apple_amx_xxl_6["min"], width=bar_width, label=f"{label_apple} Multithreading + AMX XXL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("AMX XXL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_apple_neon_xxl_6["avg"][0] + df_apple_neon_xxl_6["avg"][1]
+            b2 = df_apple_amx_xxl_6["avg"][0] + df_apple_amx_xxl_6["avg"][1]
+
+            print(f"amx_xxl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "int":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -609,6 +679,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 + Quantization Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Quantization", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
+            b2 = df_dict["intel"]["int_7"]["avg"][0] + df_dict["apple"]["int_7"]["avg"][1] + df_dict["amd"]["int_7"]["avg"][2]
+
+            print(f"int: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "int_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -634,6 +709,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["int_xl_7"]["min"], width=bar_width, label=f"{label_amd} AVX2 + Quantization XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Quantization XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
+            b2 = df_dict["intel"]["int_xl_7"]["avg"][0] + df_dict["apple"]["int_xl_7"]["avg"][1] + df_dict["amd"]["int_xl_7"]["avg"][2]
+
+            print(f"int_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "icpx":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -658,6 +738,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_intel_1["min"], width=bar_width, label=f"{label_amd} ICPX Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("ICPX", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_b_1["avg"][0] + df_amd_b_1["avg"][0]
+            b2 = df_intel_intel_1["avg"][0] + df_amd_intel_1["avg"][0]
+
+            print(f"icpx: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "icpx_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -682,6 +767,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_xl_intel_1["min"], width=bar_width, label=f"{label_amd} ICPX XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("ICPX XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_xl_1["avg"][0] + df_amd_xl_1["avg"][0]
+            b2 = df_intel_xl_intel_1["avg"][0] + df_amd_xl_intel_1["avg"][0]
+
+            print(f"icpx_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "icpx_omp":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -706,6 +796,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_omp_intel_4["min"], width=bar_width, label=f"{label_amd} ICPX OpenMP Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("ICPX OpenMP", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_omp_4["avg"][0] + df_amd_omp_4["avg"][0]
+            b2 = df_intel_omp_intel_4["avg"][0] + df_amd_omp_intel_4["avg"][0]
+
+            print(f"icpx_omp: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "icpx_omp_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -730,6 +825,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_omp_xl_intel_4["min"], width=bar_width, label=f"{label_amd} ICPX OpenMP XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("ICPX OpenMP XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_omp_xl_4["avg"][0] + df_amd_omp_xl_4["avg"][0]
+            b2 = df_intel_omp_xl_intel_4["avg"][0] + df_amd_omp_xl_intel_4["avg"][0]
+
+            print(f"icpx_omp_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "final":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -755,6 +855,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["b_7"]["min"], width=bar_width, label=f"{label_amd} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Final", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["b_1"]["avg"][0] + df_dict["apple"]["b_1"]["avg"][1] + df_dict["amd"]["b_1"]["avg"][2]
+            b2 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
+
+            print(f"final: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "final_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -780,6 +885,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Final XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["xl_1"]["avg"][0] + df_dict["apple"]["xl_1"]["avg"][1] + df_dict["amd"]["xl_1"]["avg"][2]
+            b2 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
+
+            print(f"final_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "cuda":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -836,6 +946,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_nvidia_7["min"], width=bar_width, label=f"{label_amd_nvidia} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CUDA Final", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_nvidia_3["avg"][0] + df_amd_nvidia_3["avg"][0]
+            b2 = df_intel_nvidia_7["avg"][0] + df_amd_nvidia_7["avg"][0]
+
+            print(f"cuda_final: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "cuda_final_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -860,6 +975,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_amd_xl_nvidia_7["min"], width=bar_width, label=f"{label_amd_nvidia} Final XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CUDA Final XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_intel_xl_nvidia_3["avg"][0] + df_amd_xl_nvidia_3["avg"][0]
+            b2 = df_intel_xl_nvidia_7["avg"][0] + df_amd_xl_nvidia_7["avg"][0]
+
+            print(f"cuda_final_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "cpu_gpu":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -882,6 +1002,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["nvidia_7"]["min"], width=bar_width, label=f"{label_amd_nvidia} Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CPU vs. GPU", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
+            b2 = df_dict["intel"]["nvidia_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["nvidia_7"]["avg"][2]
+
+            print(f"cpu_gpu: {np.round((b2 - b1) / b1 * 100, 0)}")
         case "cpu_gpu_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -904,6 +1029,11 @@ for f in figures:
             ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_nvidia_7"]["min"], width=bar_width, label=f"{label_amd_nvidia} XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CPU vs. GPU XL", fontsize=12, color=foreground_color, loc="center")
+
+            b1 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
+            b2 = df_dict["intel"]["xl_nvidia_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_nvidia_7"]["avg"][2]
+
+            print(f"cpu_gpu_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
 
     #ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
     ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
