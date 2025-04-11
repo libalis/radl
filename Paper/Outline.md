@@ -25,7 +25,7 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - Per-Function Multithreading
             - Thread Pool
             - Performance Benchmarks (1. Presentation vs. 2. Presentation)
-        - Further Optimizations
+        - Optimized Implementation
             - Per-Image Multithreading
             - Smart Multithreading
             - Performance Benchmarks (2. Presentation vs. NO_SIMD)
