@@ -791,10 +791,18 @@ for f in figures:
 
             ax.set_title("ICPX", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_b_1["avg"][0] + df_amd_b_1["avg"][0]
-            b2 = df_intel_intel_1["avg"][0] + df_amd_intel_1["avg"][0]
+            b1 = df_intel_b_1["avg"][0] + df_amd_b_1["avg"][1]
+            b2 = df_intel_intel_1["avg"][0] + df_amd_intel_1["avg"][1]
 
-            print(f"icpx: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"icpx: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["intel_1"]["avg"][0] - df_dict["intel"]["b_1"]["avg"][0]) / df_dict["intel"]["b_1"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["intel_1"]["avg"][2] - df_dict["amd"]["b_1"]["avg"][2]) / df_dict["amd"]["b_1"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang & {df_dict["intel"]["b_1"]["min"][0]} & {df_dict["intel"]["b_1"]["avg"][0]} & {df_dict["intel"]["b_1"]["max"][0]} & {df_dict["intel"]["b_1"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX & {df_dict["intel"]["intel_1"]["min"][0]} & {df_dict["intel"]["intel_1"]["avg"][0]} & {df_dict["intel"]["intel_1"]["max"][0]} & {df_dict["intel"]["intel_1"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang & {df_dict["amd"]["b_1"]["min"][2]} & {df_dict["amd"]["b_1"]["avg"][2]} & {df_dict["amd"]["b_1"]["max"][2]} & {df_dict["amd"]["b_1"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX & {df_dict["amd"]["intel_1"]["min"][2]} & {df_dict["amd"]["intel_1"]["avg"][2]} & {df_dict["amd"]["intel_1"]["max"][2]} & {df_dict["amd"]["intel_1"]["std"][2]} \\\\')
         case "icpx_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -820,10 +828,18 @@ for f in figures:
 
             ax.set_title("ICPX XL", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_xl_1["avg"][0] + df_amd_xl_1["avg"][0]
-            b2 = df_intel_xl_intel_1["avg"][0] + df_amd_xl_intel_1["avg"][0]
+            b1 = df_intel_xl_1["avg"][0] + df_amd_xl_1["avg"][1]
+            b2 = df_intel_xl_intel_1["avg"][0] + df_amd_xl_intel_1["avg"][1]
 
-            print(f"icpx_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"icpx_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_intel_1"]["avg"][0] - df_dict["intel"]["xl_1"]["avg"][0]) / df_dict["intel"]["xl_1"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_intel_1"]["avg"][2] - df_dict["amd"]["xl_1"]["avg"][2]) / df_dict["amd"]["xl_1"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang XL & {df_dict["intel"]["xl_1"]["min"][0]} & {df_dict["intel"]["xl_1"]["avg"][0]} & {df_dict["intel"]["xl_1"]["max"][0]} & {df_dict["intel"]["xl_1"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX XL & {df_dict["intel"]["xl_intel_1"]["min"][0]} & {df_dict["intel"]["xl_intel_1"]["avg"][0]} & {df_dict["intel"]["xl_intel_1"]["max"][0]} & {df_dict["intel"]["xl_intel_1"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang XL & {df_dict["amd"]["xl_1"]["min"][2]} & {df_dict["amd"]["xl_1"]["avg"][2]} & {df_dict["amd"]["xl_1"]["max"][2]} & {df_dict["amd"]["xl_1"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX XL & {df_dict["amd"]["xl_intel_1"]["min"][2]} & {df_dict["amd"]["xl_intel_1"]["avg"][2]} & {df_dict["amd"]["xl_intel_1"]["max"][2]} & {df_dict["amd"]["xl_intel_1"]["std"][2]} \\\\')
         case "icpx_omp":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -849,10 +865,18 @@ for f in figures:
 
             ax.set_title("ICPX OpenMP", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_omp_4["avg"][0] + df_amd_omp_4["avg"][0]
-            b2 = df_intel_omp_intel_4["avg"][0] + df_amd_omp_intel_4["avg"][0]
+            b1 = df_intel_omp_4["avg"][0] + df_amd_omp_4["avg"][1]
+            b2 = df_intel_omp_intel_4["avg"][0] + df_amd_omp_intel_4["avg"][1]
 
-            print(f"icpx_omp: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"icpx_omp: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["omp_intel_4"]["avg"][0] - df_dict["intel"]["omp_4"]["avg"][0]) / df_dict["intel"]["omp_4"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["omp_intel_4"]["avg"][2] - df_dict["amd"]["omp_4"]["avg"][2]) / df_dict["amd"]["omp_4"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang OpenMP & {df_dict["intel"]["omp_4"]["min"][0]} & {df_dict["intel"]["omp_4"]["avg"][0]} & {df_dict["intel"]["omp_4"]["max"][0]} & {df_dict["intel"]["omp_4"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX OpenMP & {df_dict["intel"]["omp_intel_4"]["min"][0]} & {df_dict["intel"]["omp_intel_4"]["avg"][0]} & {df_dict["intel"]["omp_intel_4"]["max"][0]} & {df_dict["intel"]["omp_intel_4"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang OpenMP & {df_dict["amd"]["omp_4"]["min"][2]} & {df_dict["amd"]["omp_4"]["avg"][2]} & {df_dict["amd"]["omp_4"]["max"][2]} & {df_dict["amd"]["omp_4"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX OpenMP & {df_dict["amd"]["omp_intel_4"]["min"][2]} & {df_dict["amd"]["omp_intel_4"]["avg"][2]} & {df_dict["amd"]["omp_intel_4"]["max"][2]} & {df_dict["amd"]["omp_intel_4"]["std"][2]} \\\\')
         case "icpx_omp_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -878,10 +902,18 @@ for f in figures:
 
             ax.set_title("ICPX OpenMP XL", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_omp_xl_4["avg"][0] + df_amd_omp_xl_4["avg"][0]
-            b2 = df_intel_omp_xl_intel_4["avg"][0] + df_amd_omp_xl_intel_4["avg"][0]
+            b1 = df_intel_omp_xl_4["avg"][0] + df_amd_omp_xl_4["avg"][1]
+            b2 = df_intel_omp_xl_intel_4["avg"][0] + df_amd_omp_xl_intel_4["avg"][1]
 
-            print(f"icpx_omp_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"icpx_omp_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["omp_xl_intel_4"]["avg"][0] - df_dict["intel"]["omp_xl_4"]["avg"][0]) / df_dict["intel"]["omp_xl_4"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["omp_xl_intel_4"]["avg"][2] - df_dict["amd"]["omp_xl_4"]["avg"][2]) / df_dict["amd"]["omp_xl_4"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang OpenMP XL & {df_dict["intel"]["omp_xl_4"]["min"][0]} & {df_dict["intel"]["omp_xl_4"]["avg"][0]} & {df_dict["intel"]["omp_xl_4"]["max"][0]} & {df_dict["intel"]["omp_xl_4"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX OpenMP XL & {df_dict["intel"]["omp_xl_intel_4"]["min"][0]} & {df_dict["intel"]["omp_xl_intel_4"]["avg"][0]} & {df_dict["intel"]["omp_xl_intel_4"]["max"][0]} & {df_dict["intel"]["omp_xl_intel_4"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Clang OpenMP XL & {df_dict["amd"]["omp_xl_4"]["min"][2]} & {df_dict["amd"]["omp_xl_4"]["avg"][2]} & {df_dict["amd"]["omp_xl_4"]["max"][2]} & {df_dict["amd"]["omp_xl_4"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}ICPX OpenMP XL & {df_dict["amd"]["omp_xl_intel_4"]["min"][2]} & {df_dict["amd"]["omp_xl_intel_4"]["avg"][2]} & {df_dict["amd"]["omp_xl_intel_4"]["max"][2]} & {df_dict["amd"]["omp_xl_intel_4"]["std"][2]} \\\\')
         case "final":
             group_width = bar_width * 2
             group_gap = 0.15

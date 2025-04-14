@@ -34,8 +34,8 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
         - Implementation
         - Performance Benchmarks (NO_SIMD vs. OMP)
     - Compiler & Build Tools
-        - GCC vs. Clang (Dustin)
-        - Clang vs. ICPX (Robert) (SIMD vs. ICPX)
+        - GCC and Clang (Dustin)
+        - Intel C++ Compiler (Robert) (SIMD vs. ICPX)
         - Dialog (Robert) (Graph)
     - SIMD
         - Overview of SIMD (Dustin)
