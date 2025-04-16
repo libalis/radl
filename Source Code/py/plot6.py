@@ -131,7 +131,8 @@ CREATE DATA FRAMES
 df_amd = pd.DataFrame({
     "min": [0.0] * len(threads_omp),
     "avg": [0.0] * len(threads_omp),
-    "max": [0.0] * len(threads_omp)
+    "max": [0.0] * len(threads_omp),
+    "std": [0.0] * len(threads_omp)
 })
 df_amd_old = df_amd.copy(deep=True)
 df_amd_int = df_amd.copy(deep=True)
@@ -210,9 +211,11 @@ for i in range(len(threads)):
         df_amd_nvidia.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_amd_nvidia[0:10])
         df_amd_nvidia.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_amd_nvidia[0:10])
         df_amd_nvidia.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_amd_nvidia[0:10])
+        df_amd_nvidia.loc[threads_omp.index(threads[i]), "std"] = np.round(np.std(tt_amd_nvidia[0:10]), 1)
         df_amd_nvidia_old.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_amd_nvidia_old[0:10])
         df_amd_nvidia_old.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_amd_nvidia_old[0:10])
         df_amd_nvidia_old.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_amd_nvidia_old[0:10])
+        df_amd_nvidia_old.loc[threads_omp.index(threads[i]), "std"] = np.round(np.std(tt_amd_nvidia_old[0:10]), 1)
         df_amd_omp.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_amd_omp[0:10])
         df_amd_omp.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_amd_omp[0:10])
         df_amd_omp.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_amd_omp[0:10])
@@ -240,9 +243,11 @@ for i in range(len(threads)):
         df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_amd_xl_nvidia[0:10])
         df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_amd_xl_nvidia[0:10])
         df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_amd_xl_nvidia[0:10])
+        df_amd_xl_nvidia.loc[threads_omp.index(threads[i]), "std"] = np.round(np.std(tt_amd_xl_nvidia[0:10]), 1)
         df_amd_xl_nvidia_old.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_amd_xl_nvidia_old[0:10])
         df_amd_xl_nvidia_old.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_amd_xl_nvidia_old[0:10])
         df_amd_xl_nvidia_old.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_amd_xl_nvidia_old[0:10])
+        df_amd_xl_nvidia_old.loc[threads_omp.index(threads[i]), "std"] = np.round(np.std(tt_amd_xl_nvidia_old[0:10]), 1)
 
     # apple
     if threads[i] == 1:
@@ -320,9 +325,11 @@ for i in range(len(threads)):
         df_intel_nvidia.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_intel_nvidia[0:10])
         df_intel_nvidia.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_intel_nvidia[0:10])
         df_intel_nvidia.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_intel_nvidia[0:10])
+        df_intel_nvidia.loc[threads_omp.index(threads[i]), 'std'] = np.round(np.std(tt_intel_nvidia[0:10]), 1)
         df_intel_nvidia_old.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_intel_nvidia_old[0:10])
         df_intel_nvidia_old.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_intel_nvidia_old[0:10])
         df_intel_nvidia_old.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_intel_nvidia_old[0:10])
+        df_intel_nvidia_old.loc[threads_omp.index(threads[i]), 'std'] = np.round(np.std(tt_intel_nvidia_old[0:10]), 1)
         df_intel_omp.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_intel_omp[0:10])
         df_intel_omp.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_intel_omp[0:10])
         df_intel_omp.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_intel_omp[0:10])
@@ -350,9 +357,11 @@ for i in range(len(threads)):
         df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_intel_xl_nvidia[0:10])
         df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_intel_xl_nvidia[0:10])
         df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_intel_xl_nvidia[0:10])
+        df_intel_xl_nvidia.loc[threads_omp.index(threads[i]), 'std'] = np.round(np.std(tt_intel_xl_nvidia[0:10]), 1)
         df_intel_xl_nvidia_old.loc[threads_omp.index(threads[i]), "min"] = np.min(tt_intel_xl_nvidia_old[0:10])
         df_intel_xl_nvidia_old.loc[threads_omp.index(threads[i]), "avg"] = np.average(tt_intel_xl_nvidia_old[0:10])
         df_intel_xl_nvidia_old.loc[threads_omp.index(threads[i]), "max"] = np.max(tt_intel_xl_nvidia_old[0:10])
+        df_intel_xl_nvidia_old.loc[threads_omp.index(threads[i]), 'std'] = np.round(np.std(tt_intel_xl_nvidia_old[0:10]), 1)
 
 """
 CREATE FIGURES
@@ -672,7 +681,15 @@ for f in figures:
             b1 = df_intel_nvidia_old['avg'][0] + df_amd_nvidia_old['avg'][1]
             b2 = df_intel_nvidia["avg"][0] + df_amd_nvidia['avg'][1]
 
-            print(f"cuda: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cuda: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_intel_nvidia["avg"][0] - df_intel_nvidia_old["avg"][0]) / df_intel_nvidia_old["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_amd_nvidia["avg"][1] - df_amd_nvidia_old["avg"][1]) / df_amd_nvidia_old["avg"][1] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Old & {df_intel_nvidia_old["min"][0]} & {df_intel_nvidia_old["avg"][0]} & {df_intel_nvidia_old["max"][0]} & {df_intel_nvidia_old["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}New & {df_intel_nvidia["min"][0]} & {df_intel_nvidia["avg"][0]} & {df_intel_nvidia["max"][0]} & {df_intel_nvidia["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Old & {df_amd_nvidia_old["min"][1]} & {df_amd_nvidia_old["avg"][1]} & {df_amd_nvidia_old["max"][1]} & {df_amd_nvidia_old["std"][1]} \\\\')
+            print(f'\\hspace{{0.5cm}}New & {df_amd_nvidia["min"][1]} & {df_amd_nvidia["avg"][1]} & {df_amd_nvidia["max"][1]} & {df_amd_nvidia["std"][1]} \\\\')
         case "cuda_xl":
             bar_width = 0.075
 
@@ -707,7 +724,15 @@ for f in figures:
             b1 = df_intel_xl_nvidia_old['avg'][0] + df_amd_xl_nvidia_old['avg'][1]
             b2 = df_intel_xl_nvidia["avg"][0] + df_amd_xl_nvidia['avg'][1]
 
-            print(f"cuda_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cuda_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_intel_xl_nvidia["avg"][0] - df_intel_xl_nvidia_old["avg"][0]) / df_intel_xl_nvidia_old["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_amd_xl_nvidia["avg"][1] - df_amd_xl_nvidia_old["avg"][1]) / df_amd_xl_nvidia_old["avg"][1] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Old XL & {df_intel_xl_nvidia_old["min"][0]} & {df_intel_xl_nvidia_old["avg"][0]} & {df_intel_xl_nvidia_old["max"][0]} & {df_intel_xl_nvidia_old["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}New XL & {df_intel_xl_nvidia["min"][0]} & {df_intel_xl_nvidia["avg"][0]} & {df_intel_xl_nvidia["max"][0]} & {df_intel_xl_nvidia["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Old XL & {df_amd_xl_nvidia_old["min"][1]} & {df_amd_xl_nvidia_old["avg"][1]} & {df_amd_xl_nvidia_old["max"][1]} & {df_amd_xl_nvidia_old["std"][1]} \\\\')
+            print(f'\\hspace{{0.5cm}}New XL & {df_amd_xl_nvidia["min"][1]} & {df_amd_xl_nvidia["avg"][1]} & {df_amd_xl_nvidia["max"][1]} & {df_amd_xl_nvidia["std"][1]} \\\\')
         case "cpu_gpu":
             bar_width = 0.075
 

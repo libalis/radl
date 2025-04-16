@@ -222,11 +222,7 @@ for i in range(len(threads)):
                 df_dict[group][key].loc[threads.index(threads[i]), "max"] = np.max(tt_dict[group][key][10*i:10*(i+1)])
                 df_dict[group][key].loc[threads.index(threads[i]), "std"] = np.round(np.std(tt_dict[group][key][10*i:10*(i+1)]), 1)
 
-
-try:
-    os.mkdir("../Graphs/7. Presentation")
-except:
-    pass
+"""
 try:
     os.mkdir("../Graphs/7. Presentation/csv")
 except:
@@ -235,6 +231,7 @@ except:
 for group, files in file_paths.items():
     for key, file_path in files.items():
         df_dict[group][key].to_csv(f"../Graphs/7. Presentation/csv/{key}_{group}.csv", index=False)
+"""
 
 figures = ["naive", "naive_xl", "mt_init", "mt_init_xl", "mt", "mt_xl", "omp", "omp_xl", "sse", "sse_xl", "avx", "avx_xl",\
             "neon", "neon_xl", "amx", "amx_xxl", "int", "int_xl", "icpx", "icpx_xl", "icpx_omp", "icpx_omp_xl", "final", "final_xl",\
@@ -558,7 +555,15 @@ for f in figures:
             b1 = df_intel_b_2["avg"][0] + df_amd_b_2["avg"][1]
             b2 = df_intel_b_3["avg"][0] + df_amd_b_3["avg"][1]
 
-            print(f"sse: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"sse: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["b_3"]["avg"][0] - df_dict["intel"]["b_2"]["avg"][0]) / df_dict["intel"]["b_2"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["b_3"]["avg"][2] - df_dict["amd"]["b_2"]["avg"][2]) / df_dict["amd"]["b_2"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Initial Multithreading & {df_dict["intel"]["b_2"]["min"][0]} & {df_dict["intel"]["b_2"]["avg"][0]} & {df_dict["intel"]["b_2"]["max"][0]} & {df_dict["intel"]["b_2"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Initial Multithreading + SSE & {df_dict["intel"]["b_3"]["min"][0]} & {df_dict["intel"]["b_3"]["avg"][0]} & {df_dict["intel"]["b_3"]["max"][0]} & {df_dict["intel"]["b_3"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Initial Multithreading & {df_dict["amd"]["b_2"]["min"][2]} & {df_dict["amd"]["b_2"]["avg"][2]} & {df_dict["amd"]["b_2"]["max"][2]} & {df_dict["amd"]["b_2"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Initial Multithreading + SSE & {df_dict["amd"]["b_3"]["min"][2]} & {df_dict["amd"]["b_3"]["avg"][2]} & {df_dict["amd"]["b_3"]["max"][2]} & {df_dict["amd"]["b_3"]["std"][2]} \\\\')
         case "sse_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -587,7 +592,15 @@ for f in figures:
             b1 = df_intel_xl_2["avg"][0] + df_amd_xl_2["avg"][1]
             b2 = df_intel_xl_3["avg"][0] + df_amd_xl_3["avg"][1]
 
-            print(f"sse_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"sse_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_3"]["avg"][0] - df_dict["intel"]["xl_2"]["avg"][0]) / df_dict["intel"]["xl_2"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_3"]["avg"][2] - df_dict["amd"]["xl_2"]["avg"][2]) / df_dict["amd"]["xl_2"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Initial Multithreading XL & {df_dict["intel"]["xl_2"]["min"][0]} & {df_dict["intel"]["xl_2"]["avg"][0]} & {df_dict["intel"]["xl_2"]["max"][0]} & {df_dict["intel"]["xl_2"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Initial Multithreading + SSE XL & {df_dict["intel"]["xl_3"]["min"][0]} & {df_dict["intel"]["xl_3"]["avg"][0]} & {df_dict["intel"]["xl_3"]["max"][0]} & {df_dict["intel"]["xl_3"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Initial Multithreading XL & {df_dict["amd"]["xl_2"]["min"][2]} & {df_dict["amd"]["xl_2"]["avg"][2]} & {df_dict["amd"]["xl_2"]["max"][2]} & {df_dict["amd"]["xl_2"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Initial Multithreading + SSE XL & {df_dict["amd"]["xl_3"]["min"][2]} & {df_dict["amd"]["xl_3"]["avg"][2]} & {df_dict["amd"]["xl_3"]["max"][2]} & {df_dict["amd"]["xl_3"]["std"][2]} \\\\')
         case "avx":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1050,6 +1063,14 @@ for f in figures:
             ax.bar(indices, df_amd_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CUDA Naive", fontsize=12, color=foreground_color, loc="center")
+
+            print(f"cuda")
+            print(f'intel: {np.round((df_dict["intel"]["nvidia_3"]["avg"][0] - df_dict["amd"]["nvidia_3"]["avg"][2]) / df_dict["amd"]["nvidia_3"]["avg"][2] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["nvidia_3"]["avg"][2] - df_dict["intel"]["nvidia_3"]["avg"][0]) / df_dict["intel"]["nvidia_3"]["avg"][0] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["intel"]["nvidia_3"]["min"][0]} & {df_dict["intel"]["nvidia_3"]["avg"][0]} & {df_dict["intel"]["nvidia_3"]["max"][0]} & {df_dict["intel"]["nvidia_3"]["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["amd"]["nvidia_3"]["min"][2]} & {df_dict["amd"]["nvidia_3"]["avg"][2]} & {df_dict["amd"]["nvidia_3"]["max"][2]} & {df_dict["amd"]["nvidia_3"]["std"][2]} \\\\')
         case "cuda_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1066,6 +1087,14 @@ for f in figures:
             ax.bar(indices, df_amd_xl_nvidia_3["min"], width=bar_width, label=f"{label_amd_nvidia} Naive XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("CUDA Naive XL", fontsize=12, color=foreground_color, loc="center")
+
+            print(f"cuda_xl")
+            print(f'intel: {np.round((df_dict["intel"]["xl_nvidia_3"]["avg"][0] - df_dict["amd"]["xl_nvidia_3"]["avg"][2]) / df_dict["amd"]["xl_nvidia_3"]["avg"][2] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_nvidia_3"]["avg"][2] - df_dict["intel"]["xl_nvidia_3"]["avg"][0]) / df_dict["intel"]["xl_nvidia_3"]["avg"][0] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["intel"]["xl_nvidia_3"]["min"][0]} & {df_dict["intel"]["xl_nvidia_3"]["avg"][0]} & {df_dict["intel"]["xl_nvidia_3"]["max"][0]} & {df_dict["intel"]["xl_nvidia_3"]["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["amd"]["xl_nvidia_3"]["min"][2]} & {df_dict["amd"]["xl_nvidia_3"]["avg"][2]} & {df_dict["amd"]["xl_nvidia_3"]["max"][2]} & {df_dict["amd"]["xl_nvidia_3"]["std"][2]} \\\\')
         case "cuda_final":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1091,10 +1120,18 @@ for f in figures:
 
             ax.set_title("CUDA Final", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_nvidia_3["avg"][0] + df_amd_nvidia_3["avg"][0]
-            b2 = df_intel_nvidia_7["avg"][0] + df_amd_nvidia_7["avg"][0]
+            b1 = df_intel_nvidia_3["avg"][0] + df_amd_nvidia_3["avg"][1]
+            b2 = df_intel_nvidia_7["avg"][0] + df_amd_nvidia_7["avg"][1]
 
-            print(f"cuda_final: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cuda_final: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["nvidia_7"]["avg"][0] - df_dict["intel"]["nvidia_3"]["avg"][0]) / df_dict["intel"]["nvidia_3"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["nvidia_7"]["avg"][2] - df_dict["amd"]["nvidia_3"]["avg"][2]) / df_dict["amd"]["nvidia_3"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["intel"]["nvidia_3"]["min"][0]} & {df_dict["intel"]["nvidia_3"]["avg"][0]} & {df_dict["intel"]["nvidia_3"]["max"][0]} & {df_dict["intel"]["nvidia_3"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final & {df_dict["intel"]["nvidia_7"]["min"][0]} & {df_dict["intel"]["nvidia_7"]["avg"][0]} & {df_dict["intel"]["nvidia_7"]["max"][0]} & {df_dict["intel"]["nvidia_7"]["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["amd"]["nvidia_3"]["min"][2]} & {df_dict["amd"]["nvidia_3"]["avg"][2]} & {df_dict["amd"]["nvidia_3"]["max"][2]} & {df_dict["amd"]["nvidia_3"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final & {df_dict["amd"]["nvidia_7"]["min"][2]} & {df_dict["amd"]["nvidia_7"]["avg"][2]} & {df_dict["amd"]["nvidia_7"]["max"][2]} & {df_dict["amd"]["nvidia_7"]["std"][2]} \\\\')
         case "cuda_final_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1120,10 +1157,18 @@ for f in figures:
 
             ax.set_title("CUDA Final XL", fontsize=12, color=foreground_color, loc="center")
 
-            b1 = df_intel_xl_nvidia_3["avg"][0] + df_amd_xl_nvidia_3["avg"][0]
-            b2 = df_intel_xl_nvidia_7["avg"][0] + df_amd_xl_nvidia_7["avg"][0]
+            b1 = df_intel_xl_nvidia_3["avg"][0] + df_amd_xl_nvidia_3["avg"][1]
+            b2 = df_intel_xl_nvidia_7["avg"][0] + df_amd_xl_nvidia_7["avg"][1]
 
-            print(f"cuda_final_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cuda_final_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_nvidia_7"]["avg"][0] - df_dict["intel"]["xl_nvidia_3"]["avg"][0]) / df_dict["intel"]["xl_nvidia_3"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_nvidia_7"]["avg"][2] - df_dict["amd"]["xl_nvidia_3"]["avg"][2]) / df_dict["amd"]["xl_nvidia_3"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["intel"]["xl_nvidia_3"]["min"][0]} & {df_dict["intel"]["xl_nvidia_3"]["avg"][0]} & {df_dict["intel"]["xl_nvidia_3"]["max"][0]} & {df_dict["intel"]["xl_nvidia_3"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final XL & {df_dict["intel"]["xl_nvidia_7"]["min"][0]} & {df_dict["intel"]["xl_nvidia_7"]["avg"][0]} & {df_dict["intel"]["xl_nvidia_7"]["max"][0]} & {df_dict["intel"]["xl_nvidia_7"]["std"][0]} \\\\')
+            print(f"{label_amd_nvidia} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["amd"]["xl_nvidia_3"]["min"][2]} & {df_dict["amd"]["xl_nvidia_3"]["avg"][2]} & {df_dict["amd"]["xl_nvidia_3"]["max"][2]} & {df_dict["amd"]["xl_nvidia_3"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final XL & {df_dict["amd"]["xl_nvidia_7"]["min"][2]} & {df_dict["amd"]["xl_nvidia_7"]["avg"][2]} & {df_dict["amd"]["xl_nvidia_7"]["max"][2]} & {df_dict["amd"]["xl_nvidia_7"]["std"][2]} \\\\')
         case "cpu_gpu":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1150,7 +1195,15 @@ for f in figures:
             b1 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
             b2 = df_dict["intel"]["nvidia_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["nvidia_7"]["avg"][2]
 
-            print(f"cpu_gpu: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cpu_gpu: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["nvidia_7"]["avg"][0] - df_dict["intel"]["b_7"]["avg"][0]) / df_dict["intel"]["b_7"]["avg"][0] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["b_7"]["avg"][1] - ((df_dict["intel"]["nvidia_7"]["avg"][0] + df_dict["amd"]["nvidia_7"]["avg"][2]) / 2)) / ((df_dict["intel"]["nvidia_7"]["avg"][0] + df_dict["amd"]["nvidia_7"]["avg"][2]) / 2) * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["nvidia_7"]["avg"][2] - df_dict["amd"]["b_7"]["avg"][2]) / df_dict["amd"]["b_7"]["avg"][2] * 100, 1)}')
+            print(f'{label_intel} & {df_dict["intel"]["b_7"]["min"][0]} & {df_dict["intel"]["b_7"]["avg"][0]} & {df_dict["intel"]["b_7"]["max"][0]} & {df_dict["intel"]["b_7"]["std"][0]} \\\\')
+            print(f'{label_intel_nvidia} & {df_dict["intel"]["nvidia_7"]["min"][0]} & {df_dict["intel"]["nvidia_7"]["avg"][0]} & {df_dict["intel"]["nvidia_7"]["max"][0]} & {df_dict["intel"]["nvidia_7"]["std"][0]} \\\\')
+            print(f'{label_apple} & {df_dict["apple"]["b_7"]["min"][1]} & {df_dict["apple"]["b_7"]["avg"][1]} & {df_dict["apple"]["b_7"]["max"][1]} & {df_dict["apple"]["b_7"]["std"][1]} \\\\')
+            print(f'{label_amd} & {df_dict["amd"]["b_7"]["min"][2]} & {df_dict["amd"]["b_7"]["avg"][2]} & {df_dict["amd"]["b_7"]["max"][2]} & {df_dict["amd"]["b_7"]["std"][2]} \\\\')
+            print(f'{label_amd_nvidia} & {df_dict["amd"]["nvidia_7"]["min"][2]} & {df_dict["amd"]["nvidia_7"]["avg"][2]} & {df_dict["amd"]["nvidia_7"]["max"][2]} & {df_dict["amd"]["nvidia_7"]["std"][2]} \\\\')
         case "cpu_gpu_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1177,7 +1230,15 @@ for f in figures:
             b1 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
             b2 = df_dict["intel"]["xl_nvidia_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_nvidia_7"]["avg"][2]
 
-            print(f"cpu_gpu_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"cpu_gpu_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_nvidia_7"]["avg"][0] - df_dict["intel"]["xl_7"]["avg"][0]) / df_dict["intel"]["xl_7"]["avg"][0] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["xl_7"]["avg"][1] - ((df_dict["intel"]["xl_nvidia_7"]["avg"][0] + df_dict["amd"]["xl_nvidia_7"]["avg"][2]) / 2)) / ((df_dict["intel"]["xl_nvidia_7"]["avg"][0] + df_dict["amd"]["xl_nvidia_7"]["avg"][2]) / 2) * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_nvidia_7"]["avg"][2] - df_dict["amd"]["xl_7"]["avg"][2]) / df_dict["amd"]["xl_7"]["avg"][2] * 100, 1)}')
+            print(f'{label_intel} XL & {df_dict["intel"]["xl_7"]["min"][0]} & {df_dict["intel"]["xl_7"]["avg"][0]} & {df_dict["intel"]["xl_7"]["max"][0]} & {df_dict["intel"]["xl_7"]["std"][0]} \\\\')
+            print(f'{label_intel_nvidia} XL & {df_dict["intel"]["xl_nvidia_7"]["min"][0]} & {df_dict["intel"]["xl_nvidia_7"]["avg"][0]} & {df_dict["intel"]["xl_nvidia_7"]["max"][0]} & {df_dict["intel"]["xl_nvidia_7"]["std"][0]} \\\\')
+            print(f'{label_apple} XL & {df_dict["apple"]["xl_7"]["min"][1]} & {df_dict["apple"]["xl_7"]["avg"][1]} & {df_dict["apple"]["xl_7"]["max"][1]} & {df_dict["apple"]["xl_7"]["std"][1]} \\\\')
+            print(f'{label_amd} XL & {df_dict["amd"]["xl_7"]["min"][2]} & {df_dict["amd"]["xl_7"]["avg"][2]} & {df_dict["amd"]["xl_7"]["max"][2]} & {df_dict["amd"]["xl_7"]["std"][2]} \\\\')
+            print(f'{label_amd_nvidia} XL & {df_dict["amd"]["xl_nvidia_7"]["min"][2]} & {df_dict["amd"]["xl_nvidia_7"]["avg"][2]} & {df_dict["amd"]["xl_nvidia_7"]["max"][2]} & {df_dict["amd"]["xl_nvidia_7"]["std"][2]} \\\\')
 
     #ax.set_xlabel("Threads", fontsize=12, color=foreground_color)
     ax.set_ylabel("Total time (µs)", fontsize=12, color=foreground_color)
@@ -1203,6 +1264,12 @@ for f in figures:
     ax.set_facecolor(background_color)
 
     plt.tight_layout()
+
+    """
+    try:
+        os.mkdir("../Graphs/7. Presentation")
+    except:
+        pass
 
     match f:
         case "naive":
@@ -1265,6 +1332,7 @@ for f in figures:
             plt.savefig("../Graphs/7. Presentation/CPU vs. GPU.png", dpi=300)
         case "cpu_gpu_xl":
             plt.savefig("../Graphs/7. Presentation/CPU vs. GPU XL.png", dpi=300)
+    """
 
     # plt.show()
     plt.close(fig)

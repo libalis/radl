@@ -45,9 +45,9 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - AMX (Neon vs. AMX)
             - AMX (Power Consumption)
         - x86 Optimizations (Robert)
-            - SSE
-            - (Performance Benchmarks (2. Presentation vs. 3. Presentation))
-            - AVX2
+            - Streaming SIMD Extensions
+            - Performance Benchmarks (2. Presentation vs. 3. Presentation)
+            - Advanced Vector Extensions
             - AVX-512
             - Performance Benchmarks (NO_SIMD vs. SIMD)
     - Quantization (Dustin)
@@ -57,8 +57,8 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - NO_SIMD: 2,409,961 bytes
             - NO_SIMD INT: 2,050,771 bytes
         - Performance Benchmarks (SIMD vs. Quantization)
-    - Other Optimizations
-    - Inital vs. Final Benchmarks (1. Presentation vs. 6. Presentation)
+    - Other Optimizations (Robert)
+    - Inital vs. Final Benchmarks (Robert) (1. Presentation vs. 6. Presentation)
 7. GPU-Based Optimizations (Max)
     - Overview of CUDA
     - CUDA Kernels
