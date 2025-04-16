@@ -475,7 +475,7 @@ for f in figures:
             b1 = df_dict["intel"]["no_simd_7"]["avg"][0] + df_dict["apple"]["no_simd_7"]["avg"][1] + df_dict["amd"]["no_simd_7"]["avg"][2]
             b2 = df_dict["intel"]["omp_4"]["avg"][0] + df_dict["apple"]["omp_4"]["avg"][1] + df_dict["amd"]["omp_4"]["avg"][2]
 
-            print(f"omp: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"omp: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f'intel: {np.round((df_dict["intel"]["omp_4"]["avg"][0] - df_dict["intel"]["no_simd_7"]["avg"][0]) / df_dict["intel"]["no_simd_7"]["avg"][0] * 100, 1)}')
             print(f'apple: {np.round((df_dict["apple"]["omp_4"]["avg"][1] - df_dict["apple"]["no_simd_7"]["avg"][1]) / df_dict["apple"]["no_simd_7"]["avg"][1] * 100, 1)}')
             print(f'amd: {np.round((df_dict["amd"]["omp_4"]["avg"][2] - df_dict["amd"]["no_simd_7"]["avg"][2]) / df_dict["amd"]["no_simd_7"]["avg"][2] * 100, 1)}')
@@ -517,7 +517,7 @@ for f in figures:
             b1 = df_dict["intel"]["no_simd_xl_7"]["avg"][0] + df_dict["apple"]["no_simd_xl_7"]["avg"][1] + df_dict["amd"]["no_simd_xl_7"]["avg"][2]
             b2 = df_dict["intel"]["omp_xl_4"]["avg"][0] + df_dict["apple"]["omp_xl_4"]["avg"][1] + df_dict["amd"]["omp_xl_4"]["avg"][2]
 
-            print(f"omp_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"omp_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f'intel: {np.round((df_dict["intel"]["omp_xl_4"]["avg"][0] - df_dict["intel"]["no_simd_xl_7"]["avg"][0]) / df_dict["intel"]["no_simd_xl_7"]["avg"][0] * 100, 1)}')
             print(f'apple: {np.round((df_dict["apple"]["omp_xl_4"]["avg"][1] - df_dict["apple"]["no_simd_xl_7"]["avg"][1]) / df_dict["apple"]["no_simd_xl_7"]["avg"][1] * 100, 1)}')
             print(f'amd: {np.round((df_dict["amd"]["omp_xl_4"]["avg"][2] - df_dict["amd"]["no_simd_xl_7"]["avg"][2]) / df_dict["amd"]["no_simd_xl_7"]["avg"][2] * 100, 1)}')
@@ -666,7 +666,7 @@ for f in figures:
             b1 = df_apple_no_neon_7["avg"][0] + df_apple_no_neon_7["avg"][1]
             b2 = df_apple_neon_7["avg"][0] + df_apple_neon_7["avg"][1]
 
-            print(f"neon: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"neon: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f"{label_apple} \\\\")
             print(f'\\hspace{{0.5cm}}Multithreading & {df_apple_no_neon_7["min"][1]} & {df_apple_no_neon_7["avg"][1]} & {df_apple_no_neon_7["max"][1]} & {df_apple_no_neon_7["std"][1]} \\\\')
             print(f'\\hspace{{0.5cm}}Multithreading + Neon & {df_apple_neon_7["min"][1]} & {df_apple_neon_7["avg"][1]} & {df_apple_neon_7["max"][1]} & {df_apple_neon_7["std"][1]} \\\\')
@@ -714,7 +714,7 @@ for f in figures:
             b1 = df_apple_neon_6["avg"][0] + df_apple_neon_6["avg"][1]
             b2 = df_apple_amx_6["avg"][0] + df_apple_amx_6["avg"][1]
 
-            print(f"amx: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"amx: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f"{label_apple} \\\\")
             print(f'\\hspace{{0.5cm}}Multithreading + Neon & {df_apple_neon_6["min"][1]} & {df_apple_neon_6["avg"][1]} & {df_apple_neon_6["max"][1]} & {df_apple_neon_6["std"][1]} \\\\')
             print(f'\\hspace{{0.5cm}}Multithreading + AMX & {df_apple_amx_6["min"][1]} & {df_apple_amx_6["avg"][1]} & {df_apple_amx_6["max"][1]} & {df_apple_amx_6["std"][1]} \\\\')
@@ -738,7 +738,7 @@ for f in figures:
             b1 = df_apple_neon_xxl_6["avg"][0] + df_apple_neon_xxl_6["avg"][1]
             b2 = df_apple_amx_xxl_6["avg"][0] + df_apple_amx_xxl_6["avg"][1]
 
-            print(f"amx_xxl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"amx_xxl: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f"{label_apple} \\\\")
             print(f'\\hspace{{0.5cm}}Multithreading + Neon XXL & {df_apple_neon_xxl_6["min"][1]} & {df_apple_neon_xxl_6["avg"][1]} & {df_apple_neon_xxl_6["max"][1]} & {df_apple_neon_xxl_6["std"][1]} \\\\')
             print(f'\\hspace{{0.5cm}}Multithreading + AMX XXL & {df_apple_amx_xxl_6["min"][1]} & {df_apple_amx_xxl_6["avg"][1]} & {df_apple_amx_xxl_6["max"][1]} & {df_apple_amx_xxl_6["std"][1]} \\\\')
@@ -771,7 +771,7 @@ for f in figures:
             b1 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
             b2 = df_dict["intel"]["int_7"]["avg"][0] + df_dict["apple"]["int_7"]["avg"][1] + df_dict["amd"]["int_7"]["avg"][2]
 
-            print(f"int: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"int: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f'intel: {np.round((df_dict["intel"]["b_7"]["avg"][0] - df_dict["intel"]["int_7"]["avg"][0]) / df_dict["intel"]["int_7"]["avg"][0] * 100, 1)}')
             print(f'apple: {np.round((df_dict["apple"]["b_7"]["avg"][1] - df_dict["apple"]["int_7"]["avg"][1]) / df_dict["apple"]["int_7"]["avg"][1] * 100, 1)}')
             print(f'amd: {np.round((df_dict["amd"]["b_7"]["avg"][2] - df_dict["amd"]["int_7"]["avg"][2]) / df_dict["amd"]["int_7"]["avg"][2] * 100, 1)}')
@@ -813,7 +813,7 @@ for f in figures:
             b1 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
             b2 = df_dict["intel"]["int_xl_7"]["avg"][0] + df_dict["apple"]["int_xl_7"]["avg"][1] + df_dict["amd"]["int_xl_7"]["avg"][2]
 
-            print(f"int_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"int_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
             print(f'intel: {np.round((df_dict["intel"]["xl_7"]["avg"][0] - df_dict["intel"]["int_xl_7"]["avg"][0]) / df_dict["intel"]["int_xl_7"]["avg"][0] * 100, 1)}')
             print(f'apple: {np.round((df_dict["apple"]["xl_7"]["avg"][1] - df_dict["apple"]["int_xl_7"]["avg"][1]) / df_dict["apple"]["int_xl_7"]["avg"][1] * 100, 1)}')
             print(f'amd: {np.round((df_dict["amd"]["xl_7"]["avg"][2] - df_dict["amd"]["int_xl_7"]["avg"][2]) / df_dict["amd"]["int_xl_7"]["avg"][2] * 100, 1)}')
