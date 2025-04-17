@@ -629,7 +629,15 @@ for f in figures:
             b1 = df_intel_no_simd_7["avg"][0] + df_amd_no_simd_7["avg"][1]
             b2 = df_intel_b_6["avg"][0] + df_amd_b_6["avg"][1]
 
-            print(f"avx: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"avx: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["b_6"]["avg"][0] - df_dict["intel"]["no_simd_7"]["avg"][0]) / df_dict["intel"]["no_simd_7"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["b_6"]["avg"][2] - df_dict["amd"]["no_simd_7"]["avg"][2]) / df_dict["amd"]["no_simd_7"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Multithreading & {df_dict["intel"]["no_simd_7"]["min"][0]} & {df_dict["intel"]["no_simd_7"]["avg"][0]} & {df_dict["intel"]["no_simd_7"]["max"][0]} & {df_dict["intel"]["no_simd_7"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Multithreading + AVX-512 & {df_dict["intel"]["b_6"]["min"][0]} & {df_dict["intel"]["b_6"]["avg"][0]} & {df_dict["intel"]["b_6"]["max"][0]} & {df_dict["intel"]["b_6"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Multithreading & {df_dict["amd"]["no_simd_7"]["min"][2]} & {df_dict["amd"]["no_simd_7"]["avg"][2]} & {df_dict["amd"]["no_simd_7"]["max"][2]} & {df_dict["amd"]["no_simd_7"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Multithreading + AVX2 & {df_dict["amd"]["b_6"]["min"][2]} & {df_dict["amd"]["b_6"]["avg"][2]} & {df_dict["amd"]["b_6"]["max"][2]} & {df_dict["amd"]["b_6"]["std"][2]} \\\\')
         case "avx_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -658,7 +666,15 @@ for f in figures:
             b1 = df_intel_no_simd_xl_7["avg"][0] + df_amd_no_simd_xl_7["avg"][1]
             b2 = df_intel_xl_6["avg"][0] + df_amd_xl_6["avg"][1]
 
-            print(f"avx_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"avx_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_6"]["avg"][0] - df_dict["intel"]["no_simd_xl_7"]["avg"][0]) / df_dict["intel"]["no_simd_xl_7"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_6"]["avg"][2] - df_dict["amd"]["no_simd_xl_7"]["avg"][2]) / df_dict["amd"]["no_simd_xl_7"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Multithreading XL & {df_dict["intel"]["no_simd_xl_7"]["min"][0]} & {df_dict["intel"]["no_simd_xl_7"]["avg"][0]} & {df_dict["intel"]["no_simd_xl_7"]["max"][0]} & {df_dict["intel"]["no_simd_xl_7"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Multithreading + AVX-512 XL & {df_dict["intel"]["xl_6"]["min"][0]} & {df_dict["intel"]["xl_6"]["avg"][0]} & {df_dict["intel"]["xl_6"]["max"][0]} & {df_dict["intel"]["xl_6"]["std"][0]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Multithreading XL & {df_dict["amd"]["no_simd_xl_7"]["min"][2]} & {df_dict["amd"]["no_simd_xl_7"]["avg"][2]} & {df_dict["amd"]["no_simd_xl_7"]["max"][2]} & {df_dict["amd"]["no_simd_xl_7"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Multithreading + AVX2 XL & {df_dict["amd"]["xl_6"]["min"][2]} & {df_dict["amd"]["xl_6"]["avg"][2]} & {df_dict["amd"]["xl_6"]["max"][2]} & {df_dict["amd"]["xl_6"]["std"][2]} \\\\')
         case "neon":
             group_width = bar_width * 2
             group_gap = 0.15
