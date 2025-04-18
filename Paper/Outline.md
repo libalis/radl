@@ -58,7 +58,7 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
             - NO_SIMD INT: 2,050,771 bytes
         - Performance Benchmarks (SIMD vs. Quantization)
     - Other Optimizations (Robert)
-    - Inital vs. Final Benchmarks (Robert) (1. Presentation vs. 6. Presentation)
+    - Inital vs. Final Implementation (Robert) (1. Presentation vs. 6. Presentation)
 7. GPU-Based Optimizations (Max)
     - Overview of CUDA
     - CUDA Kernels

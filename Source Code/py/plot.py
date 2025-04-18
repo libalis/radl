@@ -259,6 +259,17 @@ for f in figures:
             ax.bar(indices, df_dict["amd"]["b_1"]["min"], width=bar_width, label=f"{label_amd} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Naive", fontsize=12, color=foreground_color, loc="center")
+
+            print(f"naive")
+            print(f'intel: {np.round((df_dict["intel"]["b_1"]["avg"][0] - df_dict["amd"]["b_1"]["avg"][2]) / df_dict["amd"]["b_1"]["avg"][2] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["b_1"]["avg"][1] - df_dict["intel"]["b_1"]["avg"][0]) / df_dict["intel"]["b_1"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["b_1"]["avg"][2] - df_dict["apple"]["b_1"]["avg"][1]) / df_dict["apple"]["b_1"]["avg"][1] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["intel"]["b_1"]["min"][0]} & {df_dict["intel"]["b_1"]["avg"][0]} & {df_dict["intel"]["b_1"]["max"][0]} & {df_dict["intel"]["b_1"]["std"][0]} \\\\')
+            print(f"{label_apple} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["apple"]["b_1"]["min"][1]} & {df_dict["apple"]["b_1"]["avg"][1]} & {df_dict["apple"]["b_1"]["max"][1]} & {df_dict["apple"]["b_1"]["std"][1]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["amd"]["b_1"]["min"][2]} & {df_dict["amd"]["b_1"]["avg"][2]} & {df_dict["amd"]["b_1"]["max"][2]} & {df_dict["amd"]["b_1"]["std"][2]} \\\\')
         case "naive_xl":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -275,6 +286,17 @@ for f in figures:
             ax.bar(indices, df_dict["amd"]["xl_1"]["min"], width=bar_width, label=f"{label_amd} Naive XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Naive XL", fontsize=12, color=foreground_color, loc="center")
+
+            print(f"naive_xl")
+            print(f'intel: {np.round((df_dict["intel"]["xl_1"]["avg"][0] - df_dict["amd"]["xl_1"]["avg"][2]) / df_dict["amd"]["xl_1"]["avg"][2] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["xl_1"]["avg"][1] - df_dict["intel"]["xl_1"]["avg"][0]) / df_dict["intel"]["xl_1"]["avg"][0] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_1"]["avg"][2] - df_dict["apple"]["xl_1"]["avg"][1]) / df_dict["apple"]["xl_1"]["avg"][1] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["intel"]["xl_1"]["min"][0]} & {df_dict["intel"]["xl_1"]["avg"][0]} & {df_dict["intel"]["xl_1"]["max"][0]} & {df_dict["intel"]["xl_1"]["std"][0]} \\\\')
+            print(f"{label_apple} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["apple"]["xl_1"]["min"][1]} & {df_dict["apple"]["xl_1"]["avg"][1]} & {df_dict["apple"]["xl_1"]["max"][1]} & {df_dict["apple"]["xl_1"]["std"][1]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["amd"]["xl_1"]["min"][2]} & {df_dict["amd"]["xl_1"]["avg"][2]} & {df_dict["amd"]["xl_1"]["max"][2]} & {df_dict["amd"]["xl_1"]["std"][2]} \\\\')
         case "mt_init":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1032,37 +1054,61 @@ for f in figures:
             b1 = df_dict["intel"]["b_1"]["avg"][0] + df_dict["apple"]["b_1"]["avg"][1] + df_dict["amd"]["b_1"]["avg"][2]
             b2 = df_dict["intel"]["b_7"]["avg"][0] + df_dict["apple"]["b_7"]["avg"][1] + df_dict["amd"]["b_7"]["avg"][2]
 
-            print(f"final: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"final: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["b_7"]["avg"][0] - df_dict["intel"]["b_1"]["avg"][0]) / df_dict["intel"]["b_1"]["avg"][0] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["b_7"]["avg"][1] - df_dict["apple"]["b_1"]["avg"][1]) / df_dict["apple"]["b_1"]["avg"][1] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["b_7"]["avg"][2] - df_dict["amd"]["b_1"]["avg"][2]) / df_dict["amd"]["b_1"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["intel"]["b_1"]["min"][0]} & {df_dict["intel"]["b_1"]["avg"][0]} & {df_dict["intel"]["b_1"]["max"][0]} & {df_dict["intel"]["b_1"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final & {df_dict["intel"]["b_7"]["min"][0]} & {df_dict["intel"]["b_7"]["avg"][0]} & {df_dict["intel"]["b_7"]["max"][0]} & {df_dict["intel"]["b_7"]["std"][0]} \\\\')
+            print(f"{label_apple} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["apple"]["b_1"]["min"][1]} & {df_dict["apple"]["b_1"]["avg"][1]} & {df_dict["apple"]["b_1"]["max"][1]} & {df_dict["apple"]["b_1"]["std"][1]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final & {df_dict["apple"]["b_7"]["min"][1]} & {df_dict["apple"]["b_7"]["avg"][1]} & {df_dict["apple"]["b_7"]["max"][1]} & {df_dict["apple"]["b_7"]["std"][1]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive & {df_dict["amd"]["b_1"]["min"][2]} & {df_dict["amd"]["b_1"]["avg"][2]} & {df_dict["amd"]["b_1"]["max"][2]} & {df_dict["amd"]["b_1"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final & {df_dict["amd"]["b_7"]["min"][2]} & {df_dict["amd"]["b_7"]["avg"][2]} & {df_dict["amd"]["b_7"]["max"][2]} & {df_dict["amd"]["b_7"]["std"][2]} \\\\')
         case "final_xl":
             group_width = bar_width * 2
             group_gap = 0.15
             indices = np.arange(len(threads_omp)) * (group_width + group_gap)
 
-            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["max"], width=bar_width, label=f"{label_intel} Naive Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["avg"], width=bar_width, label=f"{label_intel} Naive Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["min"], width=bar_width, label=f"{label_intel} Naive Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["max"], width=bar_width, label=f"{label_intel} Final Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["avg"], width=bar_width, label=f"{label_intel} Final Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["min"], width=bar_width, label=f"{label_intel} Final Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["max"], width=bar_width, label=f"{label_apple} Naive Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["avg"], width=bar_width, label=f"{label_apple} Naive Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["min"], width=bar_width, label=f"{label_apple} Naive Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["max"], width=bar_width, label=f"{label_apple} Final Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["avg"], width=bar_width, label=f"{label_apple} Final Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["min"], width=bar_width, label=f"{label_apple} Final Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["max"], width=bar_width, label=f"{label_amd} Naive Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["avg"], width=bar_width, label=f"{label_amd} Naive Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["min"], width=bar_width, label=f"{label_amd} Naive Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["max"], width=bar_width, label=f"{label_amd} Final Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["avg"], width=bar_width, label=f"{label_amd} Final Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
-            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} Final Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["max"], width=bar_width, label=f"{label_intel} Naive XL Max", color="#99c1f1", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["avg"], width=bar_width, label=f"{label_intel} Naive XL Avg", color="#3584e4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["intel"]["xl_1"]["min"], width=bar_width, label=f"{label_intel} Naive XL Min", color="#1a5fb4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["max"], width=bar_width, label=f"{label_intel} Final XL Max", color="#8ff0a4", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["avg"], width=bar_width, label=f"{label_intel} Final XL Avg", color="#33d17a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["intel"]["xl_7"]["min"], width=bar_width, label=f"{label_intel} Final XL Min", color="#26a269", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["max"], width=bar_width, label=f"{label_apple} Naive XL Max", color="#f9f06b", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["avg"], width=bar_width, label=f"{label_apple} Naive XL Avg", color="#f6d32d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["apple"]["xl_1"]["min"], width=bar_width, label=f"{label_apple} Naive XL Min", color="#e5a50a", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["max"], width=bar_width, label=f"{label_apple} Final XL Max", color="#ffbe6f", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["avg"], width=bar_width, label=f"{label_apple} Final XL Avg", color="#ff7800", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["apple"]["xl_7"]["min"], width=bar_width, label=f"{label_apple} Final XL Min", color="#c64600", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["max"], width=bar_width, label=f"{label_amd} Naive XL Max", color="#f66151", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["avg"], width=bar_width, label=f"{label_amd} Naive XL Avg", color="#e01b24", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices - 0.5 * bar_width, df_dict["amd"]["xl_1"]["min"], width=bar_width, label=f"{label_amd} Naive XL Min", color="#a51d2d", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["max"], width=bar_width, label=f"{label_amd} Final XL Max", color="#dc8add", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["avg"], width=bar_width, label=f"{label_amd} Final XL Avg", color="#9141ac", edgecolor=foreground_color, linewidth=0.75)
+            ax.bar(indices + 0.5 * bar_width, df_dict["amd"]["xl_7"]["min"], width=bar_width, label=f"{label_amd} Final XL Min", color="#613583", edgecolor=foreground_color, linewidth=0.75)
 
             ax.set_title("Final XL", fontsize=12, color=foreground_color, loc="center")
 
             b1 = df_dict["intel"]["xl_1"]["avg"][0] + df_dict["apple"]["xl_1"]["avg"][1] + df_dict["amd"]["xl_1"]["avg"][2]
             b2 = df_dict["intel"]["xl_7"]["avg"][0] + df_dict["apple"]["xl_7"]["avg"][1] + df_dict["amd"]["xl_7"]["avg"][2]
 
-            print(f"final_xl: {np.round((b2 - b1) / b1 * 100, 0)}")
+            print(f"final_xl: {np.round((b2 - b1) / b1 * 100, 1)}")
+            print(f'intel: {np.round((df_dict["intel"]["xl_7"]["avg"][0] - df_dict["intel"]["xl_1"]["avg"][0]) / df_dict["intel"]["xl_1"]["avg"][0] * 100, 1)}')
+            print(f'apple: {np.round((df_dict["apple"]["xl_7"]["avg"][1] - df_dict["apple"]["xl_1"]["avg"][1]) / df_dict["apple"]["xl_1"]["avg"][1] * 100, 1)}')
+            print(f'amd: {np.round((df_dict["amd"]["xl_7"]["avg"][2] - df_dict["amd"]["xl_1"]["avg"][2]) / df_dict["amd"]["xl_1"]["avg"][2] * 100, 1)}')
+            print(f"{label_intel} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["intel"]["xl_1"]["min"][0]} & {df_dict["intel"]["xl_1"]["avg"][0]} & {df_dict["intel"]["xl_1"]["max"][0]} & {df_dict["intel"]["xl_1"]["std"][0]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final XL & {df_dict["intel"]["xl_7"]["min"][0]} & {df_dict["intel"]["xl_7"]["avg"][0]} & {df_dict["intel"]["xl_7"]["max"][0]} & {df_dict["intel"]["xl_7"]["std"][0]} \\\\')
+            print(f"{label_apple} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["apple"]["xl_1"]["min"][1]} & {df_dict["apple"]["xl_1"]["avg"][1]} & {df_dict["apple"]["xl_1"]["max"][1]} & {df_dict["apple"]["xl_1"]["std"][1]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final XL & {df_dict["apple"]["xl_7"]["min"][1]} & {df_dict["apple"]["xl_7"]["avg"][1]} & {df_dict["apple"]["xl_7"]["max"][1]} & {df_dict["apple"]["xl_7"]["std"][1]} \\\\')
+            print(f"{label_amd} \\\\")
+            print(f'\\hspace{{0.5cm}}Naive XL & {df_dict["amd"]["xl_1"]["min"][2]} & {df_dict["amd"]["xl_1"]["avg"][2]} & {df_dict["amd"]["xl_1"]["max"][2]} & {df_dict["amd"]["xl_1"]["std"][2]} \\\\')
+            print(f'\\hspace{{0.5cm}}Final XL & {df_dict["amd"]["xl_7"]["min"][2]} & {df_dict["amd"]["xl_7"]["avg"][2]} & {df_dict["amd"]["xl_7"]["max"][2]} & {df_dict["amd"]["xl_7"]["std"][2]} \\\\')
         case "cuda":
             group_width = bar_width * 2
             group_gap = 0.15
@@ -1281,7 +1327,6 @@ for f in figures:
 
     plt.tight_layout()
 
-    """
     try:
         os.mkdir("../Graphs/7. Presentation")
     except:
@@ -1348,7 +1393,6 @@ for f in figures:
             plt.savefig("../Graphs/7. Presentation/CPU vs. GPU.png", dpi=300)
         case "cpu_gpu_xl":
             plt.savefig("../Graphs/7. Presentation/CPU vs. GPU XL.png", dpi=300)
-    """
 
     # plt.show()
     plt.close(fig)
