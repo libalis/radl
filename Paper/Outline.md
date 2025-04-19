@@ -70,7 +70,6 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
     - Intermidiate Benchmarks (4. Presentation vs. 5. Presentation)
     - Error Handling & Fixing
     - Shared Memory Optimization
-    - Synchronization Call Management
     - Final Benchmarks (5. Presentation vs. 6. Presentation)
     - Inital vs. Final Benchmarks (3. Presentation vs. 6. Presentation)
 8. CPU vs. GPU (Max)
