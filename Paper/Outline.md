@@ -76,7 +76,7 @@ In-Depth Benchmarking and Evaluation of Multithreading, OpenMP, SIMD, Quantizati
 8. CPU vs. GPU (Max)
     - Overview of Optimizations
     - Performance Benchmarks (CPU vs. GPU)
-8. Conclusion (Team)
+8. Conclusion (Max)
     - Summary of Findings
     - Contributions to the Field
     - Future Work and Improvements
